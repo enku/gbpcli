@@ -1,0 +1,1 @@
+{"name": "lighthouse", "number": 2085, "storage": {"published": false, "pulled": true}, "db": {"submitted": "2021-07-21T02:21:41.675923+00:00", "completed": "2021-07-21T02:27:52.040402+00:00", "note": null, "keep": false}, "jenkins": {"url": "https://jenkins/job/Gentoo/job/lighthouse/2085/artifact/build.tar.gz"}, "error": null}

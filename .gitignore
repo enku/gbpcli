@@ -1,0 +1,3 @@
+/.coverage
+/.venv/
+/src/gbpcli.egg-info/
