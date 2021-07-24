@@ -4,10 +4,13 @@ import datetime
 import unittest
 from unittest import mock
 
-from gbpcli import APIError, NotFound, UnexpectedResponseError
-from gbpcli.utils import check, timestr, yesno
+from gbpcli import GBP, APIError, NotFound, UnexpectedResponseError
+from gbpcli.utils import timestr, yesno
 
 from . import make_response
+
+# moved to GBP as a static method
+check = GBP.check
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -24,7 +27,7 @@ class TimestrTestCase(unittest.TestCase):
     """timestr() tests"""
 
     def test(self):
-        timestamp = "2021-07-20T16:45:06.445500+00:00"
+        timestamp = datetime.datetime.fromisoformat("2021-07-20T16:45:06.445500+00:00")
         timezone = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
 
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")

@@ -8,3 +8,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.coverage.run]
 source = ["gbpcli"]
+omit = ["src/gbpcli/__main__.py"]

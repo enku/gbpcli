@@ -2,20 +2,20 @@
 import argparse
 import sys
 
-import yarl
+from gbpcli import GBP, Build, NotFound
 
 
-def handler(args: argparse.Namespace) -> int:
+def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
-    url = yarl.URL(args.url) / f"api/builds/{args.machine}/{args.number}/log"
-    response = args.session.get(str(url))
+    build = Build(name=args.machine, number=args.number)
 
-    if response.status_code == 404:
+    try:
+        text = gbp.logs(build)
+    except NotFound:
         print("Not Found", file=sys.stderr)
-
         return 1
 
-    print(response.text)
+    print(text)
 
     return 0
 

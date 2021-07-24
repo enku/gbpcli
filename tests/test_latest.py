@@ -1,47 +1,43 @@
 """Tests for the latest subcommand"""
 # pylint: disable=missing-function-docstring
-import io
-import sys
 import unittest
-from functools import partial
+from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
 from gbpcli.subcommands.latest import handler as latest
 
-from . import LOCAL_TIMEZONE, load_data, make_response
+from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-@mock.patch("gbpcli.subcommands.latest.print")
+@mock_print("gbpcli.subcommands.latest")
 class LatestTestCase(unittest.TestCase):
     """latest() tests"""
 
     def test(self, print_mock):
-        stdout = io.StringIO()
-        print_mock.side_effect = partial(print, file=stdout)
-        args_mock = mock.Mock(
-            url="http://test.invalid/", machine="lighthouse", number=2080
-        )
+        args = Namespace(machine="lighthouse")
         mock_json = parse(load_data("latest.json"))
-        args_mock.session.get.return_value = make_response(json=mock_json)
+        gbp = make_gbp()
+        gbp.session.get.return_value = make_response(json=mock_json)
 
-        latest(args_mock)
+        status = latest(args, gbp)
 
+        self.assertEqual(status, 0)
         expected = "2085\n"
-        self.assertEqual(stdout.getvalue(), expected)
-        args_mock.session.get.assert_called_once_with(
+        self.assertEqual(print_mock.stdout.getvalue(), expected)
+        gbp.session.get.assert_called_once_with(
             "http://test.invalid/api/builds/lighthouse/latest"
         )
 
-    def test_should_print_error_when_returned(self, print_mock):
-        args_mock = mock.Mock(
-            url="http://test.invalid/", machine="lighthouse", number=2080
-        )
-        mock_json = {"error": "This is bad"}
-        args_mock.session.get.return_value = make_response(json=mock_json)
+    def test_should_print_error_when_not_found(self, print_mock):
+        args = Namespace(machine="bogus")
+        gbp = make_gbp()
+        gbp.session.get.return_value = make_response(status_code=404)
 
-        status = latest(args_mock)
+        status = latest(args, gbp)
 
-        print_mock.assert_called_once_with("This is bad", file=sys.stderr)
         self.assertEqual(status, 1)
+        self.assertEqual(
+            print_mock.stderr.getvalue(), "No builds exist for the given machine\n"
+        )

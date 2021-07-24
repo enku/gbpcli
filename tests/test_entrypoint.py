@@ -41,14 +41,18 @@ class BuildParserTestCase(unittest.TestCase):
 class MainTestCase(unittest.TestCase):
     """tests for the main function"""
 
+    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
-    def test(self, parse_args_mock):
+    def test(self, parse_args_mock, gbp_mock):
+        parse_args_mock.return_value.url = "http://test.invalid/"
         func = parse_args_mock.return_value.func
         func.return_value = 0
         argv = ["show", "lighthouse"]
         status = main(argv)
 
-        func.assert_called_once_with(parse_args_mock.return_value)
+        func.assert_called_once_with(
+            parse_args_mock.return_value, gbp_mock.return_value
+        )
         self.assertEqual(status, 0)
 
     def test_should_print_help_when_no_func(self):
@@ -58,20 +62,16 @@ class MainTestCase(unittest.TestCase):
         self.assertEqual(status, 1)
         print_help_mock.assert_called_once_with(file=sys.stderr)
 
-    @mock.patch("gbpcli.argparse.ArgumentParser")
+    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.print")
-    def test_should_print_to_stderr_and_exit_1_on_exception(
-        self, print_mock, argument_parser_mock
-    ):
-        parser = argument_parser_mock.return_value
-        args = parser.parse_args.return_value
+    def test_should_print_to_stderr_and_exit_1_on_exception(self, print_mock, gbp_mock):
         errors = [APIError("blah", {}), UnexpectedResponseError(mock.Mock())]
         messages = ["blah", "Unexpected server response"]
 
         for error, message in zip(errors, messages):
             with self.subTest(error=error, message=message):
-                args.func.side_effect = error
-                status = main([])
+                gbp_mock.return_value.get_build_info.side_effect = error
+                status = main(["show", "lighthouse"])
                 self.assertEqual(status, 1)
                 print_mock.assert_called_once_with(message, file=sys.stderr)
             print_mock.reset_mock()

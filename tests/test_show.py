@@ -1,32 +1,27 @@
 """Tests for the show subcommand"""
 # pylint: disable=missing-function-docstring
-import io
-import sys
 import unittest
-from functools import partial
+from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
 from gbpcli.subcommands.show import handler as show
 
-from . import LOCAL_TIMEZONE, load_data, make_response
+from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-@mock.patch("gbpcli.subcommands.show.print")
+@mock_print("gbpcli.subcommands.show")
 class ShowTestCase(unittest.TestCase):
     """show() tests"""
 
     def test(self, print_mock):
-        stdout = io.StringIO()
-        print_mock.side_effect = partial(print, file=stdout)
-        args_mock = mock.Mock(
-            url="http://test.invalid/", machine="lighthouse", number=2080
-        )
+        args = Namespace(machine="lighthouse", number=2080)
         mock_json = parse(load_data("show.json"))
-        args_mock.session.get.return_value = make_response(json=mock_json)
+        gbp = make_gbp()
+        gbp.session.get.return_value = make_response(json=mock_json)
 
-        show(args_mock)
+        show(args, gbp)
 
         expected = """\
 Build: lighthouse/2080
@@ -42,33 +37,33 @@ Keep: no
     * net-vpn/networkmanager-openvpn-1.8.12-r1-1
     * sys-kernel/gentoo-sources-5.13.4-1
 """
-        self.assertEqual(stdout.getvalue(), expected)
-        args_mock.session.get.assert_called_once_with(
+        self.assertEqual(print_mock.stdout.getvalue(), expected)
+        gbp.session.get.assert_called_once_with(
             "http://test.invalid/api/builds/lighthouse/2080"
         )
 
     def test_should_get_latest_when_number_is_0(self, _print_mock):
-        args_mock = mock.Mock(
-            url="http://test.invalid/", machine="lighthouse", number=0
-        )
+        args = Namespace(machine="lighthouse", number=0)
         mock_latest = make_response(json={"error": None, "number": 2080})
         mock_json = parse(load_data("show.json"))
-        args_mock.session.get.side_effect = (mock_latest, make_response(json=mock_json))
+        gbp = make_gbp()
+        gbp.session.get.side_effect = (mock_latest, make_response(json=mock_json))
 
-        status = show(args_mock)
+        status = show(args, gbp)
 
         expected_calls = [
             mock.call("http://test.invalid/api/builds/lighthouse/latest"),
             mock.call("http://test.invalid/api/builds/lighthouse/2080"),
         ]
-        args_mock.session.get.has_calls(expected_calls)
+        gbp.session.get.has_calls(expected_calls)
         self.assertEqual(status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
-        args_mock = mock.Mock(url="http://test.invalid/", machine="bogus", number=934)
-        args_mock.session.get.return_value = make_response(status_code=404)
+        args = Namespace(machine="bogus", number=934)
+        gbp = make_gbp()
+        gbp.session.get.return_value = make_response(status_code=404)
 
-        status = show(args_mock)
+        status = show(args, gbp)
 
-        print_mock.assert_called_once_with("Build not found", file=sys.stderr)
         self.assertEqual(status, 1)
+        self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")

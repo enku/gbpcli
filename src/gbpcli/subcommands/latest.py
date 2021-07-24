@@ -2,19 +2,18 @@
 import argparse
 import sys
 
-import yarl
+from gbpcli import GBP, NotFound
 
 
-def handler(args: argparse.Namespace) -> int:
+def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
-    url = yarl.URL(args.url).with_path(f"/api/builds/{args.machine}/latest")
-    response = args.session.get(str(url)).json()
-
-    if error := response["error"]:
-        print(error, file=sys.stderr)
+    try:
+        latest_build = gbp.latest(args.machine)
+    except NotFound:
+        print("No builds exist for the given machine", file=sys.stderr)
         return 1
 
-    print(response["number"])
+    print(latest_build.number)
 
     return 0
 

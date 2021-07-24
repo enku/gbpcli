@@ -1,44 +1,33 @@
 """Tests for the list subcommand"""
 # pylint: disable=missing-function-docstring
-import io
-import sys
 import unittest
-from functools import partial
+from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, load_data, make_response
+from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-@mock.patch("gbpcli.subcommands.list.print")
 class ListTestCase(unittest.TestCase):
     """list() tests"""
 
+    @mock_print("gbpcli.subcommands.list")
     def test(self, print_mock):
-        stdout = io.StringIO()
-        print_mock.side_effect = partial(print, file=stdout)
-        args_mock = mock.Mock(url="http://test.invalid/", machine="lighthouse")
+        args = Namespace(machine="lighthouse")
         mock_json = parse(load_data("list.json"))
-        args_mock.session.get.return_value = make_response(json=mock_json)
+        gbp = make_gbp()
+        gbp.session.get.return_value = make_response(json=mock_json)
 
-        list_command(args_mock)
+        status = list_command(args, gbp)
 
-        self.assertEqual(stdout.getvalue(), EXPECTED_OUTPUT)
-        args_mock.session.get.assert_called_once_with(
+        self.assertEqual(status, 0)
+        self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
+        gbp.session.get.assert_called_once_with(
             "http://test.invalid/api/builds/lighthouse/"
         )
-
-    def test_should_print_error_when_api_returns_error(self, print_mock):
-        args_mock = mock.Mock(url="http://test.invalid/", machine="lighthouse")
-        args_mock.session.get.return_value = make_response(json={"error": "test"})
-
-        status = list_command(args_mock)
-
-        print_mock.assert_called_once_with("test", file=sys.stderr)
-        self.assertEqual(status, 1)
 
 
 EXPECTED_OUTPUT = """\

@@ -1,42 +1,40 @@
 """Show differences between two builds"""
 import argparse
 
-import yarl
-
-from gbpcli import utils
+from gbpcli import GBP, Status, utils
 
 
-def handler(args: argparse.Namespace) -> int:
+def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
-    url = (
-        yarl.URL(args.url) / f"api/builds/{args.machine}/diff/{args.left}/{args.right}"
-    )
-    response = utils.check(args.session.get(str(url)))
+    left_build, right_build, diff = gbp.diff(args.machine, args.left, args.right)
 
-    if len(response["diff"]["items"]) == 0:
+    if not diff:
         return 0
 
     print(f"diff -r {args.machine}/{args.left} {args.machine}/{args.right}")
+    assert left_build.info is not None
     print(
         f"--- a/{args.machine}/{args.left}"
-        f" {utils.timestr(response['diff']['builds'][0]['db']['submitted'])}"
+        f" {utils.timestr(left_build.info.submitted)}"
     )
+    assert right_build.info is not None
     print(
         f"+++ b/{args.machine}/{args.right}"
-        f" {utils.timestr(response['diff']['builds'][1]['db']['submitted'])}"
+        f" {utils.timestr(right_build.info.submitted)}"
     )
 
     last_modified = None
-    for change, item in iter(response["diff"]["items"]):
-        if change == -1:
-            print(f"-{item}")
-        elif change == 1:
-            print(f"+{item}")
+    # for change, item in iter(response["diff"]["items"]):
+    for item in diff:
+        if item.status == Status.REMOVED:
+            print(f"-{item.item}")
+        elif item.status == Status.ADDED:
+            print(f"+{item.item}")
         else:
             if item == last_modified:
-                print(f"-{item}")
+                print(f"-{item.item}")
             else:
-                print(f"+{item}")
+                print(f"+{item.item}")
             last_modified = item
 
     return 0

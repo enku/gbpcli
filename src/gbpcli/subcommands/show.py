@@ -3,46 +3,46 @@ import argparse
 import sys
 import textwrap
 
-import yarl
-
-from gbpcli import NotFound, utils
+from gbpcli import GBP, Build, NotFound, utils
 
 
-def handler(args) -> int:
+def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
+    machine: str = args.machine
+    build: Build
+
     if args.number == 0:
-        url = yarl.URL(args.url) / f"api/builds/{args.machine}/latest"
-        response = utils.check(args.session.get(str(url)))
-
-        number = response["number"]
+        build = gbp.latest(machine)
     else:
-        number = args.number
-
-    url = yarl.URL(args.url) / f"api/builds/{args.machine}/{number}"
+        build = Build(name=machine, number=args.number)
 
     try:
-        response = utils.check(args.session.get(str(url)))
+        build = gbp.get_build_info(build)
     except NotFound:
         print("Build not found", file=sys.stderr)
         return 1
 
-    print(f"Build: {response['name']}/{response['number']}")
-    submitted = utils.timestr(response["db"]["submitted"])
+    assert build.info is not None
+
+    print(f"Build: {build.name}/{build.number}")
+    submitted = utils.timestr(build.info.submitted)
     print(f"Submitted: {submitted}")
 
-    completed = utils.timestr(response["db"]["completed"])
+    assert build.info.completed is not None
+
+    completed = utils.timestr(build.info.completed)
     print(f"Completed: {completed}")
 
-    print(f"Published: {utils.yesno(response['storage']['published'])}")
-    print(f"Keep: {utils.yesno(response['db']['keep'])}")
+    print(f"Published: {utils.yesno(build.info.published)}")
+    print(f"Keep: {utils.yesno(build.info.keep)}")
 
-    if note := response["db"]["note"]:
+    if note := build.info.note:
         print("")
         lines = note.split("\n")
 
         for line in lines:
             if len(line) > 70:
-                for splitline in textwrap.wrap(response["db"]["note"]):
+                for splitline in textwrap.wrap(note):
                     print(f"    {splitline}")
             else:
                 print(f"    {line}")

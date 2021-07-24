@@ -1,33 +1,24 @@
 """List builds for the given machines"""
 import argparse
-import datetime
-import sys
 
-import yarl
-
-from gbpcli import LOCAL_TIMEZONE
+from gbpcli import GBP, LOCAL_TIMEZONE
 
 
-def handler(args: argparse.Namespace) -> int:
+def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
-    url = yarl.URL(args.url) / f"api/builds/{args.machine}/"
-    response = args.session.get(str(url)).json()
+    builds = gbp.builds(args.machine)
 
-    if error := response["error"]:
-        print(error, file=sys.stderr)
-        return 1
-
-    for build in response["builds"]:
-        timestamp = datetime.datetime.fromisoformat(build["db"]["submitted"])
-        timestamp = timestamp.astimezone(LOCAL_TIMEZONE)
+    for build in builds:
+        assert build.info is not None
+        timestamp = build.info.submitted.astimezone(LOCAL_TIMEZONE)
 
         print(
             "["
-            f"{'K' if build['db']['keep'] else ' '}"
-            f"{'P' if build['storage']['published'] else ' '}"
-            f"{'N' if build['db']['note'] else ' '}"
+            f"{'K' if build.info.keep else ' '}"
+            f"{'P' if build.info.published else ' '}"
+            f"{'N' if build.info.note else ' '}"
             "]"
-            f" {build['number']:>5}"
+            f" {build.number:>5}"
             f" {timestamp.strftime('%x %X')}"
         )
 
