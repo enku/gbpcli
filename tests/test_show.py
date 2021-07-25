@@ -55,7 +55,7 @@ Keep: no
             mock.call("http://test.invalid/api/builds/lighthouse/latest"),
             mock.call("http://test.invalid/api/builds/lighthouse/2080"),
         ]
-        gbp.session.get.has_calls(expected_calls)
+        gbp.session.get.assert_has_calls(expected_calls)
         self.assertEqual(status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
