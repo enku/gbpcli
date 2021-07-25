@@ -20,4 +20,4 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 
 def parse_args(parser: argparse.ArgumentParser):
     """Set subcommand arguments"""
-    parser.add_argument("machine", help="name of the machine")
+    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")

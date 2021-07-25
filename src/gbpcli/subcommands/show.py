@@ -51,5 +51,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 
 def parse_args(parser):
     """Set subcommand arguments"""
-    parser.add_argument("machine", help="name of the machine")
-    parser.add_argument("number", type=int, help="build number", nargs="?")
+    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
+    parser.add_argument(
+        "number", type=int, metavar="NUMBER", help="build number", nargs="?"
+    )

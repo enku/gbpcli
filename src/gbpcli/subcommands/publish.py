@@ -1,4 +1,7 @@
-"""Publish a build"""
+"""Publish a build
+
+If NUMBER is not specified, defaults to the latest build for the given machine.
+"""
 import argparse
 
 from gbpcli import GBP, Build
@@ -21,5 +24,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 
 def parse_args(parser: argparse.ArgumentParser):
     """Set subcommand arguments"""
-    parser.add_argument("machine", help="name of the machine")
-    parser.add_argument("number", type=int, nargs="?", help="build number")
+    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
+    parser.add_argument(
+        "number", type=int, metavar="NUMBER", nargs="?", help="build number"
+    )
