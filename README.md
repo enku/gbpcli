@@ -23,13 +23,6 @@ usage: gbp [-h] [--url URL] {diff,latest,list,logs,machines,publish,show} ...
 
 positional arguments:
   {diff,latest,list,logs,machines,publish,show}
-    diff                Show differences between two builds
-    latest              Show the latest build number for the given machine
-    list                List builds for the given machines
-    logs                Display logs for the given build
-    machines            List machines with builds
-    publish             Publish a build
-    show                Show details for a given build
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -39,6 +32,21 @@ optional arguments:
 The URL for the Gentoo Build Publisher may be provided via the command line or
 by using the `BUILD_PUBLISHER_URL` environment variable.
 
+To list the machines which have builds:
+
+```bash
+$ gbp machines
+babette          14
+blackwidow       45
+gbp              45
+jenkins           8
+lighthouse       43
+pgadmin           7
+postgres          8
+rabbitmq          8
+teamplayer        2
+testing          43
+```
 
 To list the available builds for a given machine:
 
@@ -49,56 +57,63 @@ $ gbp list babette
 [K N]   132 05/21/21 11:27:50
 [ PN]   157 06/16/21 08:10:04
 [   ]   167 06/27/21 08:02:12
-[   ]   168 06/29/21 11:00:41
 [  N]   169 06/30/21 06:38:53
-[  N]   170 07/01/21 06:52:48
-[   ]   171 07/02/21 06:34:30
+[  N]   187 07/17/21 10:20:25
+[  N]   188 07/18/21 13:32:48
 ```
 
 In the above example, the `PN` output for build `157` signifies that this build
 is currently published (`P`) and there is a user note for that build (`N`).
 
 ```bash
-gbp show babette 172
-Build: babette/172
-Submitted: Sat Jul  3 06:31:58 2021 -0700
-Completed: Sat Jul  3 06:34:39 2021 -0700
+Build: babette/188
+Submitted: Sun Jul 18 13:32:48 2021 -0700
+Completed: Sun Jul 18 13:35:04 2021 -0700
 Published: no
 Keep: no
 
     Packages built:
 
-    * app-vim/gentoo-syntax-20210428-1
-    * dev-python/idna-3.2-1
+    * app-misc/pax-utils-1.3.2-1
+    * app-text/po4a-0.57-r1-1
+    * sys-apps/util-linux-2.36.2-r1-1
+    * sys-devel/gcc-10.3.0-r2-1
+    * sys-libs/readline-8.1_p1-r1-1
+    * sys-process/procps-3.3.17-r1-1
 ```
 
 
-The `show` subcommand displays metadata about a given build.
+The `show` subcommand displays metadata about a given build.  If the build
+number is not given, it defaults to the latest build for that machine.
 
 The `diff` subcommand display differences between two build.
 
 ```bash
-$ gbp diff babette 157 172
-diff -r babette/157 babette/172
---- a/babette/157 Wed Jun 16 08:10:04 2021 -0700
-+++ b/babette/172 Sat Jul  3 06:31:58 2021 -0700
--app-admin/sudo-1.9.6_p1-r1-1
-+app-admin/sudo-1.9.6_p1-r2-1
--app-misc/screen-4.8.0-r2-1
-+app-misc/screen-4.8.0-r3-1
--app-vim/gentoo-syntax-20201216-1
-+app-vim/gentoo-syntax-20210428-1
--dev-lang/perl-5.32.1-1
-+dev-lang/perl-5.32.1-2
-+dev-libs/libffi-3.3-r2-1
--dev-python/idna-3.1-2
-+dev-python/idna-3.2-1
-[...]
+$ gbp diff babette 187 188
+diff -r babette/187 babette/188
+--- a/babette/187 Sat Jul 17 10:20:25 2021 -0700
++++ b/babette/188 Sun Jul 18 13:32:48 2021 -0700
+-app-misc/pax-utils-1.3.1-2
++app-misc/pax-utils-1.3.2-1
+-app-text/po4a-0.57-1
++app-text/po4a-0.57-r1-1
+-sys-apps/util-linux-2.36.2-2
++sys-apps/util-linux-2.36.2-r1-1
+-sys-devel/gcc-10.3.0-r1-1
++sys-devel/gcc-10.3.0-r2-1
+-sys-libs/readline-8.1_p1-1
++sys-libs/readline-8.1_p1-r1-1
++sys-process/procps-3.3.17-r1-1
 ```
+If the second build number is not given, it defaults to the latest build for
+that machine.  If the first build number is not given, it defaults to the
+published build for that machine.
 
 The `publish` subcommand makes the given build available for syncing and
 updating/downgrading.
 
 ```bash
-$ gbp publish babette 172
+$ gbp publish babette 188
 ```
+
+If the build nubmer is not given, it defaults to the latest build for that machine.
