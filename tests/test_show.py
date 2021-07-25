@@ -42,8 +42,8 @@ Keep: no
             "http://test.invalid/api/builds/lighthouse/2080"
         )
 
-    def test_should_get_latest_when_number_is_0(self, _print_mock):
-        args = Namespace(machine="lighthouse", number=0)
+    def test_should_get_latest_when_number_is_none(self, _print_mock):
+        args = Namespace(machine="lighthouse", number=None)
         mock_latest = make_response(json={"error": None, "number": 2080})
         mock_json = parse(load_data("show.json"))
         gbp = make_gbp()

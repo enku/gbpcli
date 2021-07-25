@@ -9,10 +9,10 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
     build: Build
     machine: str = args.machine
 
-    if args.number:
-        build = Build(name=machine, number=args.number)
-    else:
+    if args.number is None:
         build = gbp.latest(machine)
+    else:
+        build = Build(name=machine, number=args.number)
 
     gbp.publish(build)
 
@@ -22,4 +22,4 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 def parse_args(parser: argparse.ArgumentParser):
     """Set subcommand arguments"""
     parser.add_argument("machine", help="name of the machine")
-    parser.add_argument("number", type=int, nargs="?", default=0, help="build number")
+    parser.add_argument("number", type=int, nargs="?", help="build number")

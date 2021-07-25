@@ -26,8 +26,8 @@ class PublishTestCase(unittest.TestCase):
             "http://test.invalid/api/builds/lighthouse/2086/publish"
         )
 
-    def test_should_get_latest_when_number_is_0(self):
-        args = Namespace(machine="lighthouse", number=0)
+    def test_should_get_latest_when_number_is_none(self):
+        args = Namespace(machine="lighthouse", number=None)
         mock_latest = make_response(json={"error": None, "number": 2080})
         mock_json = parse(load_data("publish.json"))
         gbp = make_gbp()
