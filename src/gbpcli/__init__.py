@@ -197,7 +197,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     for entry_point in entry_points()["gbpcli.subcommands"]:
         module = entry_point.load()
-        subparser = subparsers.add_parser(entry_point.name, description=module.__doc__)
+        subparser = subparsers.add_parser(
+            entry_point.name,
+            description=module.__doc__,
+            formatter_class=argparse.RawTextHelpFormatter,
+        )
         module.parse_args(subparser)
         subparser.set_defaults(func=module.handler)
 
