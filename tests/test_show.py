@@ -10,7 +10,7 @@ from gbpcli.subcommands.show import handler as show
 from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
 
 
-@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 @mock_print("gbpcli.subcommands.show")
 class ShowTestCase(unittest.TestCase):
     """show() tests"""
