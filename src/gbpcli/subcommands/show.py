@@ -1,13 +1,12 @@
 """Show details for a given build"""
 import argparse
 import sys
-import textwrap
 
 from gbpcli import GBP, Build, NotFound, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
-    """Handler for subcommand"""
+    """Handler for "show" subcommand"""
     machine: str = args.machine
     build: Build
 
@@ -41,11 +40,8 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         lines = note.split("\n")
 
         for line in lines:
-            if len(line) > 70:
-                for splitline in textwrap.wrap(note):
-                    print(f"    {splitline}")
-            else:
-                print(f"    {line}")
+            print(f"    {line}")
+
     return 0
 
 
