@@ -66,6 +66,7 @@ In the above example, the `PN` output for build `157` signifies that this build
 is currently published (`P`) and there is a user note for that build (`N`).
 
 ```bash
+$ gbp show babette 188
 Build: babette/188
 Submitted: Sun Jul 18 13:32:48 2021 -0700
 Completed: Sun Jul 18 13:35:04 2021 -0700
