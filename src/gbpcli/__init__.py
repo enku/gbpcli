@@ -6,7 +6,7 @@ import sys
 from dataclasses import dataclass
 from enum import IntEnum
 from importlib.metadata import entry_points
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import requests
 import yarl
@@ -82,7 +82,7 @@ class GBP:
         self.url = yarl.URL(url)
         self.session = requests.Session()
 
-    def machines(self) -> List[Tuple[str, int]]:
+    def machines(self) -> list[tuple[str, int]]:
         """Handler for subcommand"""
         url = self.url / "api/machines/"
         response = self.check(self.session.get(str(url)))
@@ -106,7 +106,7 @@ class GBP:
 
         return Build(name=machine, number=number)
 
-    def builds(self, machine: str) -> List[Build]:
+    def builds(self, machine: str) -> list[Build]:
         """Return a list of Builds for the given machine"""
         url = self.url / f"api/builds/{machine}/"
         response = self.check(self.session.get(str(url)))
@@ -115,7 +115,7 @@ class GBP:
 
     def diff(
         self, machine: str, left: int, right: int
-    ) -> Tuple[Build, Build, List[Change]]:
+    ) -> tuple[Build, Build, list[Change]]:
         """Return difference between two builds"""
         url = self.url / f"api/builds/{machine}/diff/{left}/{right}"
         response = self.check(self.session.get(str(url)))
