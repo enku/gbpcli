@@ -6,34 +6,25 @@ import sys
 from dataclasses import dataclass
 from enum import IntEnum
 from importlib.metadata import entry_points
-from typing import Optional
+from typing import Any, Optional
 
 import requests
 import yarl
 
-JSON_CONTENT_TYPE = "application/json"
+from gbpcli import queries
+
+from . import queries
+
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "https://gbp/")
-
-
-class NotFound(Exception):
-    """Raised when a build does not exist"""
 
 
 class APIError(Exception):
     """When an error is returned by the REST API"""
 
-    def __init__(self, msg, json):
-        super().__init__(msg)
-        self.json = json
-
-
-class UnexpectedResponseError(Exception):
-    """Got an unexpected response from the server"""
-
-    def __init__(self, response: requests.Response):
-        super().__init__("Unexpected server response")
-        self.response = response
+    def __init__(self, errors, data):
+        super().__init__(errors)
+        self.data = data
 
 
 @dataclass
@@ -78,115 +69,114 @@ class Change:
 class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
+    headers = {"Accept-Encoding": "gzip, deflate"}
+
     def __init__(self, url: str):
-        self.url = yarl.URL(url)
+        self.url = str(yarl.URL(url) / "graphql")
         self.session = requests.Session()
+
+    def query(self, query: str, variables: dict[str, Any] = None):
+        """Execute the given GraphQL query using the given input variables"""
+        json = {"query": query, "variables": variables}
+        response = self.session.post(self.url, json=json, headers=self.headers).json()
+        return response.get("data"), response.get("errors")
 
     def machines(self) -> list[tuple[str, int]]:
         """Handler for subcommand"""
-        url = self.url / "api/machines/"
-        response = self.check(self.session.get(str(url)))
+        data = self.check(queries.machines)
 
-        return [(i["name"], i["builds"]) for i in response["machines"]]
+        return [(i["name"], i["builds"]) for i in data["machines"]]
 
     def publish(self, build: Build):
         """Publish the given build"""
-        url = self.url / f"api/builds/{build.name}/{build.number}/publish"
-        self.check(self.session.post(str(url)))
+        self.check(queries.publish, dict(name=build.name, number=build.number))
 
-    def latest(self, machine: str) -> Build:
+    def latest(self, machine: str) -> Optional[Build]:
         """Return the latest build for machine
 
         Return None if there are no builds for the given machine
         """
-        url = self.url / f"api/builds/{machine}/latest"
-        response = self.check(self.session.get(str(url)))
+        data = self.check(queries.latest, dict(name=machine))
+        latest = data["latest"]
 
-        number = response["number"]
+        if latest is None:
+            return None
 
+        number = data["latest"]["number"]
         return Build(name=machine, number=number)
 
     def builds(self, machine: str) -> list[Build]:
         """Return a list of Builds for the given machine"""
-        url = self.url / f"api/builds/{machine}/"
-        response = self.check(self.session.get(str(url)))
+        data = self.check(queries.builds, dict(name=machine))
+        builds = data["builds"]
+        builds.reverse()
 
-        return [self.api_to_build(i) for i in response["builds"]]
+        return [self.api_to_build(i) for i in builds]
 
     def diff(
         self, machine: str, left: int, right: int
     ) -> tuple[Build, Build, list[Change]]:
         """Return difference between two builds"""
-        url = self.url / f"api/builds/{machine}/diff/{left}/{right}"
-        response = self.check(self.session.get(str(url)))
+        variables = {
+            "left": {"name": machine, "number": left},
+            "right": {"name": machine, "number": right},
+        }
+        data = self.check(queries.diff, variables)
 
         return (
-            self.api_to_build(response["diff"]["builds"][0]),
-            self.api_to_build(response["diff"]["builds"][1]),
-            [Change(item=i[1], status=Status(i[0])) for i in response["diff"]["items"]],
+            self.api_to_build(data["diff"]["left"]),
+            self.api_to_build(data["diff"]["right"]),
+            [
+                Change(item=i["item"], status=getattr(Status, i["status"]))
+                for i in data["diff"]["items"]
+            ],
         )
 
-    def logs(self, build: Build) -> str:
+    def logs(self, build: Build) -> Optional[str]:
         """Return logs for the given Build"""
-        url = self.url / f"api/builds/{build.name}/{build.number}/log"
-        response = self.session.get(str(url))
+        data = self.check(queries.logs, dict(name=build.name, number=build.number))
+        build = data["build"]
 
-        if response.status_code == 404:
-            raise NotFound()
+        if build is None:
+            return None
 
-        return response.text
+        return data["build"]["logs"]
 
-    def get_build_info(self, build: Build) -> Build:
+    def get_build_info(self, build: Build) -> Optional[Build]:
         """Return build with info gained from the GBP API"""
-        url = self.url / f"api/builds/{build.name}/{build.number}"
+        data = self.check(queries.build, dict(name=build.name, number=build.number))
+        build = data["build"]
 
-        response = self.check(self.session.get(str(url)))
+        if build is None:
+            return None
 
-        return self.api_to_build(response)
+        return self.api_to_build(data["build"])
 
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""
+        completed = api_response.get("completed")
+        submitted = api_response["submitted"]
+        fromisoformat = datetime.datetime.fromisoformat
         return Build(
             name=api_response["name"],
             number=api_response["number"],
             info=BuildInfo(
-                api_response["db"]["keep"],
-                published=api_response["storage"]["published"],
-                note=api_response["db"]["note"],
-                submitted=datetime.datetime.fromisoformat(
-                    api_response["db"]["submitted"]
-                ),
-                completed=datetime.datetime.fromisoformat(
-                    api_response["db"]["completed"]
-                ),
+                api_response.get("keep"),
+                published=api_response.get("published"),
+                note=api_response.get("notes"),
+                submitted=fromisoformat(submitted),
+                completed=fromisoformat(completed) if completed is not None else None,
             ),
         )
 
-    @staticmethod
-    def check(response: requests.Response, is_json: bool = True):
-        """Check the requests response.
+    def check(self, query: str, variables: dict[str, Any] = None) -> dict:
+        """Run query and raise exception if there are errors"""
+        data, errors = self.query(query, variables)
 
-        If the status code 404, raise NotFound
-        """
-        if response.status_code == 404:
-            raise NotFound
-
-        if is_json:
-            if (
-                response.headers.get("content-type", "").partition(";")[0]
-                != JSON_CONTENT_TYPE
-            ):
-                raise UnexpectedResponseError(response)
-
-            data = response.json()
-
-            if error := data["error"]:
-                raise APIError(error, data)
-
-            return data
-
-        return response.content
+        if errors:
+            raise APIError(errors, data)
+        return data
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -225,7 +215,7 @@ def main(argv=None) -> int:
 
     try:
         return args.func(args, gbp)
-    except (APIError, UnexpectedResponseError) as error:
+    except APIError as error:
         print(str(error), file=sys.stderr)
 
         return 1

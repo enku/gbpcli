@@ -1,0 +1,18 @@
+query Diff($left: BuildInput!, $right: BuildInput!) {
+  diff(left: $left, right: $right) {
+    left {
+      name
+      number
+      submitted
+    }
+    right {
+      name
+      number
+      submitted
+    }
+    items {
+      item
+      status
+    }
+  }
+}

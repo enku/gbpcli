@@ -1,23 +1,28 @@
 """Show details for a given build"""
 import argparse
 import sys
+from typing import Optional
 
-from gbpcli import GBP, Build, NotFound, utils
+from gbpcli import GBP, Build, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for "show" subcommand"""
     machine: str = args.machine
-    build: Build
+    build: Optional[Build]
 
     if args.number is None:
         build = gbp.latest(machine)
+
+        if build is None:
+            print("Not Found", file=sys.stderr)
+            return 1
     else:
         build = Build(name=machine, number=args.number)
 
-    try:
-        build = gbp.get_build_info(build)
-    except NotFound:
+    build = gbp.get_build_info(build)
+
+    if build is None:
         print("Build not found", file=sys.stderr)
         return 1
 

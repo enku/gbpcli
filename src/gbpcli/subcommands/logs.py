@@ -2,16 +2,15 @@
 import argparse
 import sys
 
-from gbpcli import GBP, Build, NotFound
+from gbpcli import GBP, Build
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
     build = Build(name=args.machine, number=args.number)
+    text = gbp.logs(build)
 
-    try:
-        text = gbp.logs(build)
-    except NotFound:
+    if text is None:
         print("Not Found", file=sys.stderr)
         return 1
 

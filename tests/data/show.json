@@ -1,1 +1,13 @@
-{"name": "lighthouse", "number": 2080, "storage": {"published": true, "pulled": true}, "db": {"submitted": "2021-07-20T21:39:45.944606+00:00", "completed": "2021-07-20T21:47:45.387197+00:00", "note": "Packages built:\n\n* acct-group/nm-openvpn-0-1\n* acct-user/nm-openvpn-0-1\n* net-vpn/networkmanager-openvpn-1.8.12-r1-1\n* sys-kernel/gentoo-sources-5.13.4-1", "keep": false}, "jenkins": {"url": "https://jenkins/job/Gentoo/job/lighthouse/2080/artifact/build.tar.gz"}, "error": null}
+{
+   "data" : {
+      "build" : {
+         "completed" : "2021-10-02T14:41:25.797933+00:00",
+         "keep" : false,
+         "name" : "lighthouse",
+         "notes" : "Packages built:\n\n* app-text/poppler-21.10.0-1\n* dev-perl/URI-5.90.0-1\n* net-im/signal-desktop-bin-5.18.0-1\n* net-print/cups-filters-1.28.10-3",
+         "number" : 3109,
+         "published" : true,
+         "submitted" : "2021-10-02T14:26:19.898321+00:00"
+      }
+   }
+}

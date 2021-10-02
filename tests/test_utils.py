@@ -2,15 +2,11 @@
 # pylint: disable=missing-function-docstring
 import datetime
 import unittest
-from unittest import mock
 
-from gbpcli import GBP, APIError, NotFound, UnexpectedResponseError
+from gbpcli import APIError
 from gbpcli.utils import timestr, yesno
 
-from . import make_response
-
-# moved to GBP as a static method
-check = GBP.check
+from . import make_gbp, make_response
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -36,36 +32,16 @@ class TimestrTestCase(unittest.TestCase):
 class CheckTestCase(unittest.TestCase):
     """check() tests"""
 
-    def test_should_raise_notfound_when_404_response(self):
-        response_mock = mock.Mock(status_code=404)
+    def test_should_raise_apierror_if_query_response_has_errors(self):
+        error1 = {"message": "The end is near", "locations": [], "path": None}
+        error2 = {"message": "Oh no!", "locations": [], "path": None}
+        response_with_errors = {"data": {"build": None}, "errors": [error1, error2]}
+        gbp = make_gbp()
+        gbp.session.post.return_value = make_response(json=response_with_errors)
 
-        with self.assertRaises(NotFound):
-            check(response_mock)
+        with self.assertRaises(APIError) as context:
+            gbp.check("{ foo { bar } }")
 
-    def test_should_return_response_json_if_is_json_true(self):
-        json_response = {"error": None, "foo": "bar"}
-        response_mock = make_response(json=json_response)
-
-        value = check(response_mock)
-
-        self.assertEqual(value, json_response)
-
-    def test_should_error_if_json_has_error(self):
-        json_response = {"error": "Something is wrong"}
-        response_mock = make_response(json=json_response)
-
-        with self.assertRaises(APIError):
-            check(response_mock)
-
-    def test_should_error_if_response_not_json(self):
-        response_mock = make_response(status_code=204, content=b"")
-
-        with self.assertRaises(UnexpectedResponseError):
-            check(response_mock)
-
-    def test_should_return_raw_response_when_is_json_false(self):
-        response_mock = make_response(content=b"test")
-
-        value = check(response_mock, is_json=False)
-
-        self.assertEqual(value, b"test")
+        exception = context.exception
+        self.assertEqual(exception.args[0], [error1, error2])
+        self.assertEqual(exception.data, {"build": None})

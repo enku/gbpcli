@@ -5,6 +5,7 @@ from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
+from gbpcli import queries
 from gbpcli.subcommands.latest import handler as latest
 
 from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
@@ -19,21 +20,23 @@ class LatestTestCase(unittest.TestCase):
         args = Namespace(machine="lighthouse")
         mock_json = parse(load_data("latest.json"))
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(json=mock_json)
+        gbp.session.post.return_value = make_response(json=mock_json)
 
         status = latest(args, gbp)
 
         self.assertEqual(status, 0)
-        expected = "2085\n"
+        expected = "3113\n"
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        gbp.session.get.assert_called_once_with(
-            "http://test.invalid/api/builds/lighthouse/latest"
+        gbp.session.post.assert_called_once_with(
+            gbp.url,
+            json={"query": queries.latest, "variables": {"name": "lighthouse"}},
+            headers=gbp.headers,
         )
 
     def test_should_print_error_when_not_found(self, print_mock):
         args = Namespace(machine="bogus")
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(status_code=404)
+        gbp.session.post.return_value = make_response(json={"data": {"latest": None}})
 
         status = latest(args, gbp)
 

@@ -1,0 +1,11 @@
+query Build($name: String!, $number: Int!) {
+  build(name: $name, number: $number) {
+    name
+    number
+    keep
+    published
+    notes
+    submitted
+    completed
+  }
+}

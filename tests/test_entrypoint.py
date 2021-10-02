@@ -6,7 +6,7 @@ import sys
 import unittest
 from unittest import mock
 
-from gbpcli import APIError, UnexpectedResponseError, build_parser, main
+from gbpcli import APIError, build_parser, main
 
 SUBCOMMANDS = [
     "diff",
@@ -69,13 +69,10 @@ class MainTestCase(unittest.TestCase):
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.print")
     def test_should_print_to_stderr_and_exit_1_on_exception(self, print_mock, gbp_mock):
-        errors = [APIError("blah", {}), UnexpectedResponseError(mock.Mock())]
-        messages = ["blah", "Unexpected server response"]
+        error = APIError("blah", {})
+        message = "blah"
 
-        for error, message in zip(errors, messages):
-            with self.subTest(error=error, message=message):
-                gbp_mock.return_value.get_build_info.side_effect = error
-                status = main(["show", "lighthouse"])
-                self.assertEqual(status, 1)
-                print_mock.assert_called_once_with(message, file=sys.stderr)
-            print_mock.reset_mock()
+        gbp_mock.return_value.get_build_info.side_effect = error
+        status = main(["show", "lighthouse"])
+        self.assertEqual(status, 1)
+        print_mock.assert_called_once_with(message, file=sys.stderr)

@@ -5,6 +5,7 @@ from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
+from gbpcli import queries
 from gbpcli.subcommands.machines import handler as machines
 
 from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
@@ -19,29 +20,33 @@ class MachinesTestCase(unittest.TestCase):
         args = Namespace()
         mock_json = parse(load_data("machines.json"))
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(json=mock_json)
+        gbp.session.post.return_value = make_response(json=mock_json)
 
         status = machines(args, gbp)
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
-        gbp.session.get.assert_called_once_with("http://test.invalid/api/machines/")
+        gbp.session.post.assert_called_once_with(
+            gbp.url,
+            json={"query": queries.machines, "variables": None},
+            headers=gbp.headers,
+        )
 
 
 EXPECTED_OUTPUT = """\
 babette          14
-base             12
-blackwidow       57
-gbp              57
-git               4
-gnome-desktop    56
-jenkins           7
-lighthouse       57
-pgadmin           7
-postgres          7
-rabbitmq          8
-registry         14
-teamplayer        1
-testing          57
+base             15
+blackwidow       35
+gbp              36
+git               8
+gnome-desktop    35
+jenkins           9
+lighthouse       35
+lounge           12
+pgadmin           8
+postgres         12
+rabbitmq          9
+teamplayer        5
+testing          36
 web              16
 """

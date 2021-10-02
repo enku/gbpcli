@@ -5,6 +5,7 @@ from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
+from gbpcli import queries
 from gbpcli.subcommands.diff import handler as diff
 
 from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
@@ -16,42 +17,50 @@ class DiffTestCase(unittest.TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self, print_mock):
-        args = Namespace(machine="lighthouse", left=2083, right=2084)
+        args = Namespace(machine="lighthouse", left=3111, right=3112)
         mock_json = parse(load_data("diff.json"))
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(json=mock_json)
+        gbp.session.post.return_value = make_response(json=mock_json)
 
         status = diff(args, gbp)
 
         self.assertEqual(status, 0)
         expected = """\
-diff -r lighthouse/2083 lighthouse/2084
---- a/lighthouse/2083 Tue Jul 20 17:22:03 2021 -0700
-+++ b/lighthouse/2084 Tue Jul 20 18:27:18 2021 -0700
--sys-libs/pam-1.5.1_p20210610-1
-+sys-libs/pam-1.5.1-1
+diff -r lighthouse/3111 lighthouse/3112
+--- a/lighthouse/3111 Sat Oct  2 09:31:48 2021 -0700
++++ b/lighthouse/3112 Sat Oct  2 11:23:43 2021 -0700
+-app-misc/tracker-miners-3.1.2-4
++app-misc/tracker-miners-3.1.3-1
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        gbp.session.get.assert_called_once_with(
-            "http://test.invalid/api/builds/lighthouse/diff/2083/2084"
+        gbp.session.post.assert_called_once_with(
+            gbp.url,
+            json={
+                "query": queries.diff,
+                "variables": {
+                    "left": {"name": "lighthouse", "number": 3111},
+                    "right": {"name": "lighthouse", "number": 3112},
+                },
+            },
+            headers=gbp.headers,
         )
 
     def test_should_print_nothing_when_no_diffs(self, print_mock):
-        args = Namespace(machine="lighthouse", left=2083, right=2084)
+        args = Namespace(machine="lighthouse", left=3111, right=3111)
         no_diffs_json = parse(load_data("diff_no_content.json"))
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(json=no_diffs_json)
+        gbp.session.post.return_value = make_response(json=no_diffs_json)
 
         diff(args, gbp)
 
         self.assertEqual(print_mock.stdout.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self, _print_mock):
-        args = Namespace(machine="lighthouse", left=2083, right=None)
+        args = Namespace(machine="lighthouse", left=3111, right=None)
         latest_json = parse(load_data("latest.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
-        gbp.session.get.side_effect = (
+        gbp.session.post.side_effect = (
             make_response(json=latest_json),
             make_response(json=mock_diff_json),
         )
@@ -60,17 +69,31 @@ diff -r lighthouse/2083 lighthouse/2084
 
         self.assertEqual(status, 0)
         expected_calls = [
-            mock.call("http://test.invalid/api/builds/lighthouse/latest"),
-            mock.call("http://test.invalid/api/builds/lighthouse/diff/2083/2085"),
+            mock.call(
+                gbp.url,
+                json={"query": queries.latest, "variables": {"name": "lighthouse"}},
+                headers=gbp.headers,
+            ),
+            mock.call(
+                gbp.url,
+                json={
+                    "query": queries.diff,
+                    "variables": {
+                        "left": {"name": "lighthouse", "number": 3111},
+                        "right": {"name": "lighthouse", "number": 3113},
+                    },
+                },
+                headers=gbp.headers,
+            ),
         ]
-        gbp.session.get.assert_has_calls(expected_calls)
+        gbp.session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_should_use_published(self, _print_mock):
-        args = Namespace(machine="lighthouse", left=None, right=None)
+        args = Namespace(machine="jenkins", left=None, right=None)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
-        gbp.session.get.side_effect = (
+        gbp.session.post.side_effect = (
             make_response(json=list_json),
             make_response(json=mock_diff_json),
         )
@@ -79,27 +102,43 @@ diff -r lighthouse/2083 lighthouse/2084
 
         self.assertEqual(status, 0)
         expected_calls = [
-            mock.call("http://test.invalid/api/builds/lighthouse/"),
-            mock.call("http://test.invalid/api/builds/lighthouse/diff/2080/2086"),
+            mock.call(
+                gbp.url,
+                json={"query": queries.builds, "variables": {"name": "jenkins"}},
+                headers=gbp.headers,
+            ),
+            mock.call(
+                gbp.url,
+                json={
+                    "query": queries.diff,
+                    "variables": {
+                        "left": {"name": "jenkins", "number": 38},
+                        "right": {"name": "jenkins", "number": 42},
+                    },
+                },
+                headers=gbp.headers,
+            ),
         ]
-        gbp.session.get.assert_has_calls(expected_calls)
+        gbp.session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_and_not_published(self, print_mock):
-        args = Namespace(machine="lighthouse", left=None, right=None)
+        args = Namespace(machine="jenkins", left=None, right=None)
         list_json = parse(load_data("list.json"))
 
         # Make sure there are not published builds
-        for item in list_json["builds"]:
-            item["storage"]["published"] = False
+        for item in list_json["data"]["builds"]:
+            item["published"] = False
 
         gbp = make_gbp()
-        gbp.session.get.return_value = make_response(json=list_json)
+        gbp.session.post.return_value = make_response(json=list_json)
 
         status = diff(args, gbp)
 
         self.assertEqual(status, 1)
-        gbp.session.get.assert_called_once_with(
-            "http://test.invalid/api/builds/lighthouse/"
+        gbp.session.post.assert_called_with(
+            gbp.url,
+            json={"query": queries.builds, "variables": {"name": "jenkins"}},
+            headers=gbp.headers,
         )
         self.assertEqual(
             print_mock.stderr.getvalue(),

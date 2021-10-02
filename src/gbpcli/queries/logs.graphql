@@ -1,0 +1,5 @@
+query Build($name: String!, $number: Int!) {
+  build(name: $name, number: $number) {
+    logs
+  }
+}

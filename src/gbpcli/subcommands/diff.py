@@ -30,7 +30,13 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         right = builds[-1].number
 
     if right is None:
-        right = gbp.latest(args.machine).number
+        latest = gbp.latest(args.machine)
+
+        if latest is None:
+            print("Need at least two builds to diff", file=sys.stderr)
+            return 1
+
+        right = latest.number
 
     left_build, right_build, diff = gbp.diff(args.machine, left, right)
 

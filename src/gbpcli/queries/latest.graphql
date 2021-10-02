@@ -1,0 +1,5 @@
+query Latest($name: String!) {
+  latest(name: $name) {
+    number
+  }
+}

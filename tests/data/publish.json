@@ -1,1 +1,9 @@
-{"name": "lighthouse", "number": 2086, "storage": {"published": false, "pulled": false}, "db": {}, "jenkins": {"url": "https://jenkins/job/Gentoo/job/lighthouse/2086/artifact/build.tar.gz"}, "error": null}
+{
+   "data" : {
+      "publish" : {
+         "publishedBuild" : {
+            "number" : 3109
+         }
+      }
+   }
+}
