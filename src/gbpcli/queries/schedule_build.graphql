@@ -1,0 +1,3 @@
+mutation ScheduleBuild($name: String!) {
+  scheduleBuild(name: $name)
+}

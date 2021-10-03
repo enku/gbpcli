@@ -152,6 +152,11 @@ class GBP:
 
         return self.api_to_build(data["build"])
 
+    def build(self, name: str) -> str:
+        """Schedule a build"""
+        response = self.check(queries.schedule_build, dict(name=name))
+        return response["scheduleBuild"]
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""

@@ -9,6 +9,7 @@ from unittest import mock
 from gbpcli import APIError, build_parser, main
 
 SUBCOMMANDS = [
+    "build",
     "diff",
     "latest",
     "list",

@@ -18,13 +18,12 @@ $ pip install git+https://github.com/enku/gbpcli.git
 The full command set supported:
 
 ```bash
-$ gbp --help
-usage: gbp [-h] [--url URL] {diff,latest,list,logs,machines,publish,show} ...
+usage: gbp [-h] [--url URL] {build,diff,latest,list,logs,machines,publish,show} ...
 
 positional arguments:
-  {diff,latest,list,logs,machines,publish,show}
+  {build,diff,latest,list,logs,machines,publish,show}
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --url URL             GBP url
 ```
@@ -118,3 +117,10 @@ $ gbp publish babette 188
 ```
 
 If the build nubmer is not given, it defaults to the latest build for that machine.
+
+The `build` subcommand can schedule a build in CI/CD for the given machine,
+e.g.:
+
+```bash
+$ gbp build babette
+```
