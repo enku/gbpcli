@@ -15,6 +15,7 @@ SUBCOMMANDS = [
     "list",
     "logs",
     "machines",
+    "packages",
     "publish",
     "show",
 ]

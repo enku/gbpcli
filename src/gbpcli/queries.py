@@ -7,6 +7,7 @@ diff = "query Diff($left: BuildInput!, $right: BuildInput!) {\n  diff(left: $lef
 latest = "query Latest($name: String!) {\n  latest(name: $name) {\n    number\n  }\n}\n"
 logs = "query Build($name: String!, $number: Int!) {\n  build(name: $name, number: $number) {\n    logs\n  }\n}\n"
 machines = "query {\n  machines {\n    name\n    builds\n  }\n}\n"
+packages = "query Packages($name: String!, $number: Int!) {\n  packages(name: $name, number: $number)\n}\n"
 publish = "mutation Publish($name: String!, $number: Int!) {\n  publish(name: $name, number: $number) {\n    publishedBuild {\n      number\n    }\n  }\n}\n"
 schedule_build = (
     "mutation ScheduleBuild($name: String!) {\n  scheduleBuild(name: $name)\n}\n"

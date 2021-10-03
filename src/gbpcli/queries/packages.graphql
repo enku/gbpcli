@@ -1,0 +1,3 @@
+query Packages($name: String!, $number: Int!) {
+  packages(name: $name, number: $number)
+}

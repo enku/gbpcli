@@ -157,6 +157,13 @@ class GBP:
         response = self.check(queries.schedule_build, dict(name=name))
         return response["scheduleBuild"]
 
+    def packages(self, build: Build) -> Optional[list[str]]:
+        """Return the list of packages for a build"""
+        data = self.check(
+            queries.packages, {"name": build.name, "number": build.number}
+        )
+        return data["packages"]
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""
