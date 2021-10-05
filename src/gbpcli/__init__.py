@@ -78,8 +78,10 @@ class GBP:
     def query(self, query: str, variables: dict[str, Any] = None):
         """Execute the given GraphQL query using the given input variables"""
         json = {"query": query, "variables": variables}
-        response = self.session.post(self.url, json=json, headers=self.headers).json()
-        return response.get("data"), response.get("errors")
+        response = self.session.post(self.url, json=json, headers=self.headers)
+        response.raise_for_status()
+        response_json = response.json()
+        return response_json.get("data"), response_json.get("errors")
 
     def machines(self) -> list[tuple[str, int]]:
         """Handler for subcommand"""
@@ -227,7 +229,7 @@ def main(argv=None) -> int:
 
     try:
         return args.func(args, gbp)
-    except APIError as error:
+    except (APIError, requests.HTTPError) as error:
         print(str(error), file=sys.stderr)
 
         return 1
