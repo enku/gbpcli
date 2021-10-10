@@ -1,0 +1,5 @@
+mutation ReleaseBuild($name: String!, $number: Int!) {
+  releaseBuild(name: $name, number: $number) {
+    keep
+  }
+}

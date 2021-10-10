@@ -166,6 +166,18 @@ class GBP:
         )
         return data["packages"]
 
+    def keep(self, build: Build):
+        """Mark a build as kept"""
+        return self.check(
+            queries.keep_build, {"name": build.name, "number": build.number}
+        )["keepBuild"]
+
+    def release(self, build: Build):
+        """Unmark a build as kept"""
+        return self.check(
+            queries.release_build, {"name": build.name, "number": build.number}
+        )["releaseBuild"]
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""

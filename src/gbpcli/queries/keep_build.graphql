@@ -1,0 +1,5 @@
+mutation KeepBuild($name: String!, $number: Int!) {
+  keepBuild(name: $name, number: $number) {
+    keep
+  }
+}
