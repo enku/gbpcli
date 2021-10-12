@@ -18,6 +18,7 @@ SUBCOMMANDS = [
     "machines",
     "packages",
     "publish",
+    "pull",
     "show",
 ]
 

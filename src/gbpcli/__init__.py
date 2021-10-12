@@ -93,6 +93,10 @@ class GBP:
         """Publish the given build"""
         self.check(queries.publish, dict(name=build.name, number=build.number))
 
+    def pull(self, build: Build):
+        """Pull the given build"""
+        self.check(queries.pull, dict(name=build.name, number=build.number))
+
     def latest(self, machine: str) -> Optional[Build]:
         """Return the latest build for machine
 
