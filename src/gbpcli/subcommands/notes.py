@@ -59,7 +59,7 @@ def get_note(existing_note: Optional[str]) -> str:
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
-    """handler"""
+    """handler for the notes subcommand"""
     build = Build(args.machine, args.number)
     existing = gbp.get_build_info(build)
 
