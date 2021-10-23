@@ -31,8 +31,13 @@ class TestCase(unittest.TestCase):
 
         This is like make_response() below except it assumes all responses are 200
         responses and all content is JSON. Additionally it can be called more than once
-        and adds responses for subsequent calls.
+        and adds responses for subsequent calls. If called with `None` as an argument,
+        then any previously configured responses are cleared
         """
+        if data is None:
+            self.gbp.session.post.side_effect = None
+            return
+
         if isinstance(data, str):
             mock_json = parse(load_data(data))
         else:

@@ -16,6 +16,7 @@ SUBCOMMANDS = [
     "list",
     "logs",
     "machines",
+    "notes",
     "packages",
     "publish",
     "pull",
