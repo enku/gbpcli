@@ -1,60 +1,33 @@
 """Tests for the publish subcommand"""
 # pylint: disable=missing-function-docstring,no-self-use
-import unittest
 from argparse import Namespace
-from json import loads as parse
 from unittest import mock
 
 from gbpcli import queries
 from gbpcli.subcommands.publish import handler as publish
 
-from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response
+from . import LOCAL_TIMEZONE, TestCase
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class PublishTestCase(unittest.TestCase):
+class PublishTestCase(TestCase):
     """publish() tests"""
 
     def test(self):
         args = Namespace(machine="lighthouse", number=3109)
-        mock_json = parse(load_data("publish.json"))
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=mock_json)
+        self.make_response("publish.json")
 
-        publish(args, gbp)
+        publish(args, self.gbp)
 
-        gbp.session.post.assert_called_once_with(
-            gbp.url,
-            json={
-                "query": queries.publish,
-                "variables": {"name": "lighthouse", "number": 3109},
-            },
-            headers=gbp.headers,
-        )
+        self.assert_graphql(queries.publish, name="lighthouse", number=3109)
 
     def test_should_get_latest_when_number_is_none(self):
         args = Namespace(machine="lighthouse", number=None)
-        mock_latest = make_response(json={"data": {"latest": {"number": 2080}}})
-        mock_json = parse(load_data("publish.json"))
-        gbp = make_gbp()
-        gbp.session.post.side_effect = (mock_latest, make_response(json=mock_json))
+        self.make_response({"data": {"latest": {"number": 2080}}})
+        self.make_response("publish.json")
 
-        status = publish(args, gbp)
+        status = publish(args, self.gbp)
 
         self.assertEqual(status, 0)
-        expected_calls = [
-            mock.call(
-                gbp.url,
-                json={"query": queries.latest, "variables": {"name": "lighthouse"}},
-                headers=gbp.headers,
-            ),
-            mock.call(
-                gbp.url,
-                json={
-                    "query": queries.publish,
-                    "variables": {"name": "lighthouse", "number": 2080},
-                },
-                headers=gbp.headers,
-            ),
-        ]
-        gbp.session.post.assert_has_calls(expected_calls)
+        self.assert_graphql(queries.latest, index=0, name="lighthouse")
+        self.assert_graphql(queries.publish, index=1, name="lighthouse", number=2080)

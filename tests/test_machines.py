@@ -1,36 +1,28 @@
 """Tests for the machines subcommand"""
 # pylint: disable=missing-function-docstring
-import unittest
 from argparse import Namespace
-from json import loads as parse
 from unittest import mock
 
 from gbpcli import queries
 from gbpcli.subcommands.machines import handler as machines
 
-from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class MachinesTestCase(unittest.TestCase):
+class MachinesTestCase(TestCase):
     """machines() tests"""
 
     @mock_print("gbpcli.subcommands.machines")
     def test(self, print_mock):
         args = Namespace()
-        mock_json = parse(load_data("machines.json"))
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=mock_json)
+        self.make_response("machines.json")
 
-        status = machines(args, gbp)
+        status = machines(args, self.gbp)
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
-        gbp.session.post.assert_called_once_with(
-            gbp.url,
-            json={"query": queries.machines, "variables": None},
-            headers=gbp.headers,
-        )
+        self.assert_graphql(queries.machines)
 
 
 EXPECTED_OUTPUT = """\

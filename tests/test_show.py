@@ -1,30 +1,26 @@
 """Tests for the show subcommand"""
 # pylint: disable=missing-function-docstring
-import unittest
 from argparse import Namespace
-from json import loads as parse
 from unittest import mock
 
 from gbpcli import queries
 from gbpcli.subcommands.show import handler as show
 
-from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 @mock_print("gbpcli.subcommands.show")
-class ShowTestCase(unittest.TestCase):
+class ShowTestCase(TestCase):
     """show() tests"""
 
     maxDiff = None
 
     def test(self, print_mock):
         args = Namespace(machine="lighthouse", number=2080)
-        mock_json = parse(load_data("show.json"))
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=mock_json)
+        self.make_response("show.json")
 
-        show(args, gbp)
+        show(args, self.gbp)
 
         expected = """\
 Build: lighthouse/3109
@@ -41,48 +37,24 @@ Keep: no
     * net-print/cups-filters-1.28.10-3
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        gbp.session.post.assert_called_once_with(
-            gbp.url,
-            json={
-                "query": queries.build,
-                "variables": {"name": "lighthouse", "number": 2080},
-            },
-            headers=gbp.headers,
-        )
+        self.assert_graphql(queries.build, name="lighthouse", number=2080)
 
     def test_should_get_latest_when_number_is_none(self, _print_mock):
         args = Namespace(machine="lighthouse", number=None)
-        mock_latest = make_response(json={"data": {"latest": {"number": 2080}}})
-        mock_json = parse(load_data("show.json"))
-        gbp = make_gbp()
-        gbp.session.post.side_effect = (mock_latest, make_response(json=mock_json))
+        self.make_response({"data": {"latest": {"number": 2080}}})
+        self.make_response("show.json")
 
-        status = show(args, gbp)
+        status = show(args, self.gbp)
 
-        expected_calls = [
-            mock.call(
-                gbp.url,
-                json={"query": queries.latest, "variables": {"name": "lighthouse"}},
-                headers=gbp.headers,
-            ),
-            mock.call(
-                gbp.url,
-                json={
-                    "query": queries.build,
-                    "variables": {"name": "lighthouse", "number": 2080},
-                },
-                headers=gbp.headers,
-            ),
-        ]
-        gbp.session.post.assert_has_calls(expected_calls)
+        self.assert_graphql(queries.latest, index=0, name="lighthouse")
+        self.assert_graphql(queries.build, index=1, name="lighthouse", number=2080)
         self.assertEqual(status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
         args = Namespace(machine="bogus", number=934)
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json={"data": {"build": None}})
+        self.make_response({"data": {"build": None}})
 
-        status = show(args, gbp)
+        status = show(args, self.gbp)
 
         self.assertEqual(status, 1)
         self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")

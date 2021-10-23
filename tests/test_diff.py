@@ -1,6 +1,5 @@
 """Tests for the diff subcommand"""
 # pylint: disable=missing-function-docstring
-import unittest
 from argparse import Namespace
 from json import loads as parse
 from unittest import mock
@@ -8,21 +7,19 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
+from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response, mock_print
 
 
 @mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 @mock_print("gbpcli.subcommands.diff")
-class DiffTestCase(unittest.TestCase):
+class DiffTestCase(TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self, print_mock):
         args = Namespace(machine="lighthouse", left=3111, right=3112)
-        mock_json = parse(load_data("diff.json"))
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=mock_json)
+        self.make_response("diff.json")
 
-        status = diff(args, gbp)
+        status = diff(args, self.gbp)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -33,16 +30,10 @@ diff -r lighthouse/3111 lighthouse/3112
 +app-misc/tracker-miners-3.1.3-1
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        gbp.session.post.assert_called_once_with(
-            gbp.url,
-            json={
-                "query": queries.diff,
-                "variables": {
-                    "left": {"name": "lighthouse", "number": 3111},
-                    "right": {"name": "lighthouse", "number": 3112},
-                },
-            },
-            headers=gbp.headers,
+        self.assert_graphql(
+            queries.diff,
+            left={"name": "lighthouse", "number": 3111},
+            right={"name": "lighthouse", "number": 3112},
         )
 
     def test_should_print_nothing_when_no_diffs(self, print_mock):
@@ -129,17 +120,12 @@ diff -r lighthouse/3111 lighthouse/3112
         for item in list_json["data"]["builds"]:
             item["published"] = False
 
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=list_json)
+        self.make_response(list_json)
 
-        status = diff(args, gbp)
+        status = diff(args, self.gbp)
 
         self.assertEqual(status, 1)
-        gbp.session.post.assert_called_with(
-            gbp.url,
-            json={"query": queries.builds, "variables": {"name": "jenkins"}},
-            headers=gbp.headers,
-        )
+        self.assert_graphql(queries.builds, name="jenkins")
         self.assertEqual(
             print_mock.stderr.getvalue(),
             "No origin specified and no builds published\n",

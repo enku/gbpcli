@@ -1,18 +1,16 @@
 """Tests for the list subcommand"""
 # pylint: disable=missing-function-docstring
-import unittest
 from argparse import Namespace
-from json import loads as parse
 from unittest import mock
 
 from gbpcli import queries
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, load_data, make_gbp, make_response, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.subcommands.list.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class ListTestCase(unittest.TestCase):
+class ListTestCase(TestCase):
     """list() tests"""
 
     maxDiff = None
@@ -20,19 +18,13 @@ class ListTestCase(unittest.TestCase):
     @mock_print("gbpcli.subcommands.list")
     def test(self, print_mock):
         args = Namespace(machine="jenkins")
-        mock_json = parse(load_data("list.json"))
-        gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=mock_json)
+        self.make_response("list.json")
 
-        status = list_command(args, gbp)
+        status = list_command(args, self.gbp)
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
-        gbp.session.post.assert_called_once_with(
-            gbp.url,
-            json={"query": queries.builds, "variables": {"name": "jenkins"}},
-            headers=gbp.headers,
-        )
+        self.assert_graphql(queries.builds, name="jenkins")
 
 
 EXPECTED_OUTPUT = """\
