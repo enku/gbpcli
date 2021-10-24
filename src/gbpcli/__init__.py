@@ -182,6 +182,16 @@ class GBP:
             queries.release_build, {"name": build.name, "number": build.number}
         )["releaseBuild"]
 
+    def create_note(self, build: Build, note: Optional[str]):
+        """Create or delete note for the given build.
+
+        If note is None, the note is deleted (if it exists).
+        """
+        return self.check(
+            queries.create_note,
+            {"name": build.name, "number": build.number, "note": note},
+        )["createNote"]
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""

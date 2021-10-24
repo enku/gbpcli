@@ -7,7 +7,6 @@ import tempfile
 from typing import Optional
 
 from gbpcli import GBP, Build
-from gbpcli.queries import create_note
 
 
 def get_editor():
@@ -75,7 +74,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         except EnvironmentError:
             return 1
 
-    gbp.check(create_note, {"name": args.machine, "number": args.number, "note": note})
+    gbp.create_note(build, note)
 
     return 0
 
