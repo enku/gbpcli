@@ -8,12 +8,13 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import TestCase, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
+@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""
 
