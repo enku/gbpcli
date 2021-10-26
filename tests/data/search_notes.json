@@ -1,0 +1,24 @@
+{
+    "data": {
+        "searchNotes": [
+            {
+                "name": "lighthouse",
+                "number": 3363,
+                "keep": false,
+                "published": false,
+                "notes": "Packages built:\n\n* media-sound/mpg123-1.29.2-1\n* sys-apps/systemd-249.5-1",
+                "submitted": "2021-10-24T08:18:45.094877+00:00",
+                "completed": "2021-10-24T08:24:08.143730+00:00"
+            },
+            {
+                "name": "lighthouse",
+                "number": 3360,
+                "keep": true,
+                "published": false,
+                "notes": "Packages built:\n\n* app-eselect/eselect-lua-4-r1-1\n* dev-lang/lua-5.4.2-r1-1\n* media-gfx/exiv2-0.27.5-r1-1\n* media-libs/gexiv2-0.12.2-2\n* media-video/pipewire-0.3.39-1\n* media-video/wireplumber-0.4.4-1\n* sys-apps/sandbox-2.27-1\n\nBefore updating systemd\n",
+                "submitted": "2021-10-24T02:29:38.461098+00:00",
+                "completed": "2021-10-24T02:34:25.511073+00:00"
+            }
+        ]
+    }
+}

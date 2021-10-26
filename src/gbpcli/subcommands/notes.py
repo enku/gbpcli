@@ -6,7 +6,7 @@ import sys
 import tempfile
 from typing import Optional
 
-from gbpcli import GBP, Build
+from gbpcli import GBP, Build, utils
 
 
 def get_editor():
@@ -57,9 +57,35 @@ def get_note(existing_note: Optional[str]) -> str:
     return note
 
 
+def search_notes(gbp: GBP, machine: str, key: str) -> int:
+    """--search handler for the notes subcommand"""
+    builds = gbp.search_notes(machine, key)
+
+    if not builds:
+        print("No matches found")
+        return 1
+
+    sep = ""
+    for build in builds:
+        print(sep, end="")
+        print(utils.build_to_str(build), end="")
+        sep = "\n"
+
+    return 0
+
+
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """handler for the notes subcommand"""
-    build = Build(args.machine, args.number)
+    if args.search:
+        return search_notes(gbp, args.machine, args.number)
+
+    try:
+        number = int(args.number, 10)
+    except ValueError:
+        print("Expected integer value.", file=sys.stderr)
+        return 1
+
+    build = Build(args.machine, number)
     existing = gbp.get_build_info(build)
 
     if not existing or not existing.info:
@@ -82,5 +108,12 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 def parse_args(parser):
     """Set subcommand arguments"""
     parser.add_argument("--delete", "-d", action="store_true", default=False)
+    parser.add_argument(
+        "--search",
+        "-s",
+        action="store_true",
+        default=False,
+        help="Search build notes for the given text.",
+    )
     parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
-    parser.add_argument("number", type=int, metavar="NUMBER", help="build number")
+    parser.add_argument("number", metavar="KEY|NUMBER", help="build number")

@@ -22,7 +22,9 @@ class NotesTestCase(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.args = Namespace(machine="lighthouse", number=3109, delete=False)
+        self.args = Namespace(
+            machine="lighthouse", number="3109", delete=False, search=False
+        )
         self.make_response("show.json")
         self.make_response("create_note.json")
 
@@ -86,7 +88,7 @@ class NotesTestCase(TestCase):
 
         self.assert_create_note()
 
-    @mock_print("gbpcli.subcommands.notes")
+    @mock_print(MODULE)
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
         self.make_response(None)
         self.make_response({"data": {"build": None}})
@@ -95,6 +97,41 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 1)
         self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")
+
+    @mock_print(MODULE)
+    def test_should_print_error_when_invalid_number_given(self, print_mock):
+        self.args.number = "foo"
+
+        status = create_note(self.args, self.gbp)
+
+        self.assertEqual(status, 1)
+        self.assertEqual(print_mock.stderr.getvalue(), "Expected integer value.\n")
+
+    @mock_print(MODULE)
+    def test_search_notes(self, print_mock):
+        self.args.search = True
+        self.args.number = "python"
+        self.make_response(None)
+        self.make_response("search_notes.json")
+
+        status = create_note(self.args, self.gbp)
+
+        self.assertEqual(status, 0)
+        self.assert_graphql(queries.search_notes, name="lighthouse", key="python")
+        self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_SEARCH_OUTPUT)
+
+    @mock_print(MODULE)
+    def test_search_no_matches_found(self, print_mock):
+        self.args.search = True
+        self.args.number = "python"
+        self.make_response(None)
+        self.make_response({"data": {"searchNotes": []}})
+
+        status = create_note(self.args, self.gbp)
+
+        self.assertEqual(status, 1)
+        self.assert_graphql(queries.search_notes, name="lighthouse", key="python")
+        self.assertEqual(print_mock.stdout.getvalue(), "No matches found\n")
 
 
 def fake_editor(text=NOTE, returncode=0):
@@ -108,3 +145,36 @@ def fake_editor(text=NOTE, returncode=0):
         return mock.Mock(args=args, returncode=returncode)
 
     return edit
+
+
+EXPECTED_SEARCH_OUTPUT = """\
+Build: lighthouse/3363
+Submitted: Sun Oct 24 03:18:45 2021 -0500
+Completed: Sun Oct 24 03:24:08 2021 -0500
+Published: no
+Keep: no
+
+    Packages built:
+    
+    * media-sound/mpg123-1.29.2-1
+    * sys-apps/systemd-249.5-1
+
+Build: lighthouse/3360
+Submitted: Sat Oct 23 21:29:38 2021 -0500
+Completed: Sat Oct 23 21:34:25 2021 -0500
+Published: no
+Keep: yes
+
+    Packages built:
+    
+    * app-eselect/eselect-lua-4-r1-1
+    * dev-lang/lua-5.4.2-r1-1
+    * media-gfx/exiv2-0.27.5-r1-1
+    * media-libs/gexiv2-0.12.2-2
+    * media-video/pipewire-0.3.39-1
+    * media-video/wireplumber-0.4.4-1
+    * sys-apps/sandbox-2.27-1
+    
+    Before updating systemd
+    
+"""

@@ -192,6 +192,18 @@ class GBP:
             {"name": build.name, "number": build.number, "note": note},
         )["createNote"]
 
+    def search_notes(self, name: str, key: str) -> list[Build]:
+        """Search buids for the given machine name for notes containing key.
+
+        Return a list of Builds who's notes match the (case-insensitive) string.
+        """
+        query = queries.search_notes
+
+        response = self.check(query, {"name": name, "key": key})
+        builds = response["searchNotes"]
+
+        return [self.api_to_build(i) for i in builds]
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""

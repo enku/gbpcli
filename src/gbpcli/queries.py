@@ -16,3 +16,4 @@ release_build = "mutation ReleaseBuild($name: String!, $number: Int!) {\n  relea
 schedule_build = (
     "mutation ScheduleBuild($name: String!) {\n  scheduleBuild(name: $name)\n}\n"
 )
+search_notes = "query SearchNotes($name: String!, $key: String!) {\n  searchNotes(name: $name, key: $key) {\n    name\n    number\n    keep\n    published\n    notes\n    submitted\n    completed\n  }\n}\n"

@@ -118,7 +118,7 @@ class MockPrint:  # pylint: disable=too-few-public-methods
         self.stderr = io.StringIO()
         self.file = io.StringIO()
 
-    def __call__(self, value, file=sys.stdout):
+    def __call__(self, value, end="\n", file=sys.stdout):
         """Mocked print() function"""
         if file is sys.stdout:
             file = self.stdout
@@ -127,7 +127,7 @@ class MockPrint:  # pylint: disable=too-few-public-methods
         else:
             file = self.file
 
-        print(value, file=file)
+        print(value, end=end, file=file)
 
 
 def mock_print(where, *args, **kwargs):

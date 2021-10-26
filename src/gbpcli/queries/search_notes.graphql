@@ -1,0 +1,11 @@
+query SearchNotes($name: String!, $key: String!) {
+  searchNotes(name: $name, key: $key) {
+    name
+    number
+    keep
+    published
+    notes
+    submitted
+    completed
+  }
+}

@@ -27,25 +27,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         return 1
 
     assert build.info is not None
-
-    print(f"Build: {build.name}/{build.number}")
-    submitted = utils.timestr(build.info.submitted)
-    print(f"Submitted: {submitted}")
-
-    assert build.info.completed is not None
-
-    completed = utils.timestr(build.info.completed)
-    print(f"Completed: {completed}")
-
-    print(f"Published: {utils.yesno(build.info.published)}")
-    print(f"Keep: {utils.yesno(build.info.keep)}")
-
-    if note := build.info.note:
-        print("")
-        lines = note.split("\n")
-
-        for line in lines:
-            print(f"    {line}")
+    print(utils.build_to_str(build), end="")
 
     return 0
 
