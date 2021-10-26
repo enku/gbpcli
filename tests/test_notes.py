@@ -14,7 +14,7 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
-@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""
 
@@ -150,8 +150,8 @@ def fake_editor(text=NOTE, returncode=0):
 
 EXPECTED_SEARCH_OUTPUT = """\
 Build: lighthouse/3363
-Submitted: Sun Oct 24 03:18:45 2021 -0500
-Completed: Sun Oct 24 03:24:08 2021 -0500
+Submitted: Sun Oct 24 01:18:45 2021 -0700
+Completed: Sun Oct 24 01:24:08 2021 -0700
 Published: no
 Keep: no
 
@@ -161,8 +161,8 @@ Keep: no
     * sys-apps/systemd-249.5-1
 
 Build: lighthouse/3360
-Submitted: Sat Oct 23 21:29:38 2021 -0500
-Completed: Sat Oct 23 21:34:25 2021 -0500
+Submitted: Sat Oct 23 19:29:38 2021 -0700
+Completed: Sat Oct 23 19:34:25 2021 -0700
 Published: no
 Keep: yes
 
