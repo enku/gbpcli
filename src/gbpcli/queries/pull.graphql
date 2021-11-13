@@ -1,5 +1,5 @@
 mutation Pull($name: String!, $number: Int!) {
   pull(name: $name, number: $number) {
-    builds
+    buildCount
   }
 }

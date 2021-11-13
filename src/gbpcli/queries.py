@@ -12,7 +12,7 @@ logs = "query Build($name: String!, $number: Int!) {\n  build(name: $name, numbe
 machines = "query {\n  machines {\n    name\n    buildCount\n  }\n}\n"
 packages = "query Packages($name: String!, $number: Int!) {\n  packages(name: $name, number: $number)\n}\n"
 publish = "mutation Publish($name: String!, $number: Int!) {\n  publish(name: $name, number: $number) {\n    publishedBuild {\n      number\n    }\n  }\n}\n"
-pull = "mutation Pull($name: String!, $number: Int!) {\n  pull(name: $name, number: $number) {\n    builds\n  }\n}\n"
+pull = "mutation Pull($name: String!, $number: Int!) {\n  pull(name: $name, number: $number) {\n    buildCount\n  }\n}\n"
 release_build = "mutation ReleaseBuild($name: String!, $number: Int!) {\n  releaseBuild(name: $name, number: $number) {\n    keep\n  }\n}\n"
 schedule_build = (
     "mutation ScheduleBuild($name: String!) {\n  scheduleBuild(name: $name)\n}\n"
