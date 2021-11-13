@@ -1,6 +1,7 @@
 """Utility functions"""
 import datetime
 import io
+from functools import partial
 from typing import Literal, Optional
 
 from gbpcli import LOCAL_TIMEZONE, Build
@@ -36,23 +37,33 @@ def build_to_str(build: Build) -> str:
 
     myio = io.StringIO()
 
-    print(f"Build: {build.name}/{build.number}", file=myio)
+    fprint = partial(print, file=myio)
+    fprint(f"Build: {build.name}/{build.number}")
     submitted = timestr(build.info.submitted)
-    print(f"Submitted: {submitted}", file=myio)
+    fprint(f"Submitted: {submitted}")
 
     assert build.info.completed is not None
 
     completed = timestr(build.info.completed)
-    print(f"Completed: {completed}", file=myio)
+    fprint(f"Completed: {completed}")
 
-    print(f"Published: {yesno(build.info.published)}", file=myio)
-    print(f"Keep: {yesno(build.info.keep)}", file=myio)
+    fprint(f"Published: {yesno(build.info.published)}")
+    fprint(f"Keep: {yesno(build.info.keep)}")
+    fprint("Packages-built:", end="")
+
+    if packages := build.packages_built:
+        fprint("")
+
+        for package in packages:
+            fprint(f"  * {package.cpv}")
+    else:
+        fprint(" None")
 
     if note := build.info.note:
-        print("", file=myio)
+        fprint("")
         lines = note.split("\n")
 
         for line in lines:
-            print(f"    {line}", file=myio)
+            fprint(f"    {line}")
 
     return myio.getvalue()

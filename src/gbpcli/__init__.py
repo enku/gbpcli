@@ -162,10 +162,14 @@ class GBP:
 
     def get_build_info(self, build: Build) -> Optional[Build]:
         """Return build with info gained from the GBP API"""
-        data = self.check(queries.build, dict(name=build.name, number=build.number))
+        data, errors = self.query(
+            queries.build, dict(name=build.name, number=build.number)
+        )
         build = data["build"]
 
         if build is None:
+            if errors:
+                raise APIError(errors, data)
             return None
 
         return self.api_to_build(data["build"])

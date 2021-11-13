@@ -111,14 +111,14 @@ class NotesTestCase(TestCase):
     @mock_print(MODULE)
     def test_search_notes(self, print_mock):
         self.args.search = True
-        self.args.number = "python"
+        self.args.number = "foo"
         self.make_response(None)
         self.make_response("search_notes.json")
 
         status = create_note(self.args, self.gbp)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.search_notes, name="lighthouse", key="python")
+        self.assert_graphql(queries.search_notes, name="lighthouse", key="foo")
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
     @mock_print(MODULE)
@@ -154,28 +154,18 @@ Submitted: Sun Oct 24 01:18:45 2021 -0700
 Completed: Sun Oct 24 01:24:08 2021 -0700
 Published: no
 Keep: no
+Packages-built: None
 
-    Packages built:
+    foo
     
-    * media-sound/mpg123-1.29.2-1
-    * sys-apps/systemd-249.5-1
 
 Build: lighthouse/3360
 Submitted: Sat Oct 23 19:29:38 2021 -0700
 Completed: Sat Oct 23 19:34:25 2021 -0700
 Published: no
 Keep: yes
+Packages-built: None
 
-    Packages built:
-    
-    * app-eselect/eselect-lua-4-r1-1
-    * dev-lang/lua-5.4.2-r1-1
-    * media-gfx/exiv2-0.27.5-r1-1
-    * media-libs/gexiv2-0.12.2-2
-    * media-video/pipewire-0.3.39-1
-    * media-video/wireplumber-0.4.4-1
-    * sys-apps/sandbox-2.27-1
-    
-    Before updating systemd
+    foobar
     
 """

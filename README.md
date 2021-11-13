@@ -73,6 +73,8 @@ Submitted: Thu Nov 11 21:04:31 2021 -0600
 Completed: Thu Nov 11 21:08:20 2021 -0600
 Published: no
 Keep: no
+Packages-built:
+  * sys-libs/glibc-2.33-r7
 
     The glibc update seems wonky here. I submitted a bug report.
 ```

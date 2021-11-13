@@ -17,37 +17,33 @@ class ShowTestCase(TestCase):
     maxDiff = None
 
     def test(self, print_mock):
-        args = Namespace(machine="lighthouse", number=2080)
+        args = Namespace(machine="lighthouse", number=3587)
         self.make_response("show.json")
 
         show(args, self.gbp)
 
         expected = """\
-Build: lighthouse/3109
-Submitted: Sat Oct  2 07:26:19 2021 -0700
-Completed: Sat Oct  2 07:41:25 2021 -0700
-Published: yes
+Build: lighthouse/3587
+Submitted: Fri Nov 12 21:25:53 2021 -0700
+Completed: Fri Nov 12 21:29:34 2021 -0700
+Published: no
 Keep: no
-
-    Packages built:
-    
-    * app-text/poppler-21.10.0-1
-    * dev-perl/URI-5.90.0-1
-    * net-im/signal-desktop-bin-5.18.0-1
-    * net-print/cups-filters-1.28.10-3
+Packages-built:
+  * app-editors/vim-8.2.3582
+  * app-editors/vim-core-8.2.3582
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        self.assert_graphql(queries.build, name="lighthouse", number=2080)
+        self.assert_graphql(queries.build, name="lighthouse", number=3587)
 
     def test_should_get_latest_when_number_is_none(self, _print_mock):
         args = Namespace(machine="lighthouse", number=None)
-        self.make_response({"data": {"latest": {"number": 2080}}})
+        self.make_response({"data": {"latest": {"number": 3587}}})
         self.make_response("show.json")
 
         status = show(args, self.gbp)
 
         self.assert_graphql(queries.latest, index=0, name="lighthouse")
-        self.assert_graphql(queries.build, index=1, name="lighthouse", number=2080)
+        self.assert_graphql(queries.build, index=1, name="lighthouse", number=3587)
         self.assertEqual(status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):

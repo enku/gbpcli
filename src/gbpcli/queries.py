@@ -1,7 +1,7 @@
 """GraphQL query definitions"""
 # Auto-generated: DO NOT EDIT
 # pylint: disable=line-too-long,invalid-name
-build = "query Build($name: String!, $number: Int!) {\n  build(name: $name, number: $number) {\n    name\n    number\n    keep\n    published\n    notes\n    submitted\n    completed\n  }\n}\n"
+build = "query Build($name: String!, $number: Int!) {\n  build(name: $name, number: $number) {\n    name\n    number\n    keep\n    published\n    notes\n    submitted\n    completed\n    packagesBuilt {\n      cpv\n    }\n  }\n}\n"
 builds = "query Builds($name: String!) {\n  builds(name: $name) {\n    name\n    number\n    submitted\n    completed\n    published\n    notes\n    keep\n  }\n}\n"
 builds_with_packages = "query Builds($name: String!) {\n  builds(name: $name) {\n    name\n    number\n    submitted\n    completed\n    published\n    notes\n    keep\n    packagesBuilt {\n      cpv\n    }\n  }\n}\n"
 create_note = "mutation CreateNote($name: String!, $number: Int!, $note: String) {\n  createNote(name: $name, number: $number, note: $note) {\n    notes\n  }\n}\n"

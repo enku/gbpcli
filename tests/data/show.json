@@ -1,13 +1,21 @@
 {
    "data" : {
       "build" : {
-         "completed" : "2021-10-02T14:41:25.797933+00:00",
+         "completed" : "2021-11-13T04:29:34.822433+00:00",
          "keep" : false,
          "name" : "lighthouse",
-         "notes" : "Packages built:\n\n* app-text/poppler-21.10.0-1\n* dev-perl/URI-5.90.0-1\n* net-im/signal-desktop-bin-5.18.0-1\n* net-print/cups-filters-1.28.10-3",
-         "number" : 3109,
-         "published" : true,
-         "submitted" : "2021-10-02T14:26:19.898321+00:00"
+         "notes" : null,
+         "number" : 3587,
+         "packagesBuilt" : [
+            {
+               "cpv" : "app-editors/vim-8.2.3582"
+            },
+            {
+               "cpv" : "app-editors/vim-core-8.2.3582"
+            }
+         ],
+         "published" : false,
+         "submitted" : "2021-11-13T04:25:53.950605+00:00"
       }
    }
 }
