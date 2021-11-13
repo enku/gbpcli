@@ -2,63 +2,63 @@
    "data" : {
       "machines" : [
          {
-            "builds" : 14,
+            "buildCount" : 14,
             "name" : "babette"
          },
          {
-            "builds" : 15,
+            "buildCount" : 15,
             "name" : "base"
          },
          {
-            "builds" : 35,
+            "buildCount" : 35,
             "name" : "blackwidow"
          },
          {
-            "builds" : 36,
+            "buildCount" : 36,
             "name" : "gbp"
          },
          {
-            "builds" : 8,
+            "buildCount" : 8,
             "name" : "git"
          },
          {
-            "builds" : 35,
+            "buildCount" : 35,
             "name" : "gnome-desktop"
          },
          {
-            "builds" : 9,
+            "buildCount" : 9,
             "name" : "jenkins"
          },
          {
-            "builds" : 35,
+            "buildCount" : 35,
             "name" : "lighthouse"
          },
          {
-            "builds" : 12,
+            "buildCount" : 12,
             "name" : "lounge"
          },
          {
-            "builds" : 8,
+            "buildCount" : 8,
             "name" : "pgadmin"
          },
          {
-            "builds" : 12,
+            "buildCount" : 12,
             "name" : "postgres"
          },
          {
-            "builds" : 9,
+            "buildCount" : 9,
             "name" : "rabbitmq"
          },
          {
-            "builds" : 5,
+            "buildCount" : 5,
             "name" : "teamplayer"
          },
          {
-            "builds" : 36,
+            "buildCount" : 36,
             "name" : "testing"
          },
          {
-            "builds" : 16,
+            "buildCount" : 16,
             "name" : "web"
          }
       ]

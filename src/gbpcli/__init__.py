@@ -95,7 +95,7 @@ class GBP:
         """Handler for subcommand"""
         data = self.check(queries.machines)
 
-        return [(i["name"], i["builds"]) for i in data["machines"]]
+        return [(i["name"], i["buildCount"]) for i in data["machines"]]
 
     def publish(self, build: Build):
         """Publish the given build"""
