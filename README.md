@@ -35,7 +35,7 @@ To list the machines which have builds:
 
 ```bash
 $ gbp machines
-babette          14
+babette          10
 blackwidow       45
 gbp              45
 jenkins           8
@@ -50,37 +50,34 @@ testing          43
 To list the available builds for a given machine:
 
 ```bash
-$ gbp list babette
-[K  ]   104 04/25/21 06:51:19
-[   ]   109 04/30/21 07:27:04
-[K N]   132 05/21/21 11:27:50
-[ PN]   157 06/16/21 08:10:04
-[   ]   167 06/27/21 08:02:12
-[  N]   169 06/30/21 06:38:53
-[  N]   187 07/17/21 10:20:25
-[  N]   188 07/18/21 13:32:48
+[*  N]   293 11/03/21 18:56:03
+[    ]   294 11/04/21 18:56:02
+[*  N]   295 11/05/21 18:58:42
+[*  N]   296 11/06/21 20:36:07
+[*  N]   297 11/07/21 20:07:58
+[    ]   298 11/08/21 18:56:19
+[*  N]   299 11/09/21 18:56:54
+[    ]   300 11/10/21 18:56:25
+[*  N]   301 11/11/21 21:04:31
+[  PN]   302 11/12/21 20:33:33
 ```
 
-In the above example, the `PN` output for build `157` signifies that this build
-is currently published (`P`) and there is a user note for that build (`N`).
+In the above example, the `PN` output for build `302` signifies that this
+build is currently published (`P`) and there is a user note for that build
+(`N`).  The `*` means that the respective build has new binary packages.
 
 ```bash
-$ gbp show babette 188
-Build: babette/188
-Submitted: Sun Jul 18 13:32:48 2021 -0700
-Completed: Sun Jul 18 13:35:04 2021 -0700
+$ gbp show babette 301
+Build: babette/301
+Submitted: Thu Nov 11 21:04:31 2021 -0600
+Completed: Thu Nov 11 21:08:20 2021 -0600
 Published: no
 Keep: no
 
-    Packages built:
-
-    * app-misc/pax-utils-1.3.2-1
-    * app-text/po4a-0.57-r1-1
-    * sys-apps/util-linux-2.36.2-r1-1
-    * sys-devel/gcc-10.3.0-r2-1
-    * sys-libs/readline-8.1_p1-r1-1
-    * sys-process/procps-3.3.17-r1-1
+    The glibc update seems wonky here. I submitted a bug report.
 ```
+
+Edit/delete build notes using the `gbp notes` command.
 
 
 The `show` subcommand displays metadata about a given build.  If the build
@@ -89,21 +86,12 @@ number is not given, it defaults to the latest build for that machine.
 The `diff` subcommand display differences between two build.
 
 ```bash
-$ gbp diff babette 187 188
-diff -r babette/187 babette/188
---- a/babette/187 Sat Jul 17 10:20:25 2021 -0700
-+++ b/babette/188 Sun Jul 18 13:32:48 2021 -0700
--app-misc/pax-utils-1.3.1-2
-+app-misc/pax-utils-1.3.2-1
--app-text/po4a-0.57-1
-+app-text/po4a-0.57-r1-1
--sys-apps/util-linux-2.36.2-2
-+sys-apps/util-linux-2.36.2-r1-1
--sys-devel/gcc-10.3.0-r1-1
-+sys-devel/gcc-10.3.0-r2-1
--sys-libs/readline-8.1_p1-1
-+sys-libs/readline-8.1_p1-r1-1
-+sys-process/procps-3.3.17-r1-1
+$ gbp diff babette 298 299
+diff -r babette/298 babette/299
+--- a/babette/298 Mon Nov  8 18:56:19 2021 -0600
++++ b/babette/299 Tue Nov  9 18:56:54 2021 -0600
+-dev-perl/Locale-gettext-1.70.0-2
++dev-perl/Locale-gettext-1.70.0-r1-1
 ```
 If the second build number is not given, it defaults to the latest build for
 that machine.  If the first build number is not given, it defaults to the
@@ -113,7 +101,7 @@ The `publish` subcommand makes the given build available for syncing and
 updating/downgrading.
 
 ```bash
-$ gbp publish babette 188
+$ gbp publish babette 302
 ```
 
 If the build nubmer is not given, it defaults to the latest build for that machine.

@@ -42,12 +42,20 @@ class BuildInfo:
 
 
 @dataclass
+class Package:
+    """A (binary) package"""
+
+    cpv: str
+
+
+@dataclass
 class Build:
     """A GBP Build"""
 
     name: str
     number: int
     info: Optional[BuildInfo] = None
+    packages_built: Optional[list[Package]] = None
 
 
 class Status(IntEnum):
@@ -111,9 +119,13 @@ class GBP:
         number = data["latest"]["number"]
         return Build(name=machine, number=number)
 
-    def builds(self, machine: str) -> list[Build]:
-        """Return a list of Builds for the given machine"""
-        data = self.check(queries.builds, dict(name=machine))
+    def builds(self, machine: str, with_packages: bool = False) -> list[Build]:
+        """Return a list of Builds for the given machine
+
+        If `with_packages` is True, also include the list of packages for the builds
+        """
+        query = queries.builds_with_packages if with_packages else queries.builds
+        data = self.query(query, dict(name=machine))[0]
         builds = data["builds"]
         builds.reverse()
 
@@ -210,6 +222,14 @@ class GBP:
         completed = api_response.get("completed")
         submitted = api_response["submitted"]
         fromisoformat = datetime.datetime.fromisoformat
+
+        if api_response.get("packagesBuilt", None) is None:
+            packages_built = None
+        else:
+            packages_built = [
+                Package(cpv=i["cpv"]) for i in api_response["packagesBuilt"]
+            ]
+
         return Build(
             name=api_response["name"],
             number=api_response["number"],
@@ -220,6 +240,7 @@ class GBP:
                 submitted=fromisoformat(submitted),
                 completed=fromisoformat(completed) if completed is not None else None,
             ),
+            packages_built=packages_built,
         )
 
     def check(self, query: str, variables: dict[str, Any] = None) -> dict:

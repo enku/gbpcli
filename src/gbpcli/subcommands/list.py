@@ -6,7 +6,7 @@ from gbpcli import GBP, LOCAL_TIMEZONE
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for subcommand"""
-    builds = gbp.builds(args.machine)
+    builds = gbp.builds(args.machine, with_packages=True)
 
     for build in builds:
         assert build.info is not None
@@ -14,6 +14,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
 
         print(
             "["
+            f"{'*' if build.packages_built else ' '}"
             f"{'K' if build.info.keep else ' '}"
             f"{'P' if build.info.published else ' '}"
             f"{'N' if build.info.note else ' '}"
