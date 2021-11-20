@@ -1,3 +1,5 @@
 /.coverage
 /.venv/
+/build/
+/dist/
 /src/gbpcli.egg-info/
