@@ -1,3 +1,5 @@
-query Packages($name: String!, $number: Int!) {
-  packages(name: $name, number: $number)
+query Build($name: String!, $number: Int!) {
+  build(name: $name, number: $number) {
+    packages
+  }
 }

@@ -184,7 +184,7 @@ class GBP:
         data = self.check(
             queries.packages, {"name": build.name, "number": build.number}
         )
-        return data["packages"]
+        return data["build"]["packages"]
 
     def keep(self, build: Build):
         """Mark a build as kept"""
