@@ -156,8 +156,9 @@ Published: no
 Keep: no
 Packages-built: None
 
-    foo
-    
+foo
+
+
 
 Build: lighthouse/3360
 Submitted: Sat Oct 23 19:29:38 2021 -0700
@@ -166,6 +167,7 @@ Published: no
 Keep: yes
 Packages-built: None
 
-    foobar
-    
+foobar
+
+
 """

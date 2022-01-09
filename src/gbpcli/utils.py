@@ -52,18 +52,19 @@ def build_to_str(build: Build) -> str:
     fprint("Packages-built:", end="")
 
     if packages := build.packages_built:
-        fprint("")
+        fprint()
 
         for package in packages:
-            fprint(f"  * {package.cpv}")
+            fprint(f"\t{package.cpv}")
     else:
         fprint(" None")
 
     if note := build.info.note:
-        fprint("")
+        fprint()
         lines = note.split("\n")
 
         for line in lines:
-            fprint(f"    {line}")
+            fprint(line)
 
+    fprint()
     return myio.getvalue()
