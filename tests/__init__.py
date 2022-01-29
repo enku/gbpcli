@@ -76,30 +76,21 @@ def load_data(filename: str) -> bytes:
     return (DATA_DIR / filename).read_bytes()
 
 
-def make_response(status_code=200, json=NO_JSON, content=None) -> mock.Mock:
+def make_response(status_code=200, json=NO_JSON, content=None) -> requests.Response:
     """Create a mock requests.Response object"""
+    # pylint: disable=protected-access
     if content is None:
         content = b"test"
-        text = "test"
-    else:
-        text = None
 
-    attrs = {
-        "content": content,
-        "headers": {},
-        "status_code": status_code,
-        "text": text,
-    }
+    response = requests.Response()
+    response.status_code = status_code
+    response._content = content
 
     if json is not NO_JSON:
-        attrs["json.return_value"] = json
-        attrs["content"] = stringify(json, sort_keys=True).encode("utf-8")
-        attrs["headers"] = {"content-type": "application/json"}
+        response._content = stringify(json, sort_keys=True).encode("utf-8")
+        response.headers["Content-Type"] = "application/json"
 
-    response_mock = mock.Mock(spec=requests.Response)
-    response_mock.configure_mock(**attrs)
-
-    return response_mock
+    return response
 
 
 def make_gbp(url: str = "http://test.invalid/") -> GBP:
