@@ -79,14 +79,25 @@ class GBP:
 
     headers = {"Accept-Encoding": "gzip, deflate"}
 
-    def __init__(self, url: str):
+    def __init__(self, url: str, exit_gracefully_on_requests_errors=True):
         self.url = str(yarl.URL(url) / "graphql")
         self.session = requests.Session()
+        self.exit_gracefully_on_requests_errors = exit_gracefully_on_requests_errors
 
     def query(self, query: str, variables: dict[str, Any] = None):
         """Execute the given GraphQL query using the given input variables"""
         json = {"query": query, "variables": variables}
-        response = self.session.post(self.url, json=json, headers=self.headers)
+
+        try:
+            response = self.session.post(self.url, json=json, headers=self.headers)
+        except requests.exceptions.ConnectionError as error:
+            if self.exit_gracefully_on_requests_errors:
+                error_message = str(error)
+                print(error_message, file=sys.stderr)
+                raise SystemExit(-1)
+            else:
+                raise
+
         response.raise_for_status()
         response_json = response.json()
         return response_json.get("data"), response_json.get("errors")

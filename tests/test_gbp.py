@@ -32,3 +32,24 @@ class GBPQueryTestCase(TestCase):
         response = self.gbp.query(query)
 
         self.assertEqual(response, ({"foo": "bar"}, [{"this": "that"}]))
+
+    def test_exits_on_connection_errors(self):
+        query = "query foo { bar }"
+        self.gbp.session.post.side_effect = requests.exceptions.ConnectionError()
+
+        with self.assertRaises(SystemExit) as cxt:
+            self.gbp.query(query)
+
+        exception = cxt.exception
+        self.assertEqual(exception.args, (-1,))
+
+    def test_does_not_exit_when_flag_turned_off(self):
+        self.gbp.exit_gracefully_on_requests_errors = False
+        error = requests.exceptions.ConnectionError()
+        self.gbp.session.post.side_effect = error
+        query = "query foo { bar }"
+
+        with self.assertRaises(requests.exceptions.ConnectionError) as cxt:
+            self.gbp.query(query)
+
+        self.assertIs(cxt.exception, error)
