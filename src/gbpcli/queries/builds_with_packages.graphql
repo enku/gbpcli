@@ -1,4 +1,4 @@
-query Builds($name: String!) {
+query ($name: String!) {
   builds(name: $name) {
     name
     number

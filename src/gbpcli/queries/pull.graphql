@@ -1,4 +1,4 @@
-mutation Pull($name: String!, $number: Int!) {
+mutation ($name: String!, $number: Int!) {
   pull(name: $name, number: $number) {
     buildCount
   }

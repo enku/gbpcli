@@ -1,4 +1,4 @@
-query Diff($left: BuildInput!, $right: BuildInput!) {
+query ($left: BuildInput!, $right: BuildInput!) {
   diff(left: $left, right: $right) {
     left {
       name

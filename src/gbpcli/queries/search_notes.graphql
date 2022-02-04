@@ -1,4 +1,4 @@
-query SearchNotes($name: String!, $key: String!) {
+query ($name: String!, $key: String!) {
   searchNotes(name: $name, key: $key) {
     name
     number

@@ -1,4 +1,4 @@
-query Build($name: String!, $number: Int!) {
+query ($name: String!, $number: Int!) {
   build(name: $name, number: $number) {
     logs
   }

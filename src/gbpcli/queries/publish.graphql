@@ -1,4 +1,4 @@
-mutation Publish($name: String!, $number: Int!) {
+mutation ($name: String!, $number: Int!) {
   publish(name: $name, number: $number) {
     publishedBuild {
       number

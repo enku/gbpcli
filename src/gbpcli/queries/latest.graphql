@@ -1,4 +1,4 @@
-query Latest($name: String!) {
+query ($name: String!) {
   latest(name: $name) {
     number
   }
