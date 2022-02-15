@@ -106,9 +106,9 @@ class GBP:
             if self.exit_gracefully_on_requests_errors:
                 error_message = str(error)
                 print(error_message, file=sys.stderr)
-                raise SystemExit(-1)
-            else:
-                raise
+                raise SystemExit(-1) from None
+
+            raise
 
         response.raise_for_status()
         response_json = response.json()
