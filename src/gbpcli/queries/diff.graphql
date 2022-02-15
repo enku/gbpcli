@@ -1,13 +1,13 @@
-query ($left: BuildInput!, $right: BuildInput!) {
+query ($left: ID!, $right: ID!) {
   diff(left: $left, right: $right) {
     left {
-      name
-      number
+      id
+      machine
       submitted
     }
     right {
-      name
-      number
+      id
+      machine
       submitted
     }
     items {

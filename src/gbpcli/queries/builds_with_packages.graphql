@@ -1,7 +1,7 @@
 query ($name: String!) {
   builds(name: $name) {
-    name
-    number
+    id
+    machine
     submitted
     completed
     published

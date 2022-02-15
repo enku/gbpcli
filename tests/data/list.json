@@ -4,81 +4,81 @@
          {
             "completed" : "2021-10-02T16:15:43.485142+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* dev-java/openjdk-11.0.12_p7-1",
-            "number" : 42,
             "published" : false,
-            "submitted" : "2021-10-02T16:10:41.506599+00:00"
+            "submitted" : "2021-10-02T16:10:41.506599+00:00",
+            "id": "jenkins.42"
          },
          {
             "completed" : "2021-09-28T21:24:57.085231+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* app-text/poppler-21.07.0-2\n* dev-java/java-config-2.3.1-3\n* dev-libs/glib-2.68.3-r1-2\n* dev-libs/jsoncpp-1.9.4-1\n* dev-perl/Text-Unidecode-1.300.0-r1-1\n* dev-python/certifi-10001-r1-3\n* dev-python/cython-0.29.23-3\n* dev-python/filelock-3.0.12-r1-3\n* dev-python/lxml-4.6.3-r1-2\n* dev-python/platformdirs-2.3.0-1\n* dev-python/pluggy-0.13.1-r1-3\n* dev-python/py-1.10.0-3\n* dev-python/pyparsing-2.4.7-r1-3\n* dev-python/setuptools_scm-6.0.1-r1-3\n* dev-python/six-1.16.0-2\n* dev-python/toml-0.10.2-3\n* dev-util/desktop-file-utils-0.26-r1-2\n* dev-util/meson-0.59.1-r1-1\n* dev-util/meson-format-array-0-3\n* dev-util/ninja-1.10.1-1\n* dev-util/re2c-2.1.1-r1-1\n* media-libs/harfbuzz-2.9.1-1\n* media-libs/libjpeg-turbo-2.1.1-r2-1\n* net-misc/curl-7.79.1-1\n* sys-apps/coreutils-8.32-r1-2\n* sys-apps/gentoo-systemd-integration-8-1\n* sys-libs/glibc-2.33-r1-2\n* x11-base/xcb-proto-1.14.1-3\n* x11-base/xorg-proto-2021.4-2\n* x11-libs/libxcb-1.14-2\n* x11-misc/shared-mime-info-2.1-2",
-            "number" : 41,
+            "id" : "jenkins.41",
             "published" : false,
             "submitted" : "2021-09-28T21:18:42.933044+00:00"
          },
          {
             "completed" : "2021-09-07T21:12:37.068752+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* app-crypt/gnupg-2.2.29-1\n* dev-lang/tcl-8.6.11-1\n* dev-python/backports-entry_points_selectable-1.1.0-1\n* dev-python/platformdirs-2.0.2-1\n* dev-python/virtualenv-20.7.2-1\n* dev-util/pkgconf-1.7.4-r1-1\n* dev-vcs/mercurial-5.8.1-1\n* media-libs/freetype-2.11.0-r1-1\n* net-dns/libidn2-2.3.2-1\n* sys-apps/systemd-249.2-r1-1\n* sys-apps/util-linux-2.37.2-1\n* sys-fs/lvm2-2.02.188-r2-1\n* sys-libs/libseccomp-2.5.1-r1-1\n* virtual/pkgconfig-2-r1-1",
-            "number" : 38,
+            "id" : "jenkins.38",
             "published" : true,
             "submitted" : "2021-09-07T21:07:00.940482+00:00"
          },
          {
             "completed" : "2021-08-31T20:47:36.520156+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* app-arch/libarchive-3.5.2-1\n* app-crypt/pinentry-1.1.1-r1-1\n* app-eselect/eselect-pinentry-0.7.2-1\n* dev-lang/go-1.17-1\n* dev-libs/openssl-1.1.1l-1\n* dev-perl/libintl-perl-1.320.0-1\n* dev-python/jinja-3.0.1-1\n* dev-python/markupsafe-2.0.1-1\n* dev-python/pip-21.2.4-1\n* dev-util/meson-0.58.2-r1-1\n* dev-vcs/git-2.32.0-r1-1\n* sys-apps/less-590-1\n* sys-apps/man-pages-5.12-r2-1\n* sys-apps/systemd-249.2-1",
-            "number" : 37,
+            "id" : "jenkins.37",
             "published" : false,
             "submitted" : "2021-08-31T20:42:23.896776+00:00"
          },
          {
             "completed" : "2021-07-22T01:35:02.305748+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* dev-libs/openssl-1.1.1k-r1-1\n* sys-apps/systemd-248.5-1",
-            "number" : 28,
+            "id" : "jenkins.28",
             "published" : false,
             "submitted" : "2021-07-22T01:28:16.440330+00:00"
          },
          {
             "completed" : "2021-06-27T14:33:12.033299+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : "Packages built:\n\n* dev-python/pip-21.1.2-r1-1\n* dev-python/setuptools-57.0.0-1\n* net-print/cups-2.3.3_p2-r2-1\n* sys-apps/portage-3.0.20-r6-1\n* sys-apps/systemd-248.3-r1-1\n* www-servers/nginx-1.20.1-r2-1",
-            "number" : 23,
+            "id" : "jenkins.23",
             "published" : false,
             "submitted" : "2021-06-27T14:26:41.338360+00:00"
          },
          {
             "completed" : "2021-05-26T21:23:56.423528+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : null,
-            "number" : 18,
+            "id" : "jenkins.18",
             "published" : false,
             "submitted" : "2021-05-26T21:22:50.644472+00:00"
          },
          {
             "completed" : "2021-04-26T20:25:38.822337+00:00",
             "keep" : false,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : null,
-            "number" : 12,
+            "id" : "jenkins.12",
             "published" : false,
             "submitted" : "2021-04-26T20:24:42.522418+00:00"
          },
          {
             "completed" : "2021-04-26T04:48:11.806580+00:00",
             "keep" : true,
-            "name" : "jenkins",
+            "machine" : "jenkins",
             "notes" : null,
-            "number" : 1,
+            "id" : "jenkins.1",
             "published" : false,
             "submitted" : "2021-04-26T04:47:27.000716+00:00"
          }

@@ -1,5 +1,5 @@
-query ($name: String!, $number: Int!) {
-  build(name: $name, number: $number) {
+query ($id: ID!) {
+  build(id: $id) {
     logs
   }
 }

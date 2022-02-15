@@ -31,9 +31,7 @@ diff -r lighthouse/3111 lighthouse/3112
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
         self.assert_graphql(
-            queries.diff,
-            left={"name": "lighthouse", "number": 3111},
-            right={"name": "lighthouse", "number": 3112},
+            queries.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
     def test_should_print_nothing_when_no_diffs(self, print_mock):
@@ -70,8 +68,8 @@ diff -r lighthouse/3111 lighthouse/3112
                 json={
                     "query": queries.diff,
                     "variables": {
-                        "left": {"name": "lighthouse", "number": 3111},
-                        "right": {"name": "lighthouse", "number": 3113},
+                        "left": "lighthouse.3111",
+                        "right": "lighthouse.3113",
                     },
                 },
                 headers=gbp.headers,
@@ -103,8 +101,8 @@ diff -r lighthouse/3111 lighthouse/3112
                 json={
                     "query": queries.diff,
                     "variables": {
-                        "left": {"name": "jenkins", "number": 38},
-                        "right": {"name": "jenkins", "number": 42},
+                        "left": "jenkins.38",
+                        "right": "jenkins.42",
                     },
                 },
                 headers=gbp.headers,

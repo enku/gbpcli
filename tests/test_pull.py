@@ -19,4 +19,4 @@ class PullTestCase(TestCase):
 
         pull(args, self.gbp)
 
-        self.assert_graphql(queries.pull, name="lighthouse", number=3226)
+        self.assert_graphql(queries.pull, id="lighthouse.3226")

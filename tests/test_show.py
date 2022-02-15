@@ -38,7 +38,7 @@ Packages-built:
 
     def test_should_get_latest_when_number_is_none(self, _print_mock):
         args = Namespace(machine="lighthouse", number=None)
-        self.make_response({"data": {"latest": {"number": 3587}}})
+        self.make_response({"data": {"latest": {"id": "lighthouse.3587"}}})
         self.make_response("show.json")
 
         status = show(args, self.gbp)

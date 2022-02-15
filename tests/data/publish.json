@@ -2,7 +2,7 @@
    "data" : {
       "publish" : {
          "publishedBuild" : {
-            "number" : 3109
+            "id" : "lighthouse.3109"
          }
       }
    }

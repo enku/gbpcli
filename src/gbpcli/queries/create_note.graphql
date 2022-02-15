@@ -1,5 +1,5 @@
-mutation ($name: String!, $number: Int!, $note: String) {
-  createNote(name: $name, number: $number, note: $note) {
+mutation ($id: ID!, $note: String) {
+  createNote(id: $ID, note: $note) {
     notes
   }
 }

@@ -3,9 +3,9 @@
       "build" : {
          "completed" : "2021-11-13T04:29:34.822433+00:00",
          "keep" : false,
-         "name" : "lighthouse",
+         "id" : "lighthouse.3587",
          "notes" : null,
-         "number" : 3587,
+         "machine" : "lighthouse",
          "packagesBuilt" : [
             {
                "cpv" : "app-editors/vim-8.2.3582"

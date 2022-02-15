@@ -1,7 +1,7 @@
-mutation ($name: String!, $number: Int!) {
-  publish(name: $name, number: $number) {
+mutation ($id: ID!) {
+  publish(id: $id) {
     publishedBuild {
-      number
+      id
     }
   }
 }

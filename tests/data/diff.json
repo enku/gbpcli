@@ -12,13 +12,13 @@
             }
          ],
          "left" : {
-            "name" : "lighthouse",
-            "number" : 3111,
+            "id": "lighthouse.311",
+            "machine" : "lighthouse",
             "submitted" : "2021-10-02T16:31:48.478864+00:00"
          },
          "right" : {
-            "name" : "lighthouse",
-            "number" : 3112,
+            "id" : "lighthouse.3112",
+            "machine": "lighthouse",
             "submitted" : "2021-10-02T18:23:43.006780+00:00"
          }
       }

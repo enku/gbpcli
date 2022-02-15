@@ -1,7 +1,7 @@
 query ($name: String!, $key: String!) {
   searchNotes(name: $name, key: $key) {
-    name
-    number
+    id
+    machine
     keep
     published
     notes

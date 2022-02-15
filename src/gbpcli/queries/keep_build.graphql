@@ -1,5 +1,5 @@
-mutation ($name: String!, $number: Int!) {
-  keepBuild(name: $name, number: $number) {
+mutation ($id ID!) {
+  keepBuild(id: $id) {
     keep
   }
 }

@@ -1,7 +1,7 @@
-query ($name: String!, $number: Int!) {
+query ($id: ID!) {
   build(name: $name, number: $number) {
-    name
-    number
+    id
+    machine
     keep
     published
     notes

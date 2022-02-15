@@ -2,8 +2,8 @@
     "data": {
         "searchNotes": [
             {
-                "name": "lighthouse",
-                "number": 3363,
+                "id": "lighthouse.3363",
+                "machine": "lighthouse",
                 "keep": false,
                 "published": false,
                 "notes": "foo\n",
@@ -11,8 +11,8 @@
                 "completed": "2021-10-24T08:24:08.143730+00:00"
             },
             {
-                "name": "lighthouse",
-                "number": 3360,
+                "id": "lighthouse.3360",
+                "machine": "lighthouse",
                 "keep": true,
                 "published": false,
                 "notes": "foobar\n",

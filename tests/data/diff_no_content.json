@@ -3,13 +3,13 @@
       "diff" : {
          "items" : [],
          "left" : {
-            "name" : "lighthouse",
-            "number" : 3111,
+            "id": "lighthouse.311",
+            "machine" : "lighthouse",
             "submitted" : "2021-10-02T16:31:48.478864+00:00"
          },
          "right" : {
-            "name" : "lighthouse",
-            "number" : 3111,
+            "id": "lighthouse.311",
+            "machine" : "lighthouse",
             "submitted" : "2021-10-02T16:31:48.478864+00:00"
          }
       }

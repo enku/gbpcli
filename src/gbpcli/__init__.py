@@ -57,6 +57,18 @@ class Build:
     info: Optional[BuildInfo] = None
     packages_built: Optional[list[Package]] = None
 
+    @property
+    def id(self) -> str:  # pylint: disable=invalid-name
+        """Return the GBP build id"""
+        return f"{self.name}.{self.number}"
+
+    @classmethod
+    def from_id(cls, build_id: str, **kwargs):
+        """Create from GBP build id"""
+        parts = build_id.partition(".")
+
+        return cls(name=parts[0], number=int(parts[2]), **kwargs)
+
 
 class Status(IntEnum):
     """Diff status"""
@@ -110,11 +122,11 @@ class GBP:
 
     def publish(self, build: Build):
         """Publish the given build"""
-        self.check(queries.publish, dict(name=build.name, number=build.number))
+        self.check(queries.publish, {"id": build.id})
 
     def pull(self, build: Build):
         """Pull the given build"""
-        self.check(queries.pull, dict(name=build.name, number=build.number))
+        self.check(queries.pull, {"id": build.id})
 
     def latest(self, machine: str) -> Optional[Build]:
         """Return the latest build for machine
@@ -127,8 +139,8 @@ class GBP:
         if latest is None:
             return None
 
-        number = data["latest"]["number"]
-        return Build(name=machine, number=number)
+        build_id = data["latest"]["id"]
+        return Build.from_id(build_id)
 
     def builds(self, machine: str, with_packages: bool = False) -> list[Build]:
         """Return a list of Builds for the given machine
@@ -146,10 +158,7 @@ class GBP:
         self, machine: str, left: int, right: int
     ) -> tuple[Build, Build, list[Change]]:
         """Return difference between two builds"""
-        variables = {
-            "left": {"name": machine, "number": left},
-            "right": {"name": machine, "number": right},
-        }
+        variables = {"left": f"{machine}.{left}", "right": f"{machine}.{right}"}
         data = self.check(queries.diff, variables)
 
         return (
@@ -245,9 +254,8 @@ class GBP:
                 Package(cpv=i["cpv"]) for i in api_response["packagesBuilt"]
             ]
 
-        return Build(
-            name=api_response["name"],
-            number=api_response["number"],
+        return Build.from_id(
+            api_response["id"],
             info=BuildInfo(
                 api_response.get("keep"),
                 published=api_response.get("published"),
