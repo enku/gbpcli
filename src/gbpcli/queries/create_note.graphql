@@ -1,5 +1,5 @@
 mutation ($id: ID!, $note: String) {
-  createNote(id: $ID, note: $note) {
+  createNote(id: $id, note: $note) {
     notes
   }
 }

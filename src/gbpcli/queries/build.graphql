@@ -1,5 +1,5 @@
 query ($id: ID!) {
-  build(name: $name, number: $number) {
+  build(id: $id) {
     id
     machine
     keep

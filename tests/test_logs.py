@@ -22,7 +22,7 @@ class LogsTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), "This is a test!\n")
-        self.assert_graphql(queries.logs, name="lighthouse", number=3113)
+        self.assert_graphql(queries.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self, print_mock):
         args = Namespace(machine="lighthouse", number=9999)

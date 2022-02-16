@@ -20,7 +20,7 @@ class KeepTestCase(TestCase):
         status = keep(args, self.gbp)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.keep_build, name="lighthouse", number=3210)
+        self.assert_graphql(queries.keep_build, id="lighthouse.3210")
 
     @mock_print("gbpcli.subcommands.keep")
     def test_keep_should_print_error_when_build_does_not_exist(self, print_mock):
@@ -38,7 +38,7 @@ class KeepTestCase(TestCase):
         status = keep(args, self.gbp)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.release_build, name="lighthouse", number=3210)
+        self.assert_graphql(queries.release_build, id="lighthouse.3210")
 
     @mock_print("gbpcli.subcommands.keep")
     def test_release_should_print_error_when_build_does_not_exist(self, print_mock):

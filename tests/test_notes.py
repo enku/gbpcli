@@ -31,9 +31,9 @@ class NotesTestCase(TestCase):
 
     def assert_create_note(self, name="lighthouse", number=3109, note=NOTE):
         """Assert that the note was created by a GraphQL request"""
-        self.assert_graphql(queries.build, index=0, name=name, number=number)
+        self.assert_graphql(queries.build, index=0, id=f"{name}.{number}")
         self.assert_graphql(
-            queries.create_note, name=name, index=1, number=number, note=note
+            queries.create_note, id=f"{name}.{number}", index=1, note=note
         )
 
     def test_create_with_editor(self):

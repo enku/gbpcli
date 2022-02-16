@@ -34,7 +34,7 @@ Packages-built:
 
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        self.assert_graphql(queries.build, name="lighthouse", number=3587)
+        self.assert_graphql(queries.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self, _print_mock):
         args = Namespace(machine="lighthouse", number=None)
@@ -44,7 +44,7 @@ Packages-built:
         status = show(args, self.gbp)
 
         self.assert_graphql(queries.latest, index=0, name="lighthouse")
-        self.assert_graphql(queries.build, index=1, name="lighthouse", number=3587)
+        self.assert_graphql(queries.build, index=1, id="lighthouse.3587")
         self.assertEqual(status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):

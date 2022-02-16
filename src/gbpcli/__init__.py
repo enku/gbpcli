@@ -172,7 +172,7 @@ class GBP:
 
     def logs(self, build: Build) -> Optional[str]:
         """Return logs for the given Build"""
-        data = self.check(queries.logs, dict(name=build.name, number=build.number))
+        data = self.check(queries.logs, {"id": build.id})
         build = data["build"]
 
         if build is None:
@@ -182,9 +182,7 @@ class GBP:
 
     def get_build_info(self, build: Build) -> Optional[Build]:
         """Return build with info gained from the GBP API"""
-        data, errors = self.query(
-            queries.build, dict(name=build.name, number=build.number)
-        )
+        data, errors = self.query(queries.build, {"id": build.id})
         build = data["build"]
 
         if build is None:
@@ -201,32 +199,25 @@ class GBP:
 
     def packages(self, build: Build) -> Optional[list[str]]:
         """Return the list of packages for a build"""
-        data = self.check(
-            queries.packages, {"name": build.name, "number": build.number}
-        )
+        data = self.check(queries.packages, {"id": build.id})
         return data["build"]["packages"]
 
     def keep(self, build: Build):
         """Mark a build as kept"""
-        return self.check(
-            queries.keep_build, {"name": build.name, "number": build.number}
-        )["keepBuild"]
+        return self.check(queries.keep_build, {"id": build.id})["keepBuild"]
 
     def release(self, build: Build):
         """Unmark a build as kept"""
-        return self.check(
-            queries.release_build, {"name": build.name, "number": build.number}
-        )["releaseBuild"]
+        return self.check(queries.release_build, {"id": build.id})["releaseBuild"]
 
     def create_note(self, build: Build, note: Optional[str]):
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).
         """
-        return self.check(
-            queries.create_note,
-            {"name": build.name, "number": build.number, "note": note},
-        )["createNote"]
+        return self.check(queries.create_note, {"id": build.id, "note": note})[
+            "createNote"
+        ]
 
     def search_notes(self, name: str, key: str) -> list[Build]:
         """Search buids for the given machine name for notes containing key.

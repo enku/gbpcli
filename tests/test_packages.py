@@ -23,7 +23,7 @@ class PackagesTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = load_data("packages.txt").decode("utf-8")
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        self.assert_graphql(queries.packages, name="babette", number=268)
+        self.assert_graphql(queries.packages, id="babette.268")
 
     def test_when_build_does_not_exist_prints_error(self, print_mock):
         args = Namespace(machine="bogus", number=268)
