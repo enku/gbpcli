@@ -3,63 +3,63 @@
       "machines" : [
          {
             "buildCount" : 14,
-            "name" : "babette"
+            "machine" : "babette"
          },
          {
             "buildCount" : 15,
-            "name" : "base"
+            "machine" : "base"
          },
          {
             "buildCount" : 35,
-            "name" : "blackwidow"
+            "machine" : "blackwidow"
          },
          {
             "buildCount" : 36,
-            "name" : "gbp"
+            "machine" : "gbp"
          },
          {
             "buildCount" : 8,
-            "name" : "git"
+            "machine" : "git"
          },
          {
             "buildCount" : 35,
-            "name" : "gnome-desktop"
+            "machine" : "gnome-desktop"
          },
          {
             "buildCount" : 9,
-            "name" : "jenkins"
+            "machine" : "jenkins"
          },
          {
             "buildCount" : 35,
-            "name" : "lighthouse"
+            "machine" : "lighthouse"
          },
          {
             "buildCount" : 12,
-            "name" : "lounge"
+            "machine" : "lounge"
          },
          {
             "buildCount" : 8,
-            "name" : "pgadmin"
+            "machine" : "pgadmin"
          },
          {
             "buildCount" : 12,
-            "name" : "postgres"
+            "machine" : "postgres"
          },
          {
             "buildCount" : 9,
-            "name" : "rabbitmq"
+            "machine" : "rabbitmq"
          },
          {
             "buildCount" : 5,
-            "name" : "teamplayer"
+            "machine" : "teamplayer"
          },
          {
             "buildCount" : 36,
-            "name" : "testing"
+            "machine" : "testing"
          },
          {
             "buildCount" : 16,
-            "name" : "web"
+            "machine" : "web"
          }
       ]
    }

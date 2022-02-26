@@ -17,7 +17,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
     if args.number is None:
         build = gbp.latest(machine)
     else:
-        build = Build(name=machine, number=args.number)
+        build = Build(machine=machine, number=args.number)
 
     if build is None:
         print("Not Found", file=sys.stderr)

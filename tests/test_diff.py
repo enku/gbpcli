@@ -60,7 +60,7 @@ diff -r lighthouse/3111 lighthouse/3112
         expected_calls = [
             mock.call(
                 gbp.url,
-                json={"query": queries.latest, "variables": {"name": "lighthouse"}},
+                json={"query": queries.latest, "variables": {"machine": "lighthouse"}},
                 headers=gbp.headers,
             ),
             mock.call(
@@ -93,7 +93,7 @@ diff -r lighthouse/3111 lighthouse/3112
         expected_calls = [
             mock.call(
                 gbp.url,
-                json={"query": queries.builds, "variables": {"name": "jenkins"}},
+                json={"query": queries.builds, "variables": {"machine": "jenkins"}},
                 headers=gbp.headers,
             ),
             mock.call(
@@ -123,7 +123,7 @@ diff -r lighthouse/3111 lighthouse/3112
         status = diff(args, self.gbp)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(queries.builds, name="jenkins")
+        self.assert_graphql(queries.builds, machine="jenkins")
         self.assertEqual(
             print_mock.stderr.getvalue(),
             "No origin specified and no builds published\n",

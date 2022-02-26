@@ -1,5 +1,5 @@
-query ($name: String!) {
-  latest(name: $name) {
+query ($machine: String!) {
+  latest(machine: $machine) {
     id
   }
 }

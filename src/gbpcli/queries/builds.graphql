@@ -1,5 +1,5 @@
-query ($name: String!) {
-  builds(name: $name) {
+query ($machine: String!) {
+  builds(machine: $machine) {
     id
     machine
     submitted

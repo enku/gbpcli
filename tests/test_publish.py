@@ -29,5 +29,5 @@ class PublishTestCase(TestCase):
         status = publish(args, self.gbp)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.latest, index=0, name="lighthouse")
+        self.assert_graphql(queries.latest, index=0, machine="lighthouse")
         self.assert_graphql(queries.publish, index=1, id="lighthouse.2080")

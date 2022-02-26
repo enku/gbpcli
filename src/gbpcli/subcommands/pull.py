@@ -6,7 +6,7 @@ from gbpcli import GBP, Build
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for the pull subcommand"""
-    build = Build(name=args.machine, number=args.number)
+    build = Build(machine=args.machine, number=args.number)
 
     gbp.pull(build)
 

@@ -43,7 +43,7 @@ Packages-built:
 
         status = show(args, self.gbp)
 
-        self.assert_graphql(queries.latest, index=0, name="lighthouse")
+        self.assert_graphql(queries.latest, index=0, machine="lighthouse")
         self.assert_graphql(queries.build, index=1, id="lighthouse.3587")
         self.assertEqual(status, 0)
 

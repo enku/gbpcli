@@ -38,7 +38,7 @@ def build_to_str(build: Build) -> str:
     myio = io.StringIO()
 
     fprint = partial(print, file=myio)
-    fprint(f"Build: {build.name}/{build.number}")
+    fprint(f"Build: {build.machine}/{build.number}")
     submitted = timestr(build.info.submitted)
     fprint(f"Submitted: {submitted}")
 

@@ -18,7 +18,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
             print("Not Found", file=sys.stderr)
             return 1
     else:
-        build = Build(name=machine, number=args.number)
+        build = Build(machine=machine, number=args.number)
 
     build = gbp.get_build_info(build)
 

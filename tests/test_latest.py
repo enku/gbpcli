@@ -23,7 +23,7 @@ class LatestTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = "3113\n"
         self.assertEqual(print_mock.stdout.getvalue(), expected)
-        self.assert_graphql(queries.latest, name="lighthouse")
+        self.assert_graphql(queries.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self, print_mock):
         args = Namespace(machine="bogus")

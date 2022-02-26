@@ -29,11 +29,11 @@ class NotesTestCase(TestCase):
         self.make_response("show.json")
         self.make_response("create_note.json")
 
-    def assert_create_note(self, name="lighthouse", number=3109, note=NOTE):
+    def assert_create_note(self, machine="lighthouse", number=3109, note=NOTE):
         """Assert that the note was created by a GraphQL request"""
-        self.assert_graphql(queries.build, index=0, id=f"{name}.{number}")
+        self.assert_graphql(queries.build, index=0, id=f"{machine}.{number}")
         self.assert_graphql(
-            queries.create_note, id=f"{name}.{number}", index=1, note=note
+            queries.create_note, id=f"{machine}.{number}", index=1, note=note
         )
 
     def test_create_with_editor(self):
@@ -118,7 +118,7 @@ class NotesTestCase(TestCase):
         status = create_note(self.args, self.gbp)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.search_notes, name="lighthouse", key="foo")
+        self.assert_graphql(queries.search_notes, machine="lighthouse", key="foo")
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
     @mock_print(MODULE)
@@ -131,7 +131,7 @@ class NotesTestCase(TestCase):
         status = create_note(self.args, self.gbp)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(queries.search_notes, name="lighthouse", key="python")
+        self.assert_graphql(queries.search_notes, machine="lighthouse", key="python")
         self.assertEqual(print_mock.stdout.getvalue(), "No matches found\n")
 
 

@@ -24,7 +24,7 @@ class ListTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
-        self.assert_graphql(queries.builds_with_packages, name="jenkins")
+        self.assert_graphql(queries.builds_with_packages, machine="jenkins")
 
 
 EXPECTED_OUTPUT = """\

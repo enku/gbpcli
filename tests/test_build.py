@@ -20,4 +20,4 @@ class MachinesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(print_mock.stdout.getvalue(), "")
-        self.assert_graphql(queries.schedule_build, name="babette")
+        self.assert_graphql(queries.schedule_build, machine="babette")

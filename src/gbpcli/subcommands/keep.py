@@ -7,7 +7,7 @@ from gbpcli import GBP, Build
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
     """Handler for "keep" subcommand"""
-    build = Build(name=args.machine, number=args.number)
+    build = Build(machine=args.machine, number=args.number)
 
     if args.release:
         result = gbp.release(build)

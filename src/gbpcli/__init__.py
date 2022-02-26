@@ -52,7 +52,7 @@ class Package:
 class Build:
     """A GBP Build"""
 
-    name: str
+    machine: str
     number: int
     info: Optional[BuildInfo] = None
     packages_built: Optional[list[Package]] = None
@@ -60,14 +60,14 @@ class Build:
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
         """Return the GBP build id"""
-        return f"{self.name}.{self.number}"
+        return f"{self.machine}.{self.number}"
 
     @classmethod
     def from_id(cls, build_id: str, **kwargs):
         """Create from GBP build id"""
         parts = build_id.partition(".")
 
-        return cls(name=parts[0], number=int(parts[2]), **kwargs)
+        return cls(machine=parts[0], number=int(parts[2]), **kwargs)
 
 
 class Status(IntEnum):
@@ -118,7 +118,7 @@ class GBP:
         """Handler for subcommand"""
         data = self.check(queries.machines)
 
-        return [(i["name"], i["buildCount"]) for i in data["machines"]]
+        return [(i["machine"], i["buildCount"]) for i in data["machines"]]
 
     def publish(self, build: Build):
         """Publish the given build"""
@@ -133,7 +133,7 @@ class GBP:
 
         Return None if there are no builds for the given machine
         """
-        data = self.check(queries.latest, dict(name=machine))
+        data = self.check(queries.latest, dict(machine=machine))
         latest = data["latest"]
 
         if latest is None:
@@ -148,7 +148,7 @@ class GBP:
         If `with_packages` is True, also include the list of packages for the builds
         """
         query = queries.builds_with_packages if with_packages else queries.builds
-        data = self.query(query, dict(name=machine))[0]
+        data = self.query(query, dict(machine=machine))[0]
         builds = data["builds"]
         builds.reverse()
 
@@ -192,9 +192,9 @@ class GBP:
 
         return self.api_to_build(data["build"])
 
-    def build(self, name: str) -> str:
+    def build(self, machine: str) -> str:
         """Schedule a build"""
-        response = self.check(queries.schedule_build, dict(name=name))
+        response = self.check(queries.schedule_build, dict(machine=machine))
         return response["scheduleBuild"]
 
     def packages(self, build: Build) -> Optional[list[str]]:
@@ -219,14 +219,14 @@ class GBP:
             "createNote"
         ]
 
-    def search_notes(self, name: str, key: str) -> list[Build]:
+    def search_notes(self, machine: str, key: str) -> list[Build]:
         """Search buids for the given machine name for notes containing key.
 
         Return a list of Builds who's notes match the (case-insensitive) string.
         """
         query = queries.search_notes
 
-        response = self.check(query, {"name": name, "key": key})
+        response = self.check(query, {"machine": machine, "key": key})
         builds = response["searchNotes"]
 
         return [self.api_to_build(i) for i in builds]

@@ -1,6 +1,6 @@
 query {
   machines {
-    name
+    machine
     buildCount
   }
 }
