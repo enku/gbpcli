@@ -50,16 +50,16 @@ testing          43
 To list the available builds for a given machine:
 
 ```bash
-[*  N]   293 11/03/21 18:56:03
-[    ]   294 11/04/21 18:56:02
-[*  N]   295 11/05/21 18:58:42
-[*  N]   296 11/06/21 20:36:07
-[*  N]   297 11/07/21 20:07:58
-[    ]   298 11/08/21 18:56:19
-[*  N]   299 11/09/21 18:56:54
-[    ]   300 11/10/21 18:56:25
-[*  N]   301 11/11/21 21:04:31
-[  PN]   302 11/12/21 20:33:33
+[ K  ]   104 04/25/21 08:51:19
+[    ]   132 05/21/21 13:27:50
+[*  N]   412 02/27/22 06:42:08
+[*   ]   413 02/28/22 06:43:32
+[*   ]   430 03/16/22 08:49:15
+[*   ]   431 03/17/22 08:54:43
+[*   ]   434 03/21/22 16:37:30
+[*   ]   435 03/22/22 12:01:48
+[* P ]   437 03/22/22 13:28:13
+[*   ]   438 03/23/22 13:09:26
 ```
 
 In the above example, the `PN` output for build `302` signifies that this
@@ -67,16 +67,17 @@ build is currently published (`P`) and there is a user note for that build
 (`N`).  The `*` means that the respective build has new binary packages.
 
 ```bash
-$ gbp show babette 301
-Build: babette/301
-Submitted: Thu Nov 11 21:04:31 2021 -0600
-Completed: Thu Nov 11 21:08:20 2021 -0600
+$ gbp show babette 412
+Build: babette/412
+BuildDate: Sun Feb 27 06:38:30 2022 -0500
+Submitted: Sun Feb 27 06:42:08 2022 -0500
+Completed: Sun Feb 27 06:45:00 2022 -0500
 Published: no
 Keep: no
 Packages-built:
-  * sys-libs/glibc-2.33-r7
+    app-text/opensp-1.5.2-r7
 
-    The glibc update seems wonky here. I submitted a bug report.
+This is a build note.
 ```
 
 Edit/delete build notes using the `gbp notes` command.
@@ -88,12 +89,18 @@ number is not given, it defaults to the latest build for that machine.
 The `diff` subcommand display differences between two build.
 
 ```bash
-$ gbp diff babette 298 299
-diff -r babette/298 babette/299
---- a/babette/298 Mon Nov  8 18:56:19 2021 -0600
-+++ b/babette/299 Tue Nov  9 18:56:54 2021 -0600
--dev-perl/Locale-gettext-1.70.0-2
-+dev-perl/Locale-gettext-1.70.0-r1-1
+$ gbp diff babette 437 438
+diff -r babette/437 babette/438
+--- a/babette/437 Tue Mar 22 13:28:13 2022 -0500
++++ b/babette/438 Wed Mar 23 13:09:26 2022 -0500
+-app-admin/sudo-1.9.8_p2-1
++app-admin/sudo-1.9.8_p2-r1-1
+-app-crypt/gnupg-2.2.34-1
++app-crypt/gnupg-2.2.34-r1-1
+-dev-python/importlib_metadata-4.11.2-1
+-dev-python/zipp-3.7.0-r1-1
+-net-misc/curl-7.79.1-3
++net-misc/curl-7.79.1-r1-1
 ```
 If the second build number is not given, it defaults to the latest build for
 that machine.  If the first build number is not given, it defaults to the
@@ -103,7 +110,7 @@ The `publish` subcommand makes the given build available for syncing and
 updating/downgrading.
 
 ```bash
-$ gbp publish babette 302
+$ gbp publish babette 438
 ```
 
 If the build nubmer is not given, it defaults to the latest build for that machine.
