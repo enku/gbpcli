@@ -5,6 +5,7 @@ query ($id: ID!) {
     keep
     published
     notes
+    built
     submitted
     completed
     packagesBuilt {

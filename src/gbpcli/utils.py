@@ -39,6 +39,11 @@ def build_to_str(build: Build) -> str:
 
     fprint = partial(print, file=myio)
     fprint(f"Build: {build.machine}/{build.number}")
+
+    if build.info.built is not None:
+        built = timestr(build.info.built)
+        fprint(f"BuildDate: {built}")
+
     submitted = timestr(build.info.submitted)
     fprint(f"Submitted: {submitted}")
 

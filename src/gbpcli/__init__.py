@@ -39,6 +39,7 @@ class BuildInfo:
     published: bool
     submitted: datetime.datetime
     completed: Optional[datetime.datetime] = None
+    built: Optional[datetime.datetime] = None
 
 
 @dataclass
@@ -237,6 +238,7 @@ class GBP:
         completed = api_response.get("completed")
         submitted = api_response["submitted"]
         fromisoformat = datetime.datetime.fromisoformat
+        built = api_response.get("built")
 
         if api_response.get("packagesBuilt", None) is None:
             packages_built = None
@@ -253,6 +255,7 @@ class GBP:
                 note=api_response.get("notes"),
                 submitted=fromisoformat(submitted),
                 completed=fromisoformat(completed) if completed is not None else None,
+                built=fromisoformat(built) if built is not None else None,
             ),
             packages_built=packages_built,
         )
