@@ -60,7 +60,7 @@ def build_to_str(build: Build) -> str:
         fprint()
 
         for package in packages:
-            fprint(f"\t{package.cpv}")
+            fprint(f"    {package.cpv}")
     else:
         fprint(" None")
 

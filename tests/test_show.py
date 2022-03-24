@@ -29,8 +29,8 @@ Completed: Fri Nov 12 21:29:34 2021 -0700
 Published: no
 Keep: no
 Packages-built:
-\tapp-editors/vim-8.2.3582
-\tapp-editors/vim-core-8.2.3582
+    app-editors/vim-8.2.3582
+    app-editors/vim-core-8.2.3582
 
 """
         self.assertEqual(print_mock.stdout.getvalue(), expected)
