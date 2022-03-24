@@ -7,7 +7,7 @@ If the "right" argument is omitted, it defaults to the most recent build.
 import argparse
 import sys
 
-from gbpcli import GBP, Status, utils
+from gbpcli import GBP, Change, Status, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
@@ -50,7 +50,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
     print(f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.submitted)}")
     print(f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.submitted)}")
 
-    last_modified = None
+    last_modified: Change | None = None
     # for change, item in iter(response["diff"]["items"]):
     for item in diff:
         if item.status == Status.REMOVED:
