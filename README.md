@@ -50,6 +50,7 @@ testing          43
 To list the available builds for a given machine:
 
 ```bash
+$ gbp list babette
 [ K  ]   104 04/25/21 08:51:19
 [    ]   132 05/21/21 13:27:50
 [*  N]   412 02/27/22 06:42:08
