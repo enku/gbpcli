@@ -7,7 +7,7 @@ from gbpcli import GBP, Build, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP) -> int:
-    """Handler for "show" subcommand"""
+    """Handler for "status" subcommand"""
     machine: str = args.machine
     build: Optional[Build]
 

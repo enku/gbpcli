@@ -26,7 +26,7 @@ class NotesTestCase(TestCase):
         self.args = Namespace(
             machine="lighthouse", number="3109", delete=False, search=False
         )
-        self.make_response("show.json")
+        self.make_response("status.json")
         self.make_response("create_note.json")
 
     def assert_create_note(self, machine="lighthouse", number=3109, note=NOTE):
@@ -80,7 +80,7 @@ class NotesTestCase(TestCase):
         self.assert_create_note(note=None)
 
     def test_create_with_no_tty(self):
-        self.make_response("show.json")
+        self.make_response("status.json")
         self.make_response("create_note.json")
 
         with mock.patch(f"{MODULE}.sys.stdout.isatty", return_value=False):

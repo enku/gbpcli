@@ -1,26 +1,26 @@
-"""Tests for the show subcommand"""
+"""Tests for the status subcommand"""
 # pylint: disable=missing-function-docstring
 from argparse import Namespace
 from unittest import mock
 
 from gbpcli import queries
-from gbpcli.subcommands.show import handler as show
+from gbpcli.subcommands.status import handler as status
 
 from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-@mock_print("gbpcli.subcommands.show")
-class ShowTestCase(TestCase):
-    """show() tests"""
+@mock_print("gbpcli.subcommands.status")
+class StatusTestCase(TestCase):
+    """status() tests"""
 
     maxDiff = None
 
     def test(self, print_mock):
         args = Namespace(machine="lighthouse", number=3587)
-        self.make_response("show.json")
+        self.make_response("status.json")
 
-        show(args, self.gbp)
+        status(args, self.gbp)
 
         expected = """\
 Build: lighthouse/3587
@@ -39,19 +39,19 @@ Packages-built:
     def test_should_get_latest_when_number_is_none(self, _print_mock):
         args = Namespace(machine="lighthouse", number=None)
         self.make_response({"data": {"latest": {"id": "lighthouse.3587"}}})
-        self.make_response("show.json")
+        self.make_response("status.json")
 
-        status = show(args, self.gbp)
+        return_status = status(args, self.gbp)
 
         self.assert_graphql(queries.latest, index=0, machine="lighthouse")
         self.assert_graphql(queries.build, index=1, id="lighthouse.3587")
-        self.assertEqual(status, 0)
+        self.assertEqual(return_status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
         args = Namespace(machine="bogus", number=934)
         self.make_response({"data": {"build": None}})
 
-        status = show(args, self.gbp)
+        return_status = status(args, self.gbp)
 
-        self.assertEqual(status, 1)
+        self.assertEqual(return_status, 1)
         self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")

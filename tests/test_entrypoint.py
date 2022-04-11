@@ -20,7 +20,7 @@ SUBCOMMANDS = [
     "packages",
     "publish",
     "pull",
-    "show",
+    "status",
 ]
 
 
@@ -56,7 +56,7 @@ class MainTestCase(unittest.TestCase):
         parse_args_mock.return_value.url = "http://test.invalid/"
         func = parse_args_mock.return_value.func
         func.return_value = 0
-        argv = ["show", "lighthouse"]
+        argv = ["status", "lighthouse"]
         status = main(argv)
 
         func.assert_called_once_with(
@@ -78,6 +78,6 @@ class MainTestCase(unittest.TestCase):
         message = "blah"
 
         gbp_mock.return_value.get_build_info.side_effect = error
-        status = main(["show", "lighthouse"])
+        status = main(["status", "lighthouse"])
         self.assertEqual(status, 1)
         print_mock.assert_called_once_with(message, file=sys.stderr)

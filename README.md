@@ -18,10 +18,11 @@ $ pip install git+https://github.com/enku/gbpcli.git
 The full command set supported:
 
 ```bash
-usage: gbp [-h] [--url URL] {build,diff,latest,list,logs,machines,publish,show} ...
+usage: gbp [-h] [--url URL]
+           {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status} ...
 
 positional arguments:
-  {build,diff,latest,list,logs,machines,publish,show}
+  {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status}
 
 options:
   -h, --help            show this help message and exit
@@ -68,7 +69,7 @@ build is currently published (`P`) and there is a user note for that build
 (`N`).  The `*` means that the respective build has new binary packages.
 
 ```bash
-$ gbp show babette 412
+$ gbp status babette 412
 Build: babette/412
 BuildDate: Sun Feb 27 06:38:30 2022 -0500
 Submitted: Sun Feb 27 06:42:08 2022 -0500
@@ -84,7 +85,7 @@ This is a build note.
 Edit/delete build notes using the `gbp notes` command.
 
 
-The `show` subcommand displays metadata about a given build.  If the build
+The `status` subcommand displays metadata about a given build.  If the build
 number is not given, it defaults to the latest build for that machine.
 
 The `diff` subcommand display differences between two build.
