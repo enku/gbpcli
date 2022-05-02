@@ -275,7 +275,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--url", type=str, help="GBP url", default=DEFAULT_URL)
     subparsers = parser.add_subparsers()
 
-    for entry_point in entry_points()["gbpcli.subcommands"]:
+    try:
+        eps = entry_points().select(group="gbpcli.subcommands")
+    except AttributeError:
+        eps = entry_points()["gbpcli.subcommands"]
+
+    for entry_point in eps:
         module = entry_point.load()
         subparser = subparsers.add_parser(
             entry_point.name,
