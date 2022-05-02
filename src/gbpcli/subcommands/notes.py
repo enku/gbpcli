@@ -105,7 +105,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
     return 0
 
 
-def parse_args(parser):
+def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
     parser.add_argument("--delete", "-d", action="store_true", default=False)
     parser.add_argument(

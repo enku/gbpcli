@@ -2,7 +2,7 @@
 import datetime
 import io
 from functools import partial
-from typing import Literal, Optional
+from typing import Literal
 
 from gbpcli import LOCAL_TIMEZONE, Build
 
@@ -10,7 +10,7 @@ JSON_CONTENT_TYPE = "application/json"
 
 
 def timestr(
-    timestamp: datetime.datetime, timezone: Optional[datetime.tzinfo] = None
+    timestamp: datetime.datetime, timezone: datetime.tzinfo | None = None
 ) -> str:
     """Humanize JSON timestamp string"""
     timezone = timezone or LOCAL_TIMEZONE

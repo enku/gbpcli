@@ -22,7 +22,7 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "https://gbp/")
 class APIError(Exception):
     """When an error is returned by the REST API"""
 
-    def __init__(self, errors, data):
+    def __init__(self, errors, data) -> None:
         super().__init__(errors)
         self.data = data
 
@@ -92,12 +92,12 @@ class GBP:
 
     headers = {"Accept-Encoding": "gzip, deflate"}
 
-    def __init__(self, url: str, exit_gracefully_on_requests_errors=True):
+    def __init__(self, url: str, exit_gracefully_on_requests_errors=True) -> None:
         self.url = str(yarl.URL(url) / "graphql")
         self.session = requests.Session()
         self.exit_gracefully_on_requests_errors = exit_gracefully_on_requests_errors
 
-    def query(self, query: str, variables: dict[str, Any] = None):
+    def query(self, query: str, variables: dict[str, Any] | None = None):
         """Execute the given GraphQL query using the given input variables"""
         json = {"query": query, "variables": variables}
 
@@ -288,7 +288,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv=None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
     if argv is None:
         argv = sys.argv[1:]
