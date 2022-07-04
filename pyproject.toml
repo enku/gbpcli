@@ -1,3 +1,34 @@
+[project]
+name = "gbpcli"
+dynamic = ["version"]
+description = "Gentoo Build Publisher Command-Line Interface"
+authors = [{name = "Albert Hopkins", email = "marduk@letterboxes.org"}]
+dependencies = [
+    "requests",
+    "yarl"
+]
+
+[project.urls]
+homepage = "https://github.com/enku/gbpcli"
+repository = "https://github.com/enku/gbpcli"
+
+[project.scripts]
+gbp = "gbpcli:main"
+
+[project.entry-points."gbpcli.subcommands"]
+build = "gbpcli.subcommands.build"
+diff = "gbpcli.subcommands.diff"
+keep = "gbpcli.subcommands.keep"
+latest = "gbpcli.subcommands.latest"
+list = "gbpcli.subcommands.list"
+logs = "gbpcli.subcommands.logs"
+machines = "gbpcli.subcommands.machines"
+notes = "gbpcli.subcommands.notes"
+packages = "gbpcli.subcommands.packages"
+publish = "gbpcli.subcommands.publish"
+pull = "gbpcli.subcommands.pull"
+status = "gbpcli.subcommands.status"
+
 [build-system]
 requires = [
     "setuptools>45",
@@ -12,3 +43,10 @@ build-backend = "setuptools.build_meta"
 [tool.coverage.run]
 source = ["gbpcli"]
 omit = ["src/gbpcli/__main__.py"]
+
+[tool.flake8]
+max-line-length = 88
+
+[tool.pylint.master]
+init-hook = "import sys; sys.path.insert(0, 'tests')"
+ignore-imports = "yes"
