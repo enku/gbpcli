@@ -6,7 +6,7 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.latest import handler as latest
 
-from . import LOCAL_TIMEZONE, MockConsole, TestCase, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
@@ -18,19 +18,18 @@ class LatestTestCase(TestCase):
         args = Namespace(machine="lighthouse")
         self.make_response("latest.json")
 
-        console = MockConsole()
-        status = latest(args, self.gbp, console)
+        status = latest(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
         expected = "3113\n"
-        self.assertEqual(console.stdout.getvalue(), expected)
+        self.assertEqual(self.console.getvalue(), expected)
         self.assert_graphql(queries.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self, print_mock):
         args = Namespace(machine="bogus")
         self.make_response({"data": {"latest": None}})
 
-        status = latest(args, self.gbp, MockConsole())
+        status = latest(args, self.gbp, self.console)
 
         self.assertEqual(status, 1)
         self.assertEqual(

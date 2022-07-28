@@ -5,7 +5,7 @@ from argparse import Namespace
 from gbpcli import queries
 from gbpcli.subcommands.build import handler as build
 
-from . import MockConsole, TestCase, mock_print
+from . import TestCase, mock_print
 
 
 class MachinesTestCase(TestCase):
@@ -16,9 +16,8 @@ class MachinesTestCase(TestCase):
         args = Namespace(machine="babette")
         self.make_response("schedule_build.json")
 
-        console = MockConsole()
-        status = build(args, self.gbp, console)
+        status = build(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.stdout.getvalue(), "")
+        self.assertEqual(self.console.getvalue(), "")
         self.assert_graphql(queries.schedule_build, machine="babette")

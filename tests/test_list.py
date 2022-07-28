@@ -6,7 +6,7 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, MockConsole, TestCase, mock_print
+from . import LOCAL_TIMEZONE, TestCase, mock_print
 
 
 @mock.patch("gbpcli.subcommands.list.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
@@ -20,11 +20,10 @@ class ListTestCase(TestCase):
         args = Namespace(machine="jenkins")
         self.make_response("list_with_packages.json")
 
-        console = MockConsole()
-        status = list_command(args, self.gbp, console)
+        status = list_command(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.stdout.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(queries.builds_with_packages, machine="jenkins")
 
 

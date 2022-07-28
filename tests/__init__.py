@@ -26,6 +26,7 @@ class TestCase(unittest.TestCase):
         super().setUp()
 
         self.gbp = make_gbp()
+        self.console = MockConsole()
 
     def make_response(self, data):
         """Add 200 json response to mock post
@@ -102,7 +103,7 @@ def make_gbp(url: str = "http://test.invalid/") -> GBP:
     return gbp
 
 
-class MockConsole:  # pylint: disable=too-few-public-methods
+class MockConsole:
     """Mock rich.console.Console
 
     Output is instead send to it's .stdout attribute, which is a StringIO.
@@ -115,6 +116,10 @@ class MockConsole:  # pylint: disable=too-few-public-methods
     def print(self, *args, **kwargs):
         """Print to self.stdout"""
         return self.console.print(*args, **kwargs)
+
+    def getvalue(self) -> str:
+        """Return everying printed to the console"""
+        return self.stdout.getvalue()
 
 
 class MockPrint:  # pylint: disable=too-few-public-methods
