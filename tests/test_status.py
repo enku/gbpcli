@@ -6,7 +6,7 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.status import handler as status
 
-from . import LOCAL_TIMEZONE, TestCase, mock_print
+from . import LOCAL_TIMEZONE, MockConsole, TestCase, mock_print
 
 
 @mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
@@ -16,11 +16,12 @@ class StatusTestCase(TestCase):
 
     maxDiff = None
 
-    def test(self, print_mock):
+    def test(self, _print_mock):
         args = Namespace(machine="lighthouse", number=3587)
         self.make_response("status.json")
 
-        status(args, self.gbp)
+        console = MockConsole()
+        status(args, self.gbp, console)
 
         expected = """\
 Build: lighthouse/3587
@@ -33,7 +34,7 @@ Packages-built:
     app-editors/vim-core-8.2.3582
 
 """
-        self.assertEqual(print_mock.stdout.getvalue(), expected)
+        self.assertEqual(console.stdout.getvalue(), expected)
         self.assert_graphql(queries.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self, _print_mock):
@@ -41,7 +42,7 @@ Packages-built:
         self.make_response({"data": {"latest": {"id": "lighthouse.3587"}}})
         self.make_response("status.json")
 
-        return_status = status(args, self.gbp)
+        return_status = status(args, self.gbp, MockConsole())
 
         self.assert_graphql(queries.latest, index=0, machine="lighthouse")
         self.assert_graphql(queries.build, index=1, id="lighthouse.3587")
@@ -51,7 +52,7 @@ Packages-built:
         args = Namespace(machine="bogus", number=934)
         self.make_response({"data": {"build": None}})
 
-        return_status = status(args, self.gbp)
+        return_status = status(args, self.gbp, MockConsole())
 
         self.assertEqual(return_status, 1)
         self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")

@@ -1,13 +1,15 @@
 """List machines with builds"""
 import argparse
 
+from rich.console import Console
+
 from gbpcli import GBP
 
 
-def handler(_args: argparse.Namespace, gbp: GBP) -> int:
+def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for machines subcommand"""
     for machine, builds in gbp.machines():
-        print(f"{machine:15} {builds:>3}")
+        console.print(f"[bold]{machine:15}[/bold] {builds:>3}")
 
     return 0
 

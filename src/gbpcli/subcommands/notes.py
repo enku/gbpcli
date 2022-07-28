@@ -6,6 +6,8 @@ import sys
 import tempfile
 from typing import Optional
 
+from rich.console import Console
+
 from gbpcli import GBP, Build, utils
 
 
@@ -57,27 +59,27 @@ def get_note(existing_note: Optional[str]) -> str:
     return note
 
 
-def search_notes(gbp: GBP, machine: str, key: str) -> int:
+def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
     """--search handler for the notes subcommand"""
     builds = gbp.search_notes(machine, key)
 
     if not builds:
-        print("No matches found")
+        print("No matches found", file=sys.stderr)
         return 1
 
     sep = ""
     for build in builds:
-        print(sep, end="")
-        print(utils.build_to_str(build), end="")
+        console.print(sep, end="")
+        console.print(utils.build_to_str(build), end="")
         sep = "\n"
 
     return 0
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """handler for the notes subcommand"""
     if args.search:
-        return search_notes(gbp, args.machine, args.number)
+        return search_notes(gbp, args.machine, args.number, console)
 
     try:
         number = int(args.number, 10)

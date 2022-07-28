@@ -2,10 +2,12 @@
 import argparse
 import sys
 
+from rich.console import Console
+
 from gbpcli import GBP, Build
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     build = Build(machine=args.machine, number=args.number)
     packages = gbp.packages(build)
@@ -15,7 +17,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         return 1
 
     for package in packages:
-        print(package)
+        console.print(package, highlight=False)
 
     return 0
 

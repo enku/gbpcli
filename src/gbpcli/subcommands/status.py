@@ -3,10 +3,12 @@ import argparse
 import sys
 from typing import Optional
 
+from rich.console import Console
+
 from gbpcli import GBP, Build, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for "status" subcommand"""
     machine: str = args.machine
     build: Optional[Build]
@@ -27,7 +29,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         return 1
 
     assert build.info is not None
-    print(utils.build_to_str(build), end="")
+    console.print(utils.build_to_str(build), end="", highlight=False)
 
     return 0
 

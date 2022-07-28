@@ -2,10 +2,12 @@
 import argparse
 import sys
 
+from rich.console import Console
+
 from gbpcli import GBP, Build
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     """Handler for "keep" subcommand"""
     build = Build(machine=args.machine, number=args.number)
 

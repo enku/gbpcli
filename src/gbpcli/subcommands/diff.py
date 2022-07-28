@@ -7,10 +7,12 @@ If the "right" argument is omitted, it defaults to the most recent build.
 import argparse
 import sys
 
+from rich.console import Console
+
 from gbpcli import GBP, Change, Status, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     left = args.left
     right = args.right
@@ -46,22 +48,28 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
     assert left_build.info is not None
     assert right_build.info is not None
 
-    print(f"diff -r {args.machine}/{left} {args.machine}/{right}")
-    print(f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.submitted)}")
-    print(f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.submitted)}")
+    console.print(f"diff -r {args.machine}/{left} {args.machine}/{right}", style="bold")
+    console.print(
+        f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.submitted)}",
+        style="bold",
+    )
+    console.print(
+        f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.submitted)}",
+        style="bold",
+    )
 
     last_modified: Change | None = None
     # for change, item in iter(response["diff"]["items"]):
     for item in diff:
         if item.status == Status.REMOVED:
-            print(f"-{item.item}")
+            console.print(f"[red]-{item.item}")
         elif item.status == Status.ADDED:
-            print(f"+{item.item}")
+            console.print(f"[green]+{item.item}")
         else:
             if item == last_modified:
-                print(f"-{item.item}")
+                console.print(f"[red]-{item.item}")
             else:
-                print(f"+{item.item}")
+                console.print(f"[green]+{item.item}")
             last_modified = item
 
     return 0

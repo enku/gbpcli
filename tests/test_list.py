@@ -6,7 +6,7 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, TestCase, mock_print
+from . import LOCAL_TIMEZONE, MockConsole, TestCase, mock_print
 
 
 @mock.patch("gbpcli.subcommands.list.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
@@ -16,14 +16,15 @@ class ListTestCase(TestCase):
     maxDiff = None
 
     @mock_print("gbpcli.subcommands.list")
-    def test(self, print_mock):
+    def test(self, _print_mock):
         args = Namespace(machine="jenkins")
         self.make_response("list_with_packages.json")
 
-        status = list_command(args, self.gbp)
+        console = MockConsole()
+        status = list_command(args, self.gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(print_mock.stdout.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(console.stdout.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(queries.builds_with_packages, machine="jenkins")
 
 

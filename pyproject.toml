@@ -5,6 +5,7 @@ description = "Gentoo Build Publisher Command-Line Interface"
 authors = [{name = "Albert Hopkins", email = "marduk@letterboxes.org"}]
 dependencies = [
     "requests",
+    "rich>=12.5.1",
     "yarl"
 ]
 

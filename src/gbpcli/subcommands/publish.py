@@ -6,10 +6,12 @@ import argparse
 import sys
 from typing import Optional
 
+from rich.console import Console
+
 from gbpcli import GBP, Build
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     """Handler for subcommand"""
     build: Optional[Build]
     machine: str = args.machine

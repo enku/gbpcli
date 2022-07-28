@@ -9,6 +9,7 @@ from importlib.metadata import entry_points
 from typing import Any, Optional
 
 import requests
+import rich.console
 import yarl
 
 from gbpcli import queries
@@ -273,6 +274,13 @@ def build_parser() -> argparse.ArgumentParser:
     """Set command-line arguments"""
     parser = argparse.ArgumentParser(prog="gbp")
     parser.add_argument("--url", type=str, help="GBP url", default=DEFAULT_URL)
+    parser.add_argument(
+        "--color",
+        metavar="WHEN",
+        choices=["never", "always", "auto"],
+        default="auto",
+        help="color output",
+    )
     subparsers = parser.add_subparsers()
 
     try:
@@ -308,8 +316,13 @@ def main(argv: list[str] | None = None) -> int:
 
     gbp = GBP(args.url)
 
+    force_terminal = {"always": True, "never": False}.get(args.color, None)
+    console = rich.console.Console(
+        force_terminal=force_terminal, color_system="auto", highlight=False
+    )
+
     try:
-        return args.func(args, gbp)
+        return args.func(args, gbp, console)
     except (APIError, requests.HTTPError) as error:
         print(str(error), file=sys.stderr)
 

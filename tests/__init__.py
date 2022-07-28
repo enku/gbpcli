@@ -10,6 +10,7 @@ from pathlib import Path
 from unittest import mock
 
 import requests
+from rich.console import Console
 
 from gbpcli import GBP
 
@@ -99,6 +100,21 @@ def make_gbp(url: str = "http://test.invalid/") -> GBP:
     gbp.session = mock.Mock()
 
     return gbp
+
+
+class MockConsole:  # pylint: disable=too-few-public-methods
+    """Mock rich.console.Console
+
+    Output is instead send to it's .stdout attribute, which is a StringIO.
+    """
+
+    def __init__(self):
+        self.stdout = io.StringIO()
+        self.console = Console(file=self.stdout)
+
+    def print(self, *args, **kwargs):
+        """Print to self.stdout"""
+        return self.console.print(*args, **kwargs)
 
 
 class MockPrint:  # pylint: disable=too-few-public-methods

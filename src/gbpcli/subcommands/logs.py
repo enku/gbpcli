@@ -2,10 +2,12 @@
 import argparse
 import sys
 
+from rich.console import Console
+
 from gbpcli import GBP, Build
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     build = Build(machine=args.machine, number=args.number)
     text = gbp.logs(build)
@@ -14,7 +16,7 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         print("Not Found", file=sys.stderr)
         return 1
 
-    print(text)
+    console.print(text)
 
     return 0
 

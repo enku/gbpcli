@@ -1,10 +1,12 @@
 """List builds for the given machines"""
 import argparse
 
+from rich.console import Console
+
 from gbpcli import GBP, LOCAL_TIMEZONE
 
 
-def handler(args: argparse.Namespace, gbp: GBP) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     builds = gbp.builds(args.machine, with_packages=True)
 
@@ -12,14 +14,14 @@ def handler(args: argparse.Namespace, gbp: GBP) -> int:
         assert build.info is not None
         timestamp = build.info.submitted.astimezone(LOCAL_TIMEZONE)
 
-        print(
+        console.print(
             "["
-            f"{'*' if build.packages_built else ' '}"
-            f"{'K' if build.info.keep else ' '}"
-            f"{'P' if build.info.published else ' '}"
-            f"{'N' if build.info.note else ' '}"
+            f"{'[magenta]*[/magenta]' if build.packages_built else ' '}"
+            f"{'[yellow]K[/yellow]' if build.info.keep else ' '}"
+            f"{'[bold green]P[/bold green]' if build.info.published else ' '}"
+            f"{'[blue]N[/blue]' if build.info.note else ' '}"
             "]"
-            f" {build.number:>5}"
+            f" [bold]{build.number:>5}[/bold]"
             f" {timestamp.strftime('%x %X')}"
         )
 

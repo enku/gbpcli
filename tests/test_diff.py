@@ -7,7 +7,15 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response, mock_print
+from . import (
+    LOCAL_TIMEZONE,
+    MockConsole,
+    TestCase,
+    load_data,
+    make_gbp,
+    make_response,
+    mock_print,
+)
 
 
 @mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
@@ -15,11 +23,12 @@ from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response, mock
 class DiffTestCase(TestCase):
     """diff() tests"""
 
-    def test_should_display_diffs(self, print_mock):
+    def test_should_display_diffs(self, _print_mock):
         args = Namespace(machine="lighthouse", left=3111, right=3112)
         self.make_response("diff.json")
 
-        status = diff(args, self.gbp)
+        mock_console = MockConsole()
+        status = diff(args, self.gbp, mock_console)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -29,20 +38,21 @@ diff -r lighthouse/3111 lighthouse/3112
 -app-misc/tracker-miners-3.1.2-4
 +app-misc/tracker-miners-3.1.3-1
 """
-        self.assertEqual(print_mock.stdout.getvalue(), expected)
+        self.assertEqual(mock_console.stdout.getvalue(), expected)
         self.assert_graphql(
             queries.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
-    def test_should_print_nothing_when_no_diffs(self, print_mock):
+    def test_should_print_nothing_when_no_diffs(self, _print_mock):
         args = Namespace(machine="lighthouse", left=3111, right=3111)
         no_diffs_json = parse(load_data("diff_no_content.json"))
         gbp = make_gbp()
         gbp.session.post.return_value = make_response(json=no_diffs_json)
 
-        diff(args, gbp)
+        mock_console = MockConsole()
+        diff(args, gbp, mock_console)
 
-        self.assertEqual(print_mock.stdout.getvalue(), "")
+        self.assertEqual(mock_console.stdout.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self, _print_mock):
         args = Namespace(machine="lighthouse", left=3111, right=None)
@@ -54,7 +64,8 @@ diff -r lighthouse/3111 lighthouse/3112
             make_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp)
+        mock_console = MockConsole()
+        status = diff(args, gbp, mock_console)
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -87,7 +98,7 @@ diff -r lighthouse/3111 lighthouse/3112
             make_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp)
+        status = diff(args, gbp, MockConsole())
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -120,7 +131,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
         self.make_response(list_json)
 
-        status = diff(args, self.gbp)
+        status = diff(args, self.gbp, MockConsole())
 
         self.assertEqual(status, 1)
         self.assert_graphql(queries.builds, machine="jenkins")
