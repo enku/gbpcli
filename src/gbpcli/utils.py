@@ -38,25 +38,23 @@ def build_to_str(build: Build) -> str:
     myio = io.StringIO()
 
     fprint = partial(print, file=myio)
-    fprint(
-        f"[magenta bold]Build:[/magenta bold] [blue]{build.machine}/{build.number}[/blue]"
-    )
+    fprint(f"[bold]Build:[/bold] [blue]{build.machine}/{build.number}[/blue]")
 
     if build.info.built is not None:
         built = timestr(build.info.built)
-        fprint(f"[magenta bold]BuildDate:[/magenta bold] {built}")
+        fprint(f"[bold]BuildDate:[/bold] {built}")
 
     submitted = timestr(build.info.submitted)
-    fprint(f"[magenta bold]Submitted:[/magenta bold] {submitted}")
+    fprint(f"[bold]Submitted:[/bold] {submitted}")
 
     assert build.info.completed is not None
 
     completed = timestr(build.info.completed)
-    fprint(f"[magenta bold]Completed:[/magenta bold] {completed}")
+    fprint(f"[bold]Completed:[/bold] {completed}")
 
-    fprint(f"[magenta bold]Published:[/magenta bold] {yesno(build.info.published)}")
-    fprint(f"[magenta bold]Keep:[/magenta bold] {yesno(build.info.keep)}")
-    fprint("[magenta bold]Packages-built:[/magenta bold]", end="")
+    fprint(f"[bold]Published:[/bold] {yesno(build.info.published)}")
+    fprint(f"[bold]Keep:[/bold] {yesno(build.info.keep)}")
+    fprint("[bold]Packages-built:[/bold]", end="")
 
     if packages := build.packages_built:
         fprint()
