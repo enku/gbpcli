@@ -1,5 +1,5 @@
 /.coverage
+/.pdm.toml
 /.venv/
 /build/
 /dist/
-/src/gbpcli.egg-info/

@@ -3,11 +3,13 @@ name = "gbpcli"
 dynamic = ["version"]
 description = "Gentoo Build Publisher Command-Line Interface"
 authors = [{name = "Albert Hopkins", email = "marduk@letterboxes.org"}]
+license = {text = "GPL3+"}
 dependencies = [
     "requests",
     "rich>=12.5.1",
     "yarl"
 ]
+requires-python = ">=3.10"
 
 [project.urls]
 homepage = "https://github.com/enku/gbpcli"
@@ -30,16 +32,24 @@ publish = "gbpcli.subcommands.publish"
 pull = "gbpcli.subcommands.pull"
 status = "gbpcli.subcommands.status"
 
+
+[project.optional-dependencies]
 [build-system]
-requires = [
-    "setuptools>45",
-    "setuptools_scm>=6.2",
-    "wheel"
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool.pdm]
+version = { source = "scm" }
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "black",
+    "coverage",
+    "build",
+    "mypy",
+    "pylint",
+    "types-requests",
 ]
-
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
 
 [tool.coverage.run]
 source = ["gbpcli"]
