@@ -17,7 +17,7 @@ from gbpcli import queries
 from . import queries
 
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
-DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "https://gbp/")
+DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 
 class APIError(Exception):
