@@ -6,7 +6,7 @@ import sys
 from dataclasses import dataclass
 from enum import IntEnum
 from importlib.metadata import entry_points
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import requests
 import rich.console
@@ -38,6 +38,7 @@ class BuildInfo:
     keep: bool
     note: Optional[str]
     published: bool
+    tags: List[str]
     submitted: datetime.datetime
     completed: Optional[datetime.datetime] = None
     built: Optional[datetime.datetime] = None
@@ -233,6 +234,16 @@ class GBP:
 
         return [self.api_to_build(i) for i in builds]
 
+    def tag(self, build: Build, tag: str) -> None:
+        """Add the given tag to the build"""
+        query = queries.tag_build
+
+        self.check(query, {"id": build.id, "tag": tag})
+
+    def untag(self, machine: str, tag: str) -> None:
+        """Remove the tag from the given machine"""
+        self.check(queries.untag_build, {"machine": machine, "tag": tag})
+
     @staticmethod
     def api_to_build(api_response) -> Build:
         """Return a Build with BuildInfo given the response from the API"""
@@ -253,6 +264,7 @@ class GBP:
             info=BuildInfo(
                 api_response.get("keep"),
                 published=api_response.get("published"),
+                tags=api_response.get("tags"),
                 note=api_response.get("notes"),
                 submitted=fromisoformat(submitted),
                 completed=fromisoformat(completed) if completed is not None else None,

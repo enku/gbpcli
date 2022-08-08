@@ -4,6 +4,7 @@ query ($id: ID!) {
     machine
     keep
     published
+    tags
     notes
     built
     submitted

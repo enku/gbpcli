@@ -54,6 +54,7 @@ def build_to_str(build: Build) -> str:
 
     fprint(f"[bold]Published:[/bold] {yesno(build.info.published)}")
     fprint(f"[bold]Keep:[/bold] {yesno(build.info.keep)}")
+    fprint(f"[bold]Tags:[/bold] {' '.join(build.info.tags)}")
     fprint("[bold]Packages-built:[/bold]", end="")
 
     if packages := build.packages_built:

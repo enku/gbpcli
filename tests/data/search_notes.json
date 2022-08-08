@@ -6,6 +6,7 @@
                 "machine": "lighthouse",
                 "keep": false,
                 "published": false,
+                "tags": [],
                 "notes": "foo\n",
                 "submitted": "2021-10-24T08:18:45.094877+00:00",
                 "completed": "2021-10-24T08:24:08.143730+00:00"
@@ -15,6 +16,7 @@
                 "machine": "lighthouse",
                 "keep": true,
                 "published": false,
+                "tags": [],
                 "notes": "foobar\n",
                 "submitted": "2021-10-24T02:29:38.461098+00:00",
                 "completed": "2021-10-24T02:34:25.511073+00:00"

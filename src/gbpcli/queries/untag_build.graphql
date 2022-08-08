@@ -1,0 +1,5 @@
+mutation ($machine: String!, $tag: String!) {
+  removeBuildTag(machine: $machine, tag: $tag) {
+    tags
+  }
+}

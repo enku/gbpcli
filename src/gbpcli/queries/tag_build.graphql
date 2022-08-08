@@ -1,0 +1,5 @@
+mutation ($id: ID!, $tag: String!) {
+  createBuildTag(id: $id, tag: $tag) {
+    tags
+  }
+}

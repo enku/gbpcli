@@ -5,6 +5,7 @@ query ($machine: String!) {
     submitted
     completed
     published
+    tags
     notes
     keep
     packagesBuilt {

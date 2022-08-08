@@ -21,6 +21,7 @@ SUBCOMMANDS = [
     "publish",
     "pull",
     "status",
+    "tag",
 ]
 
 

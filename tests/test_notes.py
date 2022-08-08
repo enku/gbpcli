@@ -153,6 +153,7 @@ Submitted: Sun Oct 24 01:18:45 2021 -0700
 Completed: Sun Oct 24 01:24:08 2021 -0700
 Published: no
 Keep: no
+Tags: 
 Packages-built: None
 
 foo
@@ -164,6 +165,7 @@ Submitted: Sat Oct 23 19:29:38 2021 -0700
 Completed: Sat Oct 23 19:34:25 2021 -0700
 Published: no
 Keep: yes
+Tags: 
 Packages-built: None
 
 foobar

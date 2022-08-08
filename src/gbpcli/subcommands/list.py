@@ -14,7 +14,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         assert build.info is not None
         timestamp = build.info.submitted.astimezone(LOCAL_TIMEZONE)
 
-        console.print(
+        output = (
             "["
             f"{'[magenta]*[/magenta]' if build.packages_built else ' '}"
             f"{'[yellow]K[/yellow]' if build.info.keep else ' '}"
@@ -24,6 +24,11 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
             f" [bold]{build.number:>5}[/bold]"
             f" {timestamp.strftime('%x %X')}"
         )
+        if build.info.tags:
+            tags = [f"@{tag}" for tag in build.info.tags]
+            output += f" [yellow]{' '.join(tags)}[/yellow]"
+
+        console.print(output)
 
     return 0
 

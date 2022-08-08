@@ -1,0 +1,9 @@
+{
+  "data": {
+    "createBuildTag": {
+      "tags": [
+        "prod"
+      ]
+    }
+  }
+}

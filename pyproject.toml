@@ -31,6 +31,7 @@ packages = "gbpcli.subcommands.packages"
 publish = "gbpcli.subcommands.publish"
 pull = "gbpcli.subcommands.pull"
 status = "gbpcli.subcommands.status"
+tag = "gbpcli.subcommands.tag"
 
 
 [project.optional-dependencies]
