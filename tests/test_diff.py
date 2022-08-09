@@ -16,7 +16,7 @@ class DiffTestCase(TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self, _print_mock):
-        args = Namespace(machine="lighthouse", left=3111, right=3112)
+        args = Namespace(machine="lighthouse", left="3111", right="3112")
         self.make_response("diff.json")
 
         status = diff(args, self.gbp, self.console)
@@ -35,7 +35,7 @@ diff -r lighthouse/3111 lighthouse/3112
         )
 
     def test_should_print_nothing_when_no_diffs(self, _print_mock):
-        args = Namespace(machine="lighthouse", left=3111, right=3111)
+        args = Namespace(machine="lighthouse", left="3111", right="3111")
         no_diffs_json = parse(load_data("diff_no_content.json"))
         gbp = make_gbp()
         gbp.session.post.return_value = make_response(json=no_diffs_json)
@@ -45,7 +45,7 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(self.console.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self, _print_mock):
-        args = Namespace(machine="lighthouse", left=3111, right=None)
+        args = Namespace(machine="lighthouse", left="3111", right=None)
         latest_json = parse(load_data("latest.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()

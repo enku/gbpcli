@@ -145,6 +145,18 @@ class GBP:
         build_id = data["latest"]["id"]
         return Build.from_id(build_id)
 
+    def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
+        """Return the build of the given machine & tag"""
+        data = self.check(queries.resolve_tag, dict(machine=machine, tag=tag))
+        data = data["resolveBuildTag"]
+
+        if data is None:
+            return None
+
+        build_id = data["id"]
+
+        return Build.from_id(build_id)
+
     def builds(self, machine: str, with_packages: bool = False) -> list[Build]:
         """Return a list of Builds for the given machine
 

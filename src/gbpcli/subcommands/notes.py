@@ -8,7 +8,7 @@ from typing import Optional
 
 from rich.console import Console
 
-from gbpcli import GBP, Build, utils
+from gbpcli import GBP, utils
 
 
 def get_editor():
@@ -81,13 +81,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     if args.search:
         return search_notes(gbp, args.machine, args.number, console)
 
-    try:
-        number = int(args.number, 10)
-    except ValueError:
-        print("Expected integer value.", file=sys.stderr)
-        return 1
-
-    build = Build(args.machine, number)
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
     existing = gbp.get_build_info(build)
 
     if not existing or not existing.info:

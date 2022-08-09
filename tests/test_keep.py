@@ -14,7 +14,7 @@ class KeepTestCase(TestCase):
     maxDiff = None
 
     def test_keep(self):
-        args = Namespace(machine="lighthouse", number=3210, release=False)
+        args = Namespace(machine="lighthouse", number="3210", release=False)
         self.make_response("keep_build.json")
 
         status = keep(args, self.gbp, self.console)
@@ -24,7 +24,7 @@ class KeepTestCase(TestCase):
 
     @mock_print("gbpcli.subcommands.keep")
     def test_keep_should_print_error_when_build_does_not_exist(self, print_mock):
-        args = Namespace(machine="lighthouse", number=3210, release=False)
+        args = Namespace(machine="lighthouse", number="3210", release=False)
         self.make_response({"data": {"keepBuild": None}})
 
         status = keep(args, self.gbp, self.console)
@@ -32,7 +32,7 @@ class KeepTestCase(TestCase):
         self.assertEqual(print_mock.stderr.getvalue(), "Not Found\n")
 
     def test_release(self):
-        args = Namespace(machine="lighthouse", number=3210, release=True)
+        args = Namespace(machine="lighthouse", number="3210", release=True)
         self.make_response("release_build.json")
 
         status = keep(args, self.gbp, self.console)
@@ -42,7 +42,7 @@ class KeepTestCase(TestCase):
 
     @mock_print("gbpcli.subcommands.keep")
     def test_release_should_print_error_when_build_does_not_exist(self, print_mock):
-        args = Namespace(machine="lighthouse", number=3210, release=True)
+        args = Namespace(machine="lighthouse", number="3210", release=True)
         self.make_response({"data": {"releaseBuild": None}})
 
         status = keep(args, self.gbp, self.console)

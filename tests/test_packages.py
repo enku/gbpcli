@@ -15,7 +15,7 @@ class PackagesTestCase(TestCase):
     maxDiff = None
 
     def test(self, _print_mock):
-        args = Namespace(machine="babette", number=268)
+        args = Namespace(machine="babette", number="268")
         self.make_response("packages.json")
 
         status = packages(args, self.gbp, self.console)
@@ -26,7 +26,7 @@ class PackagesTestCase(TestCase):
         self.assert_graphql(queries.packages, id="babette.268")
 
     def test_when_build_does_not_exist_prints_error(self, print_mock):
-        args = Namespace(machine="bogus", number=268)
+        args = Namespace(machine="bogus", number="268")
         no_build = {"data": {"build": {"packages": None}}}
         self.make_response(no_build)
 

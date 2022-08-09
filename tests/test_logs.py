@@ -15,7 +15,7 @@ class LogsTestCase(TestCase):
     """logs() tests"""
 
     def test(self, _print_mock):
-        args = Namespace(machine="lighthouse", number=3113)
+        args = Namespace(machine="lighthouse", number="3113")
         self.make_response("logs.json")
 
         status = logs(args, self.gbp, self.console)
@@ -25,7 +25,7 @@ class LogsTestCase(TestCase):
         self.assert_graphql(queries.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self, print_mock):
-        args = Namespace(machine="lighthouse", number=9999)
+        args = Namespace(machine="lighthouse", number="9999")
         self.make_response({"data": {"build": None}})
 
         status = logs(args, self.gbp, self.console)

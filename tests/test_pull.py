@@ -14,7 +14,7 @@ class PullTestCase(TestCase):
     """pull() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number=3226)
+        args = Namespace(machine="lighthouse", number="3226")
         self.make_response("pull.json")
 
         pull(args, self.gbp, self.console)

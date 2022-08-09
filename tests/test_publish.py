@@ -14,7 +14,7 @@ class PublishTestCase(TestCase):
     """publish() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number=3109)
+        args = Namespace(machine="lighthouse", number="3109")
         self.make_response("publish.json")
 
         publish(args, self.gbp, self.console)

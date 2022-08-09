@@ -29,7 +29,7 @@ class NotesTestCase(TestCase):
         self.make_response("status.json")
         self.make_response("create_note.json")
 
-    def assert_create_note(self, machine="lighthouse", number=3109, note=NOTE):
+    def assert_create_note(self, machine="lighthouse", number="3109", note=NOTE):
         """Assert that the note was created by a GraphQL request"""
         self.assert_graphql(queries.build, index=0, id=f"{machine}.{number}")
         self.assert_graphql(
@@ -99,14 +99,14 @@ class NotesTestCase(TestCase):
         self.assertEqual(status, 1)
         self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")
 
-    @mock_print(MODULE)
+    @mock_print("gbpcli.utils")
     def test_should_print_error_when_invalid_number_given(self, print_mock):
         self.args.number = "foo"
 
-        status = create_note(self.args, self.gbp, self.console)
+        with self.assertRaises(SystemExit):
+            create_note(self.args, self.gbp, self.console)
 
-        self.assertEqual(status, 1)
-        self.assertEqual(print_mock.stderr.getvalue(), "Expected integer value.\n")
+        self.assertEqual(print_mock.stderr.getvalue(), "Invalid build ID: foo\n")
 
     def test_search_notes(self):
         self.args.search = True

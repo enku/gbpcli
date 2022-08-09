@@ -17,7 +17,7 @@ class StatusTestCase(TestCase):
     maxDiff = None
 
     def test(self, _print_mock):
-        args = Namespace(machine="lighthouse", number=3587)
+        args = Namespace(machine="lighthouse", number="3587")
         self.make_response("status.json")
 
         status(args, self.gbp, self.console)
@@ -49,10 +49,10 @@ Packages-built:
         self.assertEqual(return_status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self, print_mock):
-        args = Namespace(machine="bogus", number=934)
+        args = Namespace(machine="bogus", number="934")
         self.make_response({"data": {"build": None}})
 
         return_status = status(args, self.gbp, self.console)
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(print_mock.stderr.getvalue(), "Build not found\n")
+        self.assertEqual(print_mock.stderr.getvalue(), "Not found\n")

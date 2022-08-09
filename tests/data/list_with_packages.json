@@ -58,7 +58,7 @@
                }
             ],
             "published" : true,
-            "tags": [],
+            "tags": ["hello", "world"],
             "submitted" : "2021-11-09T21:51:08.653884+00:00"
          },
          {

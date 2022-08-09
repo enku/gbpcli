@@ -12,7 +12,7 @@ class TagTestCase(TestCase):
     """tag() tests"""
 
     def test_tag(self):
-        args = Namespace(machine="lighthouse", number=9400, tag="prod", remove=False)
+        args = Namespace(machine="lighthouse", number="9400", tag="prod", remove=False)
         self.make_response("tag_build.json")
 
         status = tag(args, self.gbp, self.console)
@@ -31,7 +31,7 @@ class TagTestCase(TestCase):
 
     @mock_print("gbpcli.subcommands.tag")
     def test_untag_with_build_number_gives_error(self, print_mock):
-        args = Namespace(machine="lighthouse", number=9400, tag="prod", remove=True)
+        args = Namespace(machine="lighthouse", number="9400", tag="prod", remove=True)
 
         status = tag(args, self.gbp, self.console)
 

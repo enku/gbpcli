@@ -1,12 +1,14 @@
 """Utility functions"""
 import datetime
 import io
+import sys
 from functools import partial
-from typing import Literal
+from typing import Literal, Optional
 
-from gbpcli import LOCAL_TIMEZONE, Build
+from gbpcli import GBP, LOCAL_TIMEZONE, Build
 
 JSON_CONTENT_TYPE = "application/json"
+TAG_SYM = "@"
 
 
 def timestr(
@@ -74,3 +76,37 @@ def build_to_str(build: Build) -> str:
 
     fprint()
     return myio.getvalue()
+
+
+def resolve_build_id(
+    machine: str, build_id: Optional[str], gbp: GBP, abort_on_error: bool = True
+) -> Build:
+    """Resolve build ids, tags, and optional numbers into a Build object
+
+    If abort_on_error is True and there is an error finding/calculating the build, then
+    an error is printed to sys.stderr and SystemExit is raised.
+    """
+    build = None
+    error = SystemExit(1)
+
+    if build_id is None:
+        build = gbp.latest(machine)
+        if not build and abort_on_error:
+            print(f"No builds for {machine}", file=sys.stderr)
+            raise error
+    elif build_id.startswith(TAG_SYM):
+        tag = build_id[1:]
+        build = gbp.resolve_tag(machine, tag)
+        if not build and abort_on_error:
+            print(f"No such tag for {machine}: {tag}", file=sys.stderr)
+            raise error
+    elif build_id.isdigit():
+        build = Build(machine, int(build_id))
+    elif abort_on_error:
+        print(f"Invalid build ID: {build_id}", file=sys.stderr)
+        raise error
+
+    if build is None:
+        raise ValueError(f"Invalid build ID: {build_id}")
+
+    return build

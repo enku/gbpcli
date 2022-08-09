@@ -3,10 +3,10 @@
 import datetime
 import unittest
 
-from gbpcli import APIError
-from gbpcli.utils import timestr, yesno
+from gbpcli import APIError, Build
+from gbpcli.utils import resolve_build_id, timestr, yesno
 
-from . import make_gbp, make_response
+from . import make_gbp, make_response, mock_print
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -45,3 +45,68 @@ class CheckTestCase(unittest.TestCase):
         exception = context.exception
         self.assertEqual(exception.args[0], [error1, error2])
         self.assertEqual(exception.data, {"build": None})
+
+
+class ResolveBuildIdTestCase(unittest.TestCase):
+    """resolve_build_id() tests"""
+
+    def test_returns_latest_build_for_machine_when_build_id_is_none(self):
+        gbp = make_gbp()
+        gbp.session.post.return_value = make_response(
+            json={"data": {"latest": {"id": "lighthouse.123"}}}
+        )
+
+        result = resolve_build_id("lighthouse", None, gbp=gbp)
+
+        self.assertEqual(result, Build(machine="lighthouse", number=123))
+
+    @mock_print("gbpcli.utils")
+    def test_aborts_when_build_id_is_none_and_no_latest(self, print_mock):
+        gbp = make_gbp()
+        gbp.session.post.return_value = make_response(json={"data": {"latest": None}})
+
+        with self.assertRaises(SystemExit) as context:
+            resolve_build_id("lighthouse", None, gbp=gbp)
+
+        self.assertEqual(context.exception.args, (1,))
+        self.assertEqual(print_mock.stderr.getvalue(), "No builds for lighthouse\n")
+
+    def test_returns_build_when_given_tag(self):
+        gbp = make_gbp()
+        gbp.session.post.return_value = make_response(
+            json={"data": {"resolveBuildTag": {"id": "lighthouse.123"}}}
+        )
+
+        result = resolve_build_id("lighthouse", "@prod", gbp=gbp)
+
+        self.assertEqual(result, Build(machine="lighthouse", number=123))
+
+    @mock_print("gbpcli.utils")
+    def test_aborts_when_given_tag_that_does_not_exist(self, print_mock):
+        gbp = make_gbp()
+        gbp.session.post.return_value = make_response(
+            json={"data": {"resolveBuildTag": None}}
+        )
+
+        with self.assertRaises(SystemExit) as context:
+            resolve_build_id("lighthouse", "@prod", gbp=gbp)
+
+        self.assertEqual(context.exception.args, (1,))
+        self.assertEqual(
+            print_mock.stderr.getvalue(), "No such tag for lighthouse: prod\n"
+        )
+
+    def test_returns_build_with_given_id_if_given_build_id_is_numeric(self):
+        gbp = make_gbp()
+
+        result = resolve_build_id("lighthouse", "456", gbp)
+
+        self.assertEqual(result, Build("lighthouse", 456))
+
+    def test_raises_valueerror_when_abort_on_error_is_false_and_bad_id(self):
+        gbp = make_gbp()
+
+        with self.assertRaises(ValueError) as context:
+            resolve_build_id("lighthouse", "bogus", gbp, abort_on_error=False)
+
+        self.assertEqual(context.exception.args, ("Invalid build ID: bogus",))

@@ -14,6 +14,7 @@ packages = "query ($id: ID!) {\n  build(id: $id) {\n    packages\n  }\n}\n"
 publish = "mutation ($id: ID!) {\n  publish(id: $id) {\n    publishedBuild {\n      id\n    }\n  }\n}\n"
 pull = "mutation ($id: ID!) {\n  pull(id: $id) {\n    buildCount\n  }\n}\n"
 release_build = "mutation ($id: ID!) {\n  releaseBuild(id: $id) {\n    keep\n  }\n}\n"
+resolve_tag = "query ($machine: String!, $tag: String!) {\n  resolveBuildTag(machine: $machine, tag: $tag) {\n    id\n  }\n}\n"
 schedule_build = (
     "mutation ($machine: String!) {\n  scheduleBuild(machine: $machine)\n}\n"
 )
