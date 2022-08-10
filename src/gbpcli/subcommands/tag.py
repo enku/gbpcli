@@ -19,6 +19,9 @@ def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
             print("When removing a tag, omit the build number", file=sys.stderr)
             return 1
 
+        if tag.startswith("@"):
+            tag = tag[1:]
+
         gbp.untag(machine, tag)
         return 0
 
