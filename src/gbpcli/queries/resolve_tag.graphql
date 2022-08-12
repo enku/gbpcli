@@ -1,0 +1,5 @@
+query ($machine: String!, $tag: String!) {
+  resolveBuildTag(machine: $machine, tag: $tag) {
+    id
+  }
+}
