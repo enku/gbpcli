@@ -4,3 +4,4 @@
 /.venv/
 /build/
 /dist/
+/src/gbpcli/queries.py

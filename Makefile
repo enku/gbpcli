@@ -17,10 +17,9 @@ raw_queries := $(shell find src/gbpcli/queries -name '*.graphql' -print)
 queries: $(python_queries)
 
 $(python_queries): scripts/make_queries.py $(raw_queries)
-	pdm run python $< $(raw_queries) > $@
-	pdm run black $@
+	pdm run python $<
 
-.coverage: $(venv) $(src) $(tests)
+.coverage: $(venv) $(src) $(tests) $(python_queries)
 	pdm run coverage run -m unittest discover --failfast
 
 .PHONY: test
@@ -52,7 +51,7 @@ $(venv):
 
 .PHONY: clean
 clean: clean-build clean-venv
-	rm -rf .coverage gbp htmlcov .mypy_cache
+	rm -rf .coverage gbp htmlcov .mypy_cache $(python_queries)
 
 .PHONY: clean-build
 clean-build:

@@ -3,23 +3,34 @@
 import sys
 from pathlib import Path
 
-DIR = Path(__file__).resolve().parent
-GRAPHQL_DIR = DIR / "src" / "gbpcli" / "queries"
+# DIR = Path(__file__).resolve().parent
+# GRAPHQL_DIR = DIR / "src" / "gbpcli" / "queries"
+
+
+def build(src: str, dst: str):
+    entries = [*(Path(src) / "src" / "gbpcli" / "queries").iterdir()]
+    entries.sort(key=lambda entry: entry.name)
+
+    dst_path = Path(dst) / "gbpcli" / "queries.py"
+    dst_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with dst_path.open("w", encoding="UTF-8") as outfile:
+        print('"""GraphQL query definitions"""', file=outfile)
+        print("# Auto-generated: DO NOT EDIT", file=outfile)
+        print("# pylint: disable=line-too-long,invalid-name", file=outfile)
+
+        for entry in entries:
+            query = entry.read_text(encoding="UTF-8")
+
+            name = entry.name[:-8]
+            print(f"{name} = {query!r}", file=outfile)
 
 
 def main():
     """Entry point"""
-    entries = [Path(entry) for entry in sys.argv[1:]]
-    entries.sort(key=lambda entry: entry.name)
-    print('"""GraphQL query definitions"""')
-    print("# Auto-generated: DO NOT EDIT")
-    print("# pylint: disable=line-too-long,invalid-name")
-    for entry in entries:
-        with entry.open(encoding="utf-8") as graphql:
-            query = graphql.read()
-
-        name = entry.name[:-8]
-        print(f"{name} = {query!r}")
+    src = Path(__file__).resolve().parent.parent
+    dst = src / "src"
+    build(str(src), str(dst))
 
 
 if __name__ == "__main__":

@@ -42,6 +42,9 @@ build-backend = "pdm.pep517.api"
 [tool.pdm]
 version = { source = "scm" }
 
+[tool.pdm.build]
+setup-script = "./scripts/make_queries.py"
+
 [tool.pdm.dev-dependencies]
 dev = [
     "black",
