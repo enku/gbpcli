@@ -2,6 +2,7 @@
 name = "gbpcli"
 dynamic = ["version"]
 description = "Gentoo Build Publisher Command-Line Interface"
+readme = "README.md"
 authors = [{name = "Albert Hopkins", email = "marduk@letterboxes.org"}]
 license = {text = "GPL3+"}
 dependencies = [
