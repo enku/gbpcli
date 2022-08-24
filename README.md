@@ -16,7 +16,7 @@ consistent.
 This is a pip-installable Python package:
 
 ```bash
-$ pip install git+https://github.com/enku/gbpcli.git
+$ pip install gbpcli
 ```
 
 ## Usage
