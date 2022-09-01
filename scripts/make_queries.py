@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 def build(src: str, dst: str):
-    entries = [*(Path(src) / "src" / "gbpcli" / "queries").iterdir()]
+    entries = [*(Path(src) / "src" / "gbpcli" / "queries").glob("*.graphql")]
     entries.sort(key=lambda entry: entry.name)
 
     dst_path = Path(dst) / "gbpcli" / "queries.py"
