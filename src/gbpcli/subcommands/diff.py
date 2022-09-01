@@ -5,6 +5,7 @@ If the "left" argument is omitted, it defaults to the build which is published.
 If the "right" argument is omitted, it defaults to the most recent build.
 """
 import argparse
+import datetime as dt
 import sys
 from collections.abc import Iterable
 
@@ -52,14 +53,16 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     assert left_build.info is not None
     assert right_build.info is not None
+    assert isinstance(left_build.info.built, dt.datetime)
+    assert isinstance(right_build.info.built, dt.datetime)
 
     console.print(f"diff -r {args.machine}/{left} {args.machine}/{right}", style="bold")
     console.print(
-        f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.submitted)}",
+        f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.built)}",
         style="bold",
     )
     console.print(
-        f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.submitted)}",
+        f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.built)}",
         style="bold",
     )
 

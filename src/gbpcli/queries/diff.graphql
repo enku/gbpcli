@@ -3,11 +3,13 @@ query ($left: ID!, $right: ID!) {
     left {
       id
       machine
+      built
       submitted
     }
     right {
       id
       machine
+      built
       submitted
     }
     items {
