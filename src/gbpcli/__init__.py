@@ -5,7 +5,7 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import IntEnum
-from importlib.metadata import entry_points
+from importlib.metadata import entry_points, version
 from typing import Any, List, Optional
 
 import requests
@@ -297,6 +297,9 @@ class GBP:
 def build_parser() -> argparse.ArgumentParser:
     """Set command-line arguments"""
     parser = argparse.ArgumentParser(prog="gbp")
+    parser.add_argument(
+        "--version", action="version", version=f"gbpcli {version('gbpcli')}"
+    )
     parser.add_argument("--url", type=str, help="GBP url", default=DEFAULT_URL)
     parser.add_argument(
         "--color",
