@@ -3,9 +3,6 @@
 import sys
 from pathlib import Path
 
-# DIR = Path(__file__).resolve().parent
-# GRAPHQL_DIR = DIR / "src" / "gbpcli" / "queries"
-
 
 def build(src: str, dst: str):
     entries = [*(Path(src) / "src" / "gbpcli" / "queries").glob("*.graphql")]
