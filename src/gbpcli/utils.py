@@ -49,9 +49,7 @@ def build_to_str(build: Build) -> str:
     submitted = timestr(build.info.submitted)
     fprint(f"[bold]Submitted:[/bold] {submitted}")
 
-    assert build.info.completed is not None
-
-    completed = timestr(build.info.completed)
+    completed = timestr(build.info.completed) if build.info.completed else "no"
     fprint(f"[bold]Completed:[/bold] {completed}")
 
     fprint(f"[bold]Published:[/bold] {yesno(build.info.published)}")
@@ -65,7 +63,7 @@ def build_to_str(build: Build) -> str:
         for package in packages:
             fprint(f"    {package.cpv}")
     else:
-        fprint(" None")
+        fprint(" None" if build.info.completed else " Unknown")
 
     if note := build.info.note:
         fprint()
