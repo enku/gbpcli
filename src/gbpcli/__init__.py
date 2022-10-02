@@ -14,8 +14,6 @@ import yarl
 
 from gbpcli import queries
 
-from . import queries
-
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
