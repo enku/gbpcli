@@ -42,16 +42,21 @@ To list the machines which have builds:
 
 ```bash
 $ gbp machines
-babette          10
-blackwidow       45
-gbp              45
-jenkins           8
-lighthouse       43
-pgadmin           7
-postgres          8
-rabbitmq          8
-teamplayer        2
-testing          43
+         Machines         
+╭───────────────┬────────╮
+│ Name          │ Builds │
+├───────────────┼────────┤
+│ babette       │     10 │
+│ blackwidow    │     45 │
+│ gbp           │     45 │
+│ jenkins       │      8 │
+│ lighthouse    │     43 │
+│ pgadmin       │      7 │
+│ postgres      │      8 │
+│ rabbitmq      │      8 │
+│ teamplayer    │      2 │
+│ testing       │     43 │
+╰───────────────┴────────╯
 ```
 
 To list the available builds for a given machine:

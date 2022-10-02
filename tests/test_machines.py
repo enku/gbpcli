@@ -21,24 +21,31 @@ class MachinesTestCase(TestCase):
         status = machines(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(
+            self.console.getvalue(), EXPECTED_OUTPUT, self.console.getvalue()
+        )
         self.assert_graphql(queries.machines)
 
 
 EXPECTED_OUTPUT = """\
-babette          14
-base             15
-blackwidow       35
-gbp              36
-git               8
-gnome-desktop    35
-jenkins           9
-lighthouse       35
-lounge           12
-pgadmin           8
-postgres         12
-rabbitmq          9
-teamplayer        5
-testing          36
-web              16
+         Machines         
+╭───────────────┬────────╮
+│ Name          │ Builds │
+├───────────────┼────────┤
+│ babette       │     14 │
+│ base          │     15 │
+│ blackwidow    │     35 │
+│ gbp           │     36 │
+│ git           │      8 │
+│ gnome-desktop │     35 │
+│ jenkins       │      9 │
+│ lighthouse    │     35 │
+│ lounge        │     12 │
+│ pgadmin       │      8 │
+│ postgres      │     12 │
+│ rabbitmq      │      9 │
+│ teamplayer    │      5 │
+│ testing       │     36 │
+│ web           │     16 │
+╰───────────────┴────────╯
 """
