@@ -2,6 +2,8 @@
 # pylint: disable=missing-docstring
 import requests.exceptions
 
+from gbpcli import Queries
+
 from . import TestCase, make_response
 
 
@@ -53,3 +55,30 @@ class GBPQueryTestCase(TestCase):
             self.gbp.query(query)
 
         self.assertIs(cxt.exception, error)
+
+
+class QueriesTestCase(TestCase):
+    """Tests for the Queries wrapper"""
+
+    def test_returns_query_on_attribute_access(self):
+        queries = Queries()
+
+        logs_query = queries.logs
+
+        self.assertEqual(
+            logs_query, "query ($id: ID!) {\n  build(id: $id) {\n    logs\n  }\n}\n"
+        )
+
+    def test_raises_attribute_error_when_file_not_found(self):
+        queries = Queries()
+
+        with self.assertRaises(AttributeError):
+            queries.bogus  # pylint: disable=pointless-statement
+
+    def test_to_dict_returns_dict(self):
+        queries = Queries()
+
+        as_dict = queries.to_dict()
+
+        self.assertIsInstance(as_dict, dict)
+        self.assertIn("logs", as_dict)

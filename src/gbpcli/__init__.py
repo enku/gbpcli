@@ -5,14 +5,13 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import IntEnum
+from importlib import resources
 from importlib.metadata import entry_points, version
 from typing import Any, List, Optional
 
 import requests
 import rich.console
 import yarl
-
-from gbpcli import queries
 
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
@@ -24,6 +23,30 @@ class APIError(Exception):
     def __init__(self, errors, data) -> None:
         super().__init__(errors)
         self.data = data
+
+
+class Queries:
+    """Python interface to raw queries/*.graphql files"""
+
+    def __getattr__(self, name: str) -> str:
+        query_file = resources.files("gbpcli") / "queries" / f"{name}.graphql"
+        try:
+            return query_file.read_text(encoding="UTF-8")
+        except FileNotFoundError:
+            raise AttributeError(name) from None
+
+    def to_dict(self) -> dict[str, str]:
+        """Return the queries as a dict"""
+        files = (resources.files("gbpcli") / "queries").iterdir()
+
+        return {
+            filename.name[:-8]: getattr(self, filename.name[:-8])
+            for filename in files
+            if filename.name.endswith(".graphql")
+        }
+
+
+queries = Queries()
 
 
 @dataclass
