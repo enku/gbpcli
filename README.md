@@ -58,21 +58,28 @@ To list the available builds for a given machine:
 
 ```bash
 $ gbp list babette
-[ K  ]   104 04/25/21 08:51:19
-[    ]   132 05/21/21 13:27:50
-[*  N]   412 02/27/22 06:42:08
-[*   ]   413 02/28/22 06:43:32
-[*   ]   430 03/16/22 08:49:15
-[*   ]   431 03/17/22 08:54:43
-[*   ]   434 03/21/22 16:37:30
-[*   ]   435 03/22/22 12:01:48
-[* P ]   437 03/22/22 13:28:13
-[*   ]   438 03/23/22 13:09:26
+                   💻 babette                   
+╭────────┬────────┬───────────────────┬────────╮
+│ Status │ ID     │ Submitted         │ Tags   │
+├────────┼────────┼───────────────────┼────────┤
+│  K     │    104 │ 04/25/21 08:51:19 │ @first │
+│        │    132 │ 05/21/21 13:27:50 │        │
+│ *      │    412 │ 02/27/22 06:42:08 │        │
+│ *      │    413 │ 02/28/22 06:43:32 │        │
+│ *      │    430 │ 03/16/22 08:49:15 │        │
+│ *      │    431 │ 03/17/22 08:54:43 │        │
+│ *      │    434 │ 03/21/22 16:37:30 │        │
+│ *      │    435 │ 03/22/22 12:01:48 │        │
+│ * PN   │    437 │ 03/22/22 13:28:13 │        │
+│ *      │    438 │ 03/23/22 13:09:26 │        │
+╰────────┴────────┴───────────────────┴────────╯
 ```
 
-In the above example, the `PN` output for build `302` signifies that this
-build is currently published (`P`) and there is a user note for that build
-(`N`).  The `*` means that the respective build has new binary packages.
+In the above example, the `P` output for build `437` signifies that this build
+is currently published (`P`) and there is a user note for that build (`N`).
+The `*` means that the respective build has new binary packages. The `K` for
+build `104` means that the build is marked for keeping and will not be removed
+during the purge process. Build `104` has also been given a "first" tag.
 
 ```bash
 $ gbp status babette 412
