@@ -1,4 +1,13 @@
-"""List builds for the given machines"""
+"""List builds for the given machines
+
+Key for the "Status" column:
+
+    *: Packages were build for the build
+    K: The build has been marked for keeping
+    P: This build is published
+    N: This build has a note attached
+
+"""
 import argparse
 
 from rich import box
