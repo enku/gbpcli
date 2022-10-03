@@ -2,5 +2,9 @@ query {
   machines {
     machine
     buildCount
+    latestBuild {
+      id
+      published
+    }
   }
 }

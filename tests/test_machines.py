@@ -28,24 +28,16 @@ class MachinesTestCase(TestCase):
 
 
 EXPECTED_OUTPUT = """\
-         Machines         
-╭───────────────┬────────╮
-│ Name          │ Builds │
-├───────────────┼────────┤
-│ babette       │     14 │
-│ base          │     15 │
-│ blackwidow    │     35 │
-│ gbp           │     36 │
-│ git           │      8 │
-│ gnome-desktop │     35 │
-│ jenkins       │      9 │
-│ lighthouse    │     35 │
-│ lounge        │     12 │
-│ pgadmin       │      8 │
-│ postgres      │     12 │
-│ rabbitmq      │      9 │
-│ teamplayer    │      5 │
-│ testing       │     36 │
-│ web           │     16 │
-╰───────────────┴────────╯
+            Machines            
+╭────────────┬────────┬────────╮
+│ Machine    │ Builds │ Latest │
+├────────────┼────────┼────────┤
+│ arm64-base │      6 │     36 │
+│ babette    │     14 │    631 │
+│ base       │     16 │    643 │
+│ blackwidow │     24 │  10994 │
+│ gbpbox     │     12 │    224 │
+│ lighthouse │     29 │ *10694 │
+│ testing    │     23 │  10159 │
+╰────────────┴────────┴────────╯
 """

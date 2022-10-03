@@ -138,11 +138,13 @@ class GBP:
         response_json = response.json()
         return response_json.get("data"), response_json.get("errors")
 
-    def machines(self) -> list[tuple[str, int]]:
+    def machines(self) -> list[tuple[str, int, dict]]:
         """Handler for subcommand"""
         data = self.check(queries.machines)
 
-        return [(i["machine"], i["buildCount"]) for i in data["machines"]]
+        return [
+            (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]
+        ]
 
     def publish(self, build: Build):
         """Publish the given build"""

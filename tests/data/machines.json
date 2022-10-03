@@ -2,64 +2,60 @@
    "data" : {
       "machines" : [
          {
+            "buildCount" : 6,
+            "latestBuild" : {
+               "id" : "arm64-base.36",
+               "published" : false
+            },
+            "machine" : "arm64-base"
+         },
+         {
             "buildCount" : 14,
+            "latestBuild" : {
+               "id" : "babette.631",
+               "published" : false
+            },
             "machine" : "babette"
          },
          {
-            "buildCount" : 15,
+            "buildCount" : 16,
+            "latestBuild" : {
+               "id" : "base.643",
+               "published" : false
+            },
             "machine" : "base"
          },
          {
-            "buildCount" : 35,
+            "buildCount" : 24,
+            "latestBuild" : {
+               "id" : "blackwidow.10994",
+               "published" : false
+            },
             "machine" : "blackwidow"
          },
          {
-            "buildCount" : 36,
-            "machine" : "gbp"
+            "buildCount" : 12,
+            "latestBuild" : {
+               "id" : "gbpbox.224",
+               "published" : false
+            },
+            "machine" : "gbpbox"
          },
          {
-            "buildCount" : 8,
-            "machine" : "git"
-         },
-         {
-            "buildCount" : 35,
-            "machine" : "gnome-desktop"
-         },
-         {
-            "buildCount" : 9,
-            "machine" : "jenkins"
-         },
-         {
-            "buildCount" : 35,
+            "buildCount" : 29,
+            "latestBuild" : {
+               "id" : "lighthouse.10694",
+               "published" : true
+            },
             "machine" : "lighthouse"
          },
          {
-            "buildCount" : 12,
-            "machine" : "lounge"
-         },
-         {
-            "buildCount" : 8,
-            "machine" : "pgadmin"
-         },
-         {
-            "buildCount" : 12,
-            "machine" : "postgres"
-         },
-         {
-            "buildCount" : 9,
-            "machine" : "rabbitmq"
-         },
-         {
-            "buildCount" : 5,
-            "machine" : "teamplayer"
-         },
-         {
-            "buildCount" : 36,
+            "buildCount" : 23,
+            "latestBuild" : {
+               "id" : "testing.10159",
+               "published" : false
+            },
             "machine" : "testing"
-         },
-         {
-            "buildCount" : 16,
-            "machine" : "web"
          }
       ]
    }

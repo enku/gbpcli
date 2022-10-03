@@ -42,22 +42,21 @@ To list the machines which have builds:
 
 ```bash
 $ gbp machines
-         Machines         
-╭───────────────┬────────╮
-│ Name          │ Builds │
-├───────────────┼────────┤
-│ babette       │     10 │
-│ blackwidow    │     45 │
-│ gbp           │     45 │
-│ jenkins       │      8 │
-│ lighthouse    │     43 │
-│ pgadmin       │      7 │
-│ postgres      │      8 │
-│ rabbitmq      │      8 │
-│ teamplayer    │      2 │
-│ testing       │     43 │
-╰───────────────┴────────╯
+            Machines            
+╭────────────┬────────┬────────╮
+│ Machine    │ Builds │ Latest │
+├────────────┼────────┼────────┤
+│ arm64-base │      6 │     36 │
+│ babette    │     10 │    438 │
+│ base       │     16 │    643 │
+│ blackwidow │     24 │  10994 │
+│ gbpbox     │     12 │    224 │
+│ lighthouse │     29 │ *10694 │
+│ testing    │     23 │  10159 │
+╰────────────┴────────┴────────╯
 ```
+The "Latest" column shows the latest build ID for the given machine. If the ID has a `*`
+beside it that denotes that the latest build is published (available for emerges).
 
 To list the available builds for a given machine:
 
