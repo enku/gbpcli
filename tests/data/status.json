@@ -4,7 +4,7 @@
          "completed" : "2021-11-13T04:29:34.822433+00:00",
          "keep" : false,
          "id" : "lighthouse.3587",
-         "notes" : null,
+         "notes" : "This is a build note.\nHello world!\n",
          "machine" : "lighthouse",
          "packagesBuilt" : [
             {

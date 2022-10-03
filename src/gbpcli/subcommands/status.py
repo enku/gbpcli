@@ -2,14 +2,17 @@
 import argparse
 import sys
 
+from rich import box
 from rich.console import Console
+from rich.table import Table
 
-from gbpcli import GBP, utils
+from gbpcli import GBP
+from gbpcli.utils import resolve_build_id, timestr, yesno
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for "status" subcommand"""
-    resolved_build = utils.resolve_build_id(args.machine, args.number, gbp)
+    resolved_build = resolve_build_id(args.machine, args.number, gbp)
     build = gbp.get_build_info(resolved_build)
 
     if build is None:
@@ -17,7 +20,44 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         return 1
 
     assert build.info is not None
-    console.print(utils.build_to_str(build), end="", highlight=False)
+
+    grid = Table.grid()
+    grid.add_column()
+    grid.add_column()
+
+    grid.add_row("[bold]Build:[/bold] ", f"[blue]{build.machine}/{build.number}[/blue]")
+
+    grid.add_row("[bold]Submitted:[/bold] ", timestr(build.info.submitted))
+
+    grid.add_row(
+        "[bold]Completed:[/bold] ",
+        timestr(build.info.completed) if build.info.completed else "no",
+    )
+
+    if build.info.built is not None:
+        grid.add_row("[bold]BuildDate:[/bold] ", timestr(build.info.built))
+
+    grid.add_row("[bold]Published:[/bold] ", f"{yesno(build.info.published)}")
+    grid.add_row("[bold]Keep:[/bold] ", f"{yesno(build.info.keep)}")
+    grid.add_row("[bold]Tags:[/bold] ", f"{' '.join(build.info.tags)}")
+
+    grid.add_row(
+        "[bold]Packages-built:[/bold] ", "" if build.packages_built else "None"
+    )
+
+    if packages := build.packages_built:
+        for package in packages:
+            grid.add_row("", package.cpv)
+
+    console.print(grid)
+
+    if note := build.info.note:
+        console.print()
+        table = Table(box=box.ROUNDED, pad_edge=False)
+        table.add_column("📎 Notes")
+        table.add_row(note.rstrip("\n"))
+
+        console.print(table)
 
     return 0
 
