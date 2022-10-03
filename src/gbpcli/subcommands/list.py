@@ -17,7 +17,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         title_style="bold",
     )
     table.add_column("Status")
-    table.add_column("ID")
+    table.add_column("ID", justify="right")
     table.add_column("Submitted")
     table.add_column("Tags")
 
@@ -30,7 +30,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
             f"{'[bold green]P[/bold green]' if build.info.published else ' '}"
             f"{'[blue]N[/blue]' if build.info.note else ' '}"
         )
-        number = f" [bold]{build.number:>5}[/bold]"
+        number = f"[bold]{build.number}[/bold]"
         submitted = f"{timestamp.strftime('%x %X')}"
         tag_list = [f"@{tag}" for tag in build.info.tags] if build.info.tags else []
         tags = f"[yellow]{' '.join(tag_list)}[/yellow]"
