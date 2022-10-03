@@ -1,6 +1,6 @@
 """List builds for the given machines
 
-Key for the "Status" column:
+Key for the "Flags" column:
 
     *: Packages were build for the build
     K: The build has been marked for keeping
@@ -25,7 +25,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         box=box.ROUNDED,
         title_style="bold",
     )
-    table.add_column("Status")
+    table.add_column("Flags")
     table.add_column("ID", justify="right")
     table.add_column("Built")
     table.add_column("Tags")
@@ -38,7 +38,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
             LOCAL_TIMEZONE
         )
 
-        status = (
+        flags = (
             f"{'[magenta]*[/magenta]' if build.packages_built else ' '}"
             f"{'[yellow]K[/yellow]' if build.info.keep else ' '}"
             f"{'[bold green]P[/bold green]' if build.info.published else ' '}"
@@ -48,7 +48,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         built = f"{timestamp.strftime('%x %X')}"
         tag_list = [f"@{tag}" for tag in build.info.tags] if build.info.tags else []
         tags = f"[yellow]{' '.join(tag_list)}[/yellow]"
-        table.add_row(status, number, built, tags)
+        table.add_row(flags, number, built, tags)
 
     console.print(table)
 
