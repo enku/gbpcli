@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from gbpcli import GBP
-from gbpcli.utils import resolve_build_id, timestr, yesno
+from gbpcli.utils import green_yes, resolve_build_id, timestr
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
@@ -38,8 +38,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         timestr(build.info.completed) if build.info.completed else "no",
     )
 
-    grid.add_row("[bold]Published:[/bold] ", f"{yesno(build.info.published)}")
-    grid.add_row("[bold]Keep:[/bold] ", f"{yesno(build.info.keep)}")
+    grid.add_row("[bold]Published:[/bold] ", f"{green_yes(build.info.published)}")
+    grid.add_row("[bold]Keep:[/bold] ", f"{green_yes(build.info.keep)}")
     tags = [f"[yellow]@{tag}[/yellow]" for tag in build.info.tags]
     grid.add_row("[bold]Tags:[/bold] ", " ".join(tags))
 

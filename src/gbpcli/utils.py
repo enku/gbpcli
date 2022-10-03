@@ -24,9 +24,17 @@ def timestr(
 def yesno(value: bool) -> Literal["yes", "no"]:
     """Convert bool value to 'yes' or 'no'"""
     if value:
-        return "[green]yes[/green]"
+        return "yes"
 
     return "no"
+
+
+def green_yes(value: bool) -> str:
+    """Like yesno() but yes's are wrapped in green"""
+    if (yes_or_no := yesno(value)) == "no":
+        return yes_or_no
+
+    return "[green]yes[/green]"
 
 
 def build_to_str(build: Build) -> str:
