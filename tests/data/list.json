@@ -2,86 +2,512 @@
    "data" : {
       "builds" : [
          {
-            "completed" : "2021-10-02T16:15:43.485142+00:00",
+            "built" : "2022-10-03T11:38:28.189000+00:00",
+            "completed" : "2022-10-03T11:47:07.423809+00:00",
+            "id" : "lighthouse.10694",
             "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* dev-java/openjdk-11.0.12_p7-1",
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [],
             "published" : false,
-            "submitted" : "2021-10-02T16:10:41.506599+00:00",
-            "id": "jenkins.42"
+            "submitted" : "2022-10-03T11:43:32.534362+00:00",
+            "tags" : []
          },
          {
-            "completed" : "2021-09-28T21:24:57.085231+00:00",
+            "built" : "2022-10-03T10:04:08.774000+00:00",
+            "completed" : "2022-10-03T10:17:49.033242+00:00",
+            "id" : "lighthouse.10693",
             "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* app-text/poppler-21.07.0-2\n* dev-java/java-config-2.3.1-3\n* dev-libs/glib-2.68.3-r1-2\n* dev-libs/jsoncpp-1.9.4-1\n* dev-perl/Text-Unidecode-1.300.0-r1-1\n* dev-python/certifi-10001-r1-3\n* dev-python/cython-0.29.23-3\n* dev-python/filelock-3.0.12-r1-3\n* dev-python/lxml-4.6.3-r1-2\n* dev-python/platformdirs-2.3.0-1\n* dev-python/pluggy-0.13.1-r1-3\n* dev-python/py-1.10.0-3\n* dev-python/pyparsing-2.4.7-r1-3\n* dev-python/setuptools_scm-6.0.1-r1-3\n* dev-python/six-1.16.0-2\n* dev-python/toml-0.10.2-3\n* dev-util/desktop-file-utils-0.26-r1-2\n* dev-util/meson-0.59.1-r1-1\n* dev-util/meson-format-array-0-3\n* dev-util/ninja-1.10.1-1\n* dev-util/re2c-2.1.1-r1-1\n* media-libs/harfbuzz-2.9.1-1\n* media-libs/libjpeg-turbo-2.1.1-r2-1\n* net-misc/curl-7.79.1-1\n* sys-apps/coreutils-8.32-r1-2\n* sys-apps/gentoo-systemd-integration-8-1\n* sys-libs/glibc-2.33-r1-2\n* x11-base/xcb-proto-1.14.1-3\n* x11-base/xorg-proto-2021.4-2\n* x11-libs/libxcb-1.14-2\n* x11-misc/shared-mime-info-2.1-2",
-            "id" : "jenkins.41",
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "sys-kernel/vanilla-sources-6.0.0"
+               }
+            ],
             "published" : false,
-            "submitted" : "2021-09-28T21:18:42.933044+00:00"
+            "submitted" : "2022-10-03T10:15:09.626400+00:00",
+            "tags" : []
          },
          {
-            "completed" : "2021-09-07T21:12:37.068752+00:00",
+            "built" : "2022-10-03T04:07:34.756000+00:00",
+            "completed" : "2022-10-03T04:14:57.152704+00:00",
+            "id" : "lighthouse.10687",
             "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* app-crypt/gnupg-2.2.29-1\n* dev-lang/tcl-8.6.11-1\n* dev-python/backports-entry_points_selectable-1.1.0-1\n* dev-python/platformdirs-2.0.2-1\n* dev-python/virtualenv-20.7.2-1\n* dev-util/pkgconf-1.7.4-r1-1\n* dev-vcs/mercurial-5.8.1-1\n* media-libs/freetype-2.11.0-r1-1\n* net-dns/libidn2-2.3.2-1\n* sys-apps/systemd-249.2-r1-1\n* sys-apps/util-linux-2.37.2-1\n* sys-fs/lvm2-2.02.188-r2-1\n* sys-libs/libseccomp-2.5.1-r1-1\n* virtual/pkgconfig-2-r1-1",
-            "id" : "jenkins.38",
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-libs/libgusb-0.4.1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-03T04:12:31.319533+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-03T03:03:28.777000+00:00",
+            "completed" : "2022-10-03T03:11:29.965796+00:00",
+            "id" : "lighthouse.10686",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-accessibility/at-spi2-atk-2.46.0"
+               },
+               {
+                  "cpv" : "app-accessibility/at-spi2-core-2.46.0"
+               },
+               {
+                  "cpv" : "dev-libs/atk-2.46.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-03T03:08:40.283267+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-02T19:10:02.642000+00:00",
+            "completed" : "2022-10-02T19:20:51.297393+00:00",
+            "id" : "lighthouse.10678",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-python/pytz-2022.4"
+               }
+            ],
             "published" : true,
-            "submitted" : "2021-09-07T21:07:00.940482+00:00"
+            "submitted" : "2022-10-02T19:15:11.606184+00:00",
+            "tags" : []
          },
          {
-            "completed" : "2021-08-31T20:47:36.520156+00:00",
+            "built" : "2022-10-02T17:08:06.334000+00:00",
+            "completed" : "2022-10-02T17:22:48.521560+00:00",
+            "id" : "lighthouse.10676",
             "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* app-arch/libarchive-3.5.2-1\n* app-crypt/pinentry-1.1.1-r1-1\n* app-eselect/eselect-pinentry-0.7.2-1\n* dev-lang/go-1.17-1\n* dev-libs/openssl-1.1.1l-1\n* dev-perl/libintl-perl-1.320.0-1\n* dev-python/jinja-3.0.1-1\n* dev-python/markupsafe-2.0.1-1\n* dev-python/pip-21.2.4-1\n* dev-util/meson-0.58.2-r1-1\n* dev-vcs/git-2.32.0-r1-1\n* sys-apps/less-590-1\n* sys-apps/man-pages-5.12-r2-1\n* sys-apps/systemd-249.2-1",
-            "id" : "jenkins.37",
-            "published" : false,
-            "submitted" : "2021-08-31T20:42:23.896776+00:00"
-         },
-         {
-            "completed" : "2021-07-22T01:35:02.305748+00:00",
-            "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* dev-libs/openssl-1.1.1k-r1-1\n* sys-apps/systemd-248.5-1",
-            "id" : "jenkins.28",
-            "published" : false,
-            "submitted" : "2021-07-22T01:28:16.440330+00:00"
-         },
-         {
-            "completed" : "2021-06-27T14:33:12.033299+00:00",
-            "keep" : false,
-            "machine" : "jenkins",
-            "notes" : "Packages built:\n\n* dev-python/pip-21.1.2-r1-1\n* dev-python/setuptools-57.0.0-1\n* net-print/cups-2.3.3_p2-r2-1\n* sys-apps/portage-3.0.20-r6-1\n* sys-apps/systemd-248.3-r1-1\n* www-servers/nginx-1.20.1-r2-1",
-            "id" : "jenkins.23",
-            "published" : false,
-            "submitted" : "2021-06-27T14:26:41.338360+00:00"
-         },
-         {
-            "completed" : "2021-05-26T21:23:56.423528+00:00",
-            "keep" : false,
-            "machine" : "jenkins",
+            "machine" : "lighthouse",
             "notes" : null,
-            "id" : "jenkins.18",
+            "packagesBuilt" : [
+               {
+                  "cpv" : "media-gfx/imagemagick-7.1.0.48"
+               }
+            ],
             "published" : false,
-            "submitted" : "2021-05-26T21:22:50.644472+00:00"
+            "submitted" : "2022-10-02T17:20:06.378524+00:00",
+            "tags" : []
          },
          {
-            "completed" : "2021-04-26T20:25:38.822337+00:00",
+            "built" : "2022-10-02T10:03:48.353000+00:00",
+            "completed" : "2022-10-02T10:23:00.858505+00:00",
+            "id" : "lighthouse.10669",
             "keep" : false,
-            "machine" : "jenkins",
+            "machine" : "lighthouse",
             "notes" : null,
-            "id" : "jenkins.12",
+            "packagesBuilt" : [
+               {
+                  "cpv" : "x11-themes/adwaita-icon-theme-43_p1"
+               }
+            ],
             "published" : false,
-            "submitted" : "2021-04-26T20:24:42.522418+00:00"
+            "submitted" : "2022-10-02T10:16:59.620658+00:00",
+            "tags" : []
          },
          {
-            "completed" : "2021-04-26T04:48:11.806580+00:00",
+            "built" : "2022-10-02T09:03:47.894000+00:00",
+            "completed" : "2022-10-02T09:29:40.120816+00:00",
+            "id" : "lighthouse.10668",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "sys-libs/glibc-2.36-r4"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-02T09:27:20.349794+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-02T06:03:20.488000+00:00",
+            "completed" : "2022-10-02T06:23:34.757765+00:00",
+            "id" : "lighthouse.10665",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-text/ghostscript-gpl-10.0.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-02T06:20:07.501567+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-02T03:03:47.942000+00:00",
+            "completed" : "2022-10-02T03:22:40.321564+00:00",
+            "id" : "lighthouse.10662",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "sys-apps/systemd-251.5"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-02T03:17:28.842192+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-02T02:03:47.453000+00:00",
+            "completed" : "2022-10-02T02:15:51.101740+00:00",
+            "id" : "lighthouse.10661",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-text/qpdf-11.1.1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-02T02:12:19.425102+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-02T01:58:07.417000+00:00",
+            "completed" : "2022-10-02T02:04:52.975539+00:00",
+            "id" : "lighthouse.10660",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-crypt/pinentry-1.2.1-r1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-02T02:02:25.329257+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-10-01T21:03:49.527000+00:00",
+            "completed" : "2022-10-01T21:12:43.513889+00:00",
+            "id" : "lighthouse.10655",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "gnome-base/gnome-session-43.0"
+               },
+               {
+                  "cpv" : "gnome-extra/gnome-contacts-43.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-10-01T21:09:23.007036+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-30T20:09:48.761000+00:00",
+            "completed" : "2022-09-30T20:17:52.971841+00:00",
+            "id" : "lighthouse.10629",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-arch/xz-utils-5.2.7"
+               },
+               {
+                  "cpv" : "media-video/totem-43.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-30T20:15:42.920321+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-29T19:05:05.307000+00:00",
+            "completed" : "2022-09-29T20:33:53.979663+00:00",
+            "id" : "lighthouse.10603",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "net-libs/nodejs-18.10.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-29T20:30:57.572210+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-28T14:09:51.476000+00:00",
+            "completed" : "2022-09-28T14:18:51.568135+00:00",
+            "id" : "lighthouse.10572",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "gui-libs/gdk-pixbuf-loader-webp-0.0.6"
+               },
+               {
+                  "cpv" : "x11-themes/gnome-backgrounds-43-r1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-28T14:14:51.789418+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-27T19:10:32.365000+00:00",
+            "completed" : "2022-09-27T19:31:31.730454+00:00",
+            "id" : "lighthouse.10550",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-text/evince-43.0"
+               },
+               {
+                  "cpv" : "dev-libs/glib-2.74.0-r1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-27T19:22:56.027573+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-26T21:09:41.011000+00:00",
+            "completed" : "2022-09-26T21:27:08.288764+00:00",
+            "id" : "lighthouse.10529",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-shells/bash-5.2"
+               },
+               {
+                  "cpv" : "sys-libs/readline-8.2"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-26T21:23:24.129924+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-25T18:09:31.523000+00:00",
+            "completed" : "2022-09-25T20:43:09.888980+00:00",
+            "id" : "lighthouse.10502",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-lang/rust-1.64.0-r1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-09-25T20:34:33.724533+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-09-01T15:43:10.457000+00:00",
+            "completed" : "2022-09-01T16:47:34.291792+00:00",
+            "id" : "lighthouse.10000",
             "keep" : true,
-            "machine" : "jenkins",
-            "notes" : null,
-            "id" : "jenkins.1",
+            "machine" : "lighthouse",
+            "notes" : "Our 10,000th build of lighthouse!  Keep this for prosperity.\n\nNo new packages were built, but oh well 😼\n",
+            "packagesBuilt" : [],
             "published" : false,
-            "submitted" : "2021-04-26T04:47:27.000716+00:00"
+            "submitted" : "2022-09-01T16:28:12.713042+00:00",
+            "tags" : [
+               "10000"
+            ]
+         },
+         {
+            "built" : "2022-08-31T23:07:06.058000+00:00",
+            "completed" : "2022-08-31T23:34:03.533214+00:00",
+            "id" : "lighthouse.9983",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-libs/gobject-introspection-1.72.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-08-31T23:14:39.317830+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-08-12T09:50:29.519000+00:00",
+            "completed" : "2022-08-12T10:23:24.934833+00:00",
+            "id" : "lighthouse.9515",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-python/setuptools-63.4.3"
+               },
+               {
+                  "cpv" : "net-print/cups-pk-helper-0.2.7"
+               },
+               {
+                  "cpv" : "sys-kernel/vanilla-sources-5.19.1"
+               },
+               {
+                  "cpv" : "x11-base/xorg-proto-2022.2"
+               },
+               {
+                  "cpv" : "x11-libs/gdk-pixbuf-2.42.9"
+               },
+               {
+                  "cpv" : "x11-libs/pango-1.50.9"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-08-12T10:08:39.164875+00:00",
+            "tags" : [
+               "emptytree"
+            ]
+         },
+         {
+            "built" : "2022-07-31T17:03:03.714000+00:00",
+            "completed" : "2022-07-31T17:49:14.477386+00:00",
+            "id" : "lighthouse.9280",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-shells/bash-5.1_p16-r1"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-07-31T17:16:23.036028+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-06-30T21:08:40.507000+00:00",
+            "completed" : "2022-06-30T21:33:33.226712+00:00",
+            "id" : "lighthouse.8589",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "app-crypt/gnupg-2.3.6-r1"
+               },
+               {
+                  "cpv" : "sys-apps/attr-2.5.1-r2"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-06-30T21:19:38.281041+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-05-31T22:06:45.397000+00:00",
+            "completed" : "2022-05-31T22:39:20.034065+00:00",
+            "id" : "lighthouse.8011",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-lang/python-3.11.0_beta1-r2"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-05-31T22:36:08.149821+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-04-30T16:18:49.067000+00:00",
+            "completed" : "2022-04-30T16:24:42.858665+00:00",
+            "id" : "lighthouse.7280",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [],
+            "published" : false,
+            "submitted" : "2022-04-30T16:21:31.006689+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-03-31T21:00:53.100000+00:00",
+            "completed" : "2022-03-31T21:20:35.831038+00:00",
+            "id" : "lighthouse.6573",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "sys-libs/glibc-2.35-r2"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-03-31T21:15:23.396350+00:00",
+            "tags" : []
+         },
+         {
+            "built" : "2022-02-28T10:05:29.810000+00:00",
+            "completed" : "2022-02-28T12:49:30.815054+00:00",
+            "id" : "lighthouse.5867",
+            "keep" : false,
+            "machine" : "lighthouse",
+            "notes" : null,
+            "packagesBuilt" : [
+               {
+                  "cpv" : "dev-db/sqlite-3.38.0"
+               }
+            ],
+            "published" : false,
+            "submitted" : "2022-02-28T10:13:58.461048+00:00",
+            "tags" : []
+         },
+         {
+            "built" : null,
+            "completed" : "2021-04-28T22:13:31.218850+00:00",
+            "id" : "lighthouse.237",
+            "keep" : true,
+            "machine" : "lighthouse",
+            "notes" : "First!\n",
+            "packagesBuilt" : null,
+            "published" : false,
+            "submitted" : "2021-04-25T23:10:22.553326+00:00",
+            "tags" : []
          }
       ]
-   }
+   },
+   "errors" : [
+      {
+         "locations" : [
+            {
+               "column" : 5,
+               "line" : 12
+            }
+         ],
+         "message" : "Packages built unknown",
+         "path" : [
+            "builds",
+            28,
+            "packagesBuilt"
+         ]
+      }
+   ]
 }

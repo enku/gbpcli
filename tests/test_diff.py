@@ -24,10 +24,18 @@ class DiffTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = """\
 diff -r lighthouse/3111 lighthouse/3112
---- a/lighthouse/3111 Sat Oct  2 09:31:48 2021 -0700
-+++ b/lighthouse/3112 Sat Oct  2 11:23:43 2021 -0700
--app-misc/tracker-miners-3.1.2-4
-+app-misc/tracker-miners-3.1.3-1
+--- a/lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
++++ b/lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
+-app-accessibility/at-spi2-atk-2.38.0-1
++app-accessibility/at-spi2-atk-2.46.0-1
+-app-accessibility/at-spi2-core-2.44.1-1
++app-accessibility/at-spi2-core-2.46.0-1
+-dev-libs/atk-2.38.0-3
++dev-libs/atk-2.46.0-1
+-dev-libs/libgusb-0.4.0-1
++dev-libs/libgusb-0.4.1-1
+-sys-kernel/vanilla-sources-5.19.12-1
++sys-kernel/vanilla-sources-6.0.0-1
 """
         self.assertEqual(self.console.getvalue(), expected)
         self.assert_graphql(
@@ -78,7 +86,7 @@ diff -r lighthouse/3111 lighthouse/3112
         gbp.session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_should_use_published(self, _print_mock):
-        args = Namespace(machine="jenkins", left=None, right=None)
+        args = Namespace(machine="lighthouse", left=None, right=None)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
@@ -93,7 +101,7 @@ diff -r lighthouse/3111 lighthouse/3112
         expected_calls = [
             mock.call(
                 gbp.url,
-                json={"query": queries.builds, "variables": {"machine": "jenkins"}},
+                json={"query": queries.builds, "variables": {"machine": "lighthouse"}},
                 headers=gbp.headers,
             ),
             mock.call(
@@ -101,8 +109,8 @@ diff -r lighthouse/3111 lighthouse/3112
                 json={
                     "query": queries.diff,
                     "variables": {
-                        "left": "jenkins.38",
-                        "right": "jenkins.42",
+                        "left": "lighthouse.10678",
+                        "right": "lighthouse.10694",
                     },
                 },
                 headers=gbp.headers,
