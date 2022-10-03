@@ -24,7 +24,7 @@ def timestr(
 def yesno(value: bool) -> Literal["yes", "no"]:
     """Convert bool value to 'yes' or 'no'"""
     if value:
-        return "yes"
+        return "[green]yes[/green]"
 
     return "no"
 

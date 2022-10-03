@@ -13,7 +13,7 @@ class UtilsTestCase(unittest.TestCase):
     """Tests for the yesno() function"""
 
     def test_true(self):
-        self.assertEqual("yes", yesno(True))
+        self.assertEqual("[green]yes[/green]", yesno(True))
 
     def test_false(self):
         self.assertEqual("no", yesno(False))
