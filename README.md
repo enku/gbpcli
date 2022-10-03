@@ -95,8 +95,7 @@ $ gbp status babette 412
 │ Completed:      Sun Feb 27 06:45:00 2022 -0500 │
 │ Published:      no                             │
 │ Keep:           no                             │
-│ Packages-built:                                │
-│                 app-text/opensp-1.5.2-r7       │
+│ Packages-built: app-text/opensp-1.5.2-r7       │
 ╰────────────────────────────────────────────────╯
 
 ╭─────────────────────╮

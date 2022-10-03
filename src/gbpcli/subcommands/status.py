@@ -42,13 +42,15 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     grid.add_row("[bold]Keep:[/bold] ", f"{yesno(build.info.keep)}")
     grid.add_row("[bold]Tags:[/bold] ", f"{' '.join(build.info.tags)}")
 
+    packages = build.packages_built
     grid.add_row(
-        "[bold]Packages-built:[/bold] ", "" if build.packages_built else "None"
+        "[bold]Packages-built:[/bold] ",
+        f"[magenta]{packages[0].cpv}[/magenta]" if packages else "None",
     )
 
-    if packages := build.packages_built:
-        for package in packages:
-            grid.add_row("", package.cpv)
+    if packages:
+        for package in packages[1:]:
+            grid.add_row("", f"[magenta]{package.cpv}[/magenta]")
 
     console.print(Panel(grid, expand=False))
 

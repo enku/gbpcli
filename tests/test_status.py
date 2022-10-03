@@ -30,8 +30,7 @@ class StatusTestCase(TestCase):
 │ Published:      no                             │
 │ Keep:           no                             │
 │ Tags:           testing                        │
-│ Packages-built:                                │
-│                 app-editors/vim-8.2.3582       │
+│ Packages-built: app-editors/vim-8.2.3582       │
 │                 app-editors/vim-core-8.2.3582  │
 ╰────────────────────────────────────────────────╯
 
