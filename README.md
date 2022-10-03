@@ -42,69 +42,23 @@ by using the `BUILD_PUBLISHER_URL` environment variable.
 
 To list the machines which have builds:
 
-```bash
-$ gbp machines
-            Machines            
-╭────────────┬────────┬────────╮
-│ Machine    │ Builds │ Latest │
-├────────────┼────────┼────────┤
-│ arm64-base │      6 │     36 │
-│ babette    │     10 │    438 │
-│ base       │     16 │    643 │
-│ blackwidow │     24 │  10994 │
-│ gbpbox     │     12 │    224 │
-│ lighthouse │     29 │ *10694 │
-│ testing    │     23 │  10159 │
-╰────────────┴────────┴────────╯
-```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png)
+
 The "Latest" column shows the latest build ID for the given machine. If the ID has a `*`
 beside it that denotes that the latest build is published (available for emerges).
 
 To list the available builds for a given machine:
 
-```bash
-$ gbp list babette
-                   💻 babette               
-╭───────┬─────┬───────────────────┬────────╮
-│ Flags │  ID │ Built             │ Tags   │
-├───────┼─────┼───────────────────┼────────┤
-│  K    │ 104 │ 04/25/21 08:51:19 │ @first │
-│       │ 132 │ 05/21/21 13:27:50 │        │
-│ *     │ 412 │ 02/27/22 06:42:08 │        │
-│ *     │ 413 │ 02/28/22 06:43:32 │        │
-│ *     │ 430 │ 03/16/22 08:49:15 │        │
-│ *     │ 431 │ 03/17/22 08:54:43 │        │
-│ *     │ 434 │ 03/21/22 16:37:30 │        │
-│ *     │ 435 │ 03/22/22 12:01:48 │        │
-│ * PN  │ 437 │ 03/22/22 13:28:13 │        │
-│ *     │ 438 │ 03/23/22 13:09:26 │        │
-╰───────┴─────┴───────────────────┴────────╯
-```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png)
 
-In the above example, the `P` output for build `437` signifies that this build
-is currently published (`P`) and there is a user note for that build (`N`).
-The `*` means that the respective build has new binary packages. The `K` for
-build `104` means that the build is marked for keeping and will not be removed
-during the purge process. Build `104` has also been given a "first" tag.
+In the above example, the `P` output for build `623` signifies that this build
+is currently published.  The `*` flag means that the respective build has new
+binary packages. The `K` for build `104` means that the build is marked for
+keeping and will not be removed during the purge process. Build `600` has also
+been given a "stable" tag.  The `N` flag for build `631` means that the build
+has a note attached.
 
-```bash
-$ gbp status babette 412
-╭────────────────────────────────────────────────╮
-│ Build:          babette/412                    │
-│ BuildDate:      Sun Feb 27 06:38:30 2022 -0500 │
-│ Submitted:      Sun Feb 27 06:42:08 2022 -0500 │
-│ Completed:      Sun Feb 27 06:45:00 2022 -0500 │
-│ Published:      no                             │
-│ Keep:           no                             │
-│ Packages-built: app-text/opensp-1.5.2-r7       │
-╰────────────────────────────────────────────────╯
-
-╭─────────────────────╮
-│📎 Notes             │
-├─────────────────────┤
-│This is a build note.│
-╰─────────────────────╯
-```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png)
 
 Edit/delete build notes using the `gbp notes` command.
 
@@ -114,20 +68,8 @@ number is not given, it defaults to the latest build for that machine.
 
 The `diff` subcommand display differences between two build.
 
-```bash
-$ gbp diff babette 437 438
-diff -r babette/437 babette/438
---- a/babette/437 Tue Mar 22 13:28:13 2022 -0500
-+++ b/babette/438 Wed Mar 23 13:09:26 2022 -0500
--app-admin/sudo-1.9.8_p2-1
-+app-admin/sudo-1.9.8_p2-r1-1
--app-crypt/gnupg-2.2.34-1
-+app-crypt/gnupg-2.2.34-r1-1
--dev-python/importlib_metadata-4.11.2-1
--dev-python/zipp-3.7.0-r1-1
--net-misc/curl-7.79.1-3
-+net-misc/curl-7.79.1-r1-1
-```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.png)
+
 If the second build number is not given, it defaults to the latest build for
 that machine.  If the first build number is not given, it defaults to the
 published build for that machine.
@@ -136,7 +78,7 @@ The `publish` subcommand makes the given build available for syncing and
 updating/downgrading.
 
 ```bash
-$ gbp publish babette 438
+$ gbp publish babette 631
 ```
 
 If the build nubmer is not given, it defaults to the latest build for that machine.
