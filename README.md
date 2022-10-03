@@ -24,15 +24,17 @@ $ pip install gbpcli
 The full command set supported:
 
 ```bash
-usage: gbp [-h] [--url URL]
-           {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status} ...
+usage: gbp [-h] [--version] [--url URL] [--color WHEN]
+           {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag} ...
 
 positional arguments:
-  {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status}
+  {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag}
 
 options:
   -h, --help            show this help message and exit
+  --version             show program's version number and exit
   --url URL             GBP url
+  --color WHEN          color output
 ```
 
 The URL for the Gentoo Build Publisher may be provided via the command line or
