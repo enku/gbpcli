@@ -4,6 +4,7 @@ import sys
 
 from rich import box
 from rich.console import Console
+from rich.panel import Panel
 from rich.table import Table
 
 from gbpcli import GBP
@@ -49,7 +50,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         for package in packages:
             grid.add_row("", package.cpv)
 
-    console.print(grid)
+    console.print(Panel(grid, expand=False))
 
     if note := build.info.note:
         console.print()

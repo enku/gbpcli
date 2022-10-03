@@ -88,14 +88,16 @@ during the purge process. Build `104` has also been given a "first" tag.
 
 ```bash
 $ gbp status babette 412
-Build:          babette/412                   
-BuildDate:      Sun Feb 27 06:38:30 2022 -0500
-Submitted:      Sun Feb 27 06:42:08 2022 -0500
-Completed:      Sun Feb 27 06:45:00 2022 -0500
-Published:      no                            
-Keep:           no                            
-Packages-built:                               
-                app-text/opensp-1.5.2-r7      
+╭────────────────────────────────────────────────╮
+│ Build:          babette/412                    │
+│ BuildDate:      Sun Feb 27 06:38:30 2022 -0500 │
+│ Submitted:      Sun Feb 27 06:42:08 2022 -0500 │
+│ Completed:      Sun Feb 27 06:45:00 2022 -0500 │
+│ Published:      no                             │
+│ Keep:           no                             │
+│ Packages-built:                                │
+│                 app-text/opensp-1.5.2-r7       │
+╰────────────────────────────────────────────────╯
 
 ╭─────────────────────╮
 │📎 Notes             │

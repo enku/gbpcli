@@ -23,15 +23,17 @@ class StatusTestCase(TestCase):
         status(args, self.gbp, self.console)
 
         expected = """\
-Build:          lighthouse/3587               
-Submitted:      Fri Nov 12 21:25:53 2021 -0700
-Completed:      Fri Nov 12 21:29:34 2021 -0700
-Published:      no                            
-Keep:           no                            
-Tags:           testing                       
-Packages-built:                               
-                app-editors/vim-8.2.3582      
-                app-editors/vim-core-8.2.3582 
+╭────────────────────────────────────────────────╮
+│ Build:          lighthouse/3587                │
+│ Submitted:      Fri Nov 12 21:25:53 2021 -0700 │
+│ Completed:      Fri Nov 12 21:29:34 2021 -0700 │
+│ Published:      no                             │
+│ Keep:           no                             │
+│ Tags:           testing                        │
+│ Packages-built:                                │
+│                 app-editors/vim-8.2.3582       │
+│                 app-editors/vim-core-8.2.3582  │
+╰────────────────────────────────────────────────╯
 
 ╭─────────────────────╮
 │📎 Notes             │
