@@ -2,6 +2,7 @@ query ($machine: String!) {
   builds(machine: $machine) {
     id
     machine
+    built
     submitted
     completed
     published
