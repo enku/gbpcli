@@ -40,7 +40,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     grid.add_row("[bold]Published:[/bold] ", f"{yesno(build.info.published)}")
     grid.add_row("[bold]Keep:[/bold] ", f"{yesno(build.info.keep)}")
-    grid.add_row("[bold]Tags:[/bold] ", f"{' '.join(build.info.tags)}")
+    tags = [f"[yellow]@{tag}[/yellow]" for tag in build.info.tags]
+    grid.add_row("[bold]Tags:[/bold] ", " ".join(tags))
 
     packages = build.packages_built
     grid.add_row(
