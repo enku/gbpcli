@@ -28,15 +28,15 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     grid.add_row("[bold]Build:[/bold] ", f"[blue]{build.machine}/{build.number}[/blue]")
 
+    if build.info.built is not None:
+        grid.add_row("[bold]BuildDate:[/bold] ", timestr(build.info.built))
+
     grid.add_row("[bold]Submitted:[/bold] ", timestr(build.info.submitted))
 
     grid.add_row(
         "[bold]Completed:[/bold] ",
         timestr(build.info.completed) if build.info.completed else "no",
     )
-
-    if build.info.built is not None:
-        grid.add_row("[bold]BuildDate:[/bold] ", timestr(build.info.built))
 
     grid.add_row("[bold]Published:[/bold] ", f"{yesno(build.info.published)}")
     grid.add_row("[bold]Keep:[/bold] ", f"{yesno(build.info.keep)}")
