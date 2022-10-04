@@ -51,7 +51,7 @@ def open_editor(editor: str, text: Optional[str]) -> str:
 
 def get_note(existing_note: Optional[str]) -> str:
     """Get a note either from standard input or editor"""
-    if sys.stdout.isatty() and (editor := get_editor()):
+    if sys.stdin.isatty() and (editor := get_editor()):
         note = open_editor(editor, existing_note)
     else:
         note = sys.stdin.read()

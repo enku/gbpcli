@@ -83,7 +83,7 @@ class NotesTestCase(TestCase):
         self.make_response("status.json")
         self.make_response("create_note.json")
 
-        with mock.patch(f"{MODULE}.sys.stdout.isatty", return_value=False):
+        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                 create_note(self.args, self.gbp, self.console)
 
