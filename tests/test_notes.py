@@ -53,7 +53,7 @@ class NotesTestCase(TestCase):
     def test_create_with_editor_but_editor_fails_does_not_create_note(self):
         editor = fake_editor(returncode=1)
 
-        with mock.patch(f"{MODULE}.sys.stdout.isatty", return_value=True):
+        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"VISUAL": "foo"}, clear=True):
                     status = create_note(self.args, self.gbp, self.console)
@@ -65,7 +65,7 @@ class NotesTestCase(TestCase):
         self.assertEqual(call_args[0][0][0], "foo")
 
     def test_when_isatty_but_no_editor_reads_from_stdin(self):
-        with mock.patch(f"{MODULE}.sys.stdout.isatty", return_value=True):
+        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch.dict(os.environ, {}, clear=True):
                 with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                     status = create_note(self.args, self.gbp, self.console)
