@@ -39,7 +39,7 @@ class NotesTestCase(TestCase):
     def test_create_with_editor(self):
         editor = fake_editor()
 
-        with mock.patch(f"{MODULE}.sys.stdout.isatty", return_value=True):
+        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"EDITOR": "foo"}, clear=True):
                     status = create_note(self.args, self.gbp, self.console)
