@@ -9,7 +9,6 @@ venv := .venv/pyenv.cfg
 wheel := dist/$(subst -,_,$(name))-$(version)-py3-none-any.whl
 src := $(shell find src -type f -print)
 tests := $(shell find tests -type f -print)
-raw_queries := $(shell find src/gbpcli/queries -name '*.graphql' -print)
 
 
 .coverage: $(venv) $(src) $(tests)
