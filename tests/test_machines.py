@@ -37,7 +37,7 @@ EXPECTED_OUTPUT = """\
 │ base       │     16 │    643 │
 │ blackwidow │     24 │  10994 │
 │ gbpbox     │     12 │    224 │
-│ lighthouse │     29 │ *10694 │
+│ lighthouse │     29 │  10694 │
 │ testing    │     23 │  10159 │
 ╰────────────┴────────┴────────╯
 """

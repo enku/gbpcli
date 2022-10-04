@@ -12,7 +12,10 @@ def latest_build_to_str(build: dict) -> str:
     """Return the "Latest" column for the given build"""
     build_id = build["id"].rpartition(".")[2]
 
-    return f"{'[green]*[/green]' if build['published'] else ''}{build_id}"
+    if build["published"]:
+        build_id = f"[bold green]{build_id}[/bold green]"
+
+    return build_id
 
 
 def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
