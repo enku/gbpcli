@@ -4,7 +4,7 @@ import requests.exceptions
 
 from gbpcli import Queries
 
-from . import TestCase, make_response
+from . import TestCase, make_response, mock_print
 
 
 class GBPQueryTestCase(TestCase):
@@ -35,7 +35,8 @@ class GBPQueryTestCase(TestCase):
 
         self.assertEqual(response, ({"foo": "bar"}, [{"this": "that"}]))
 
-    def test_exits_on_connection_errors(self):
+    @mock_print("gbpcli")
+    def test_exits_on_connection_errors(self, _):
         query = "query foo { bar }"
         self.gbp.session.post.side_effect = requests.exceptions.ConnectionError()
 
