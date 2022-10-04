@@ -21,14 +21,12 @@ class MachinesTestCase(TestCase):
         status = machines(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(
-            self.console.getvalue(), EXPECTED_OUTPUT, self.console.getvalue()
-        )
+        self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(queries.machines)
 
 
 EXPECTED_OUTPUT = """\
-            Machines            
+           7 Machines           
 ╭────────────┬────────┬────────╮
 │ Machine    │ Builds │ Latest │
 ├────────────┼────────┼────────┤

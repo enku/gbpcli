@@ -20,12 +20,15 @@ def latest_build_to_str(build: dict) -> str:
 
 def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for machines subcommand"""
-    table = Table(title="Machines", box=box.ROUNDED, title_style="bold")
+    machines = gbp.machines()
+    table = Table(
+        title=f"{len(machines)} Machines", box=box.ROUNDED, title_style="bold"
+    )
     table.add_column("Machine")
     table.add_column("Builds", justify="right")
     table.add_column("Latest", justify="right")
 
-    for machine, builds, latest in gbp.machines():
+    for machine, builds, latest in machines:
         table.add_row(
             f"[bold blue]{machine}[/bold blue]",
             str(builds),
