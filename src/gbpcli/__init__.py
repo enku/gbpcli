@@ -90,6 +90,7 @@ class Package:
     """A (binary) package"""
 
     cpv: str
+    build_time: datetime.datetime
 
 
 @dataclass
@@ -130,7 +131,7 @@ class Change:
     status: Status
 
 
-class GBP:
+class GBP:  # pylint: disable=too-many-public-methods
     """Python wrapper for the Gentoo Build Publisher API"""
 
     headers = {"Accept-Encoding": "gzip, deflate"}
@@ -165,6 +166,15 @@ class GBP:
         return [
             (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]
         ]
+
+    def machine_names(self) -> list["str"]:
+        """Return the list of machine names
+
+        Machines having builds.
+        """
+        machines = self.check(queries.machine_names)["machines"]
+
+        return [machine["machine"] for machine in machines]
 
     def publish(self, build: Build):
         """Publish the given build"""
@@ -311,7 +321,11 @@ class GBP:
             packages_built = None
         else:
             packages_built = [
-                Package(cpv=i["cpv"]) for i in api_response["packagesBuilt"]
+                Package(
+                    cpv=i["cpv"],
+                    build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
+                )
+                for i in api_response["packagesBuilt"]
             ]
 
         return Build.from_id(

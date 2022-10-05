@@ -29,6 +29,7 @@ gbp = "gbpcli:main"
 [project.entry-points."gbpcli.subcommands"]
 build = "gbpcli.subcommands.build"
 diff = "gbpcli.subcommands.diff"
+inspect = "gbpcli.subcommands.inspect"
 keep = "gbpcli.subcommands.keep"
 latest = "gbpcli.subcommands.latest"
 list = "gbpcli.subcommands.list"

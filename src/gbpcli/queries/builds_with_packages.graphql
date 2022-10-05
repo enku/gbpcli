@@ -11,6 +11,7 @@ query ($machine: String!) {
     keep
     packagesBuilt {
       cpv
+      buildTime
     }
   }
 }

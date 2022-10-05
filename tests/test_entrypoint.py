@@ -11,6 +11,7 @@ from gbpcli import APIError, build_parser, main
 SUBCOMMANDS = [
     "build",
     "diff",
+    "inspect",
     "keep",
     "latest",
     "list",
