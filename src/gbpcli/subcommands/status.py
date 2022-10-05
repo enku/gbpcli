@@ -69,7 +69,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     if note := build.info.note:
         console.print()
         table = Table(box=box.ROUNDED, pad_edge=False)
-        table.add_column("📎 Notes")
+        table.add_column("📎 Notes", header_style="header")
         table.add_row("[note]" + note.rstrip("\n") + "[/note]")
 
         console.print(table)
