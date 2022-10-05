@@ -17,7 +17,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         return 1
 
     for package in packages:
-        console.print(package, highlight=False)
+        console.print(f"[package]{package}[/package]")
 
     return 0
 
