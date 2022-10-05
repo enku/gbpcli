@@ -12,6 +12,9 @@ from typing import Any, List, Optional
 import requests
 import rich.console
 import yarl
+from rich.theme import Theme
+
+from gbpcli import colormap
 
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
@@ -368,7 +371,10 @@ def main(argv: list[str] | None = None) -> int:
 
     force_terminal = {"always": True, "never": False}.get(args.color, None)
     console = rich.console.Console(
-        force_terminal=force_terminal, color_system="auto", highlight=False
+        force_terminal=force_terminal,
+        color_system="auto",
+        highlight=False,
+        theme=Theme(colormap.DEFAULT),
     )
 
     try:

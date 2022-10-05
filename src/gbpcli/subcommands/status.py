@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from gbpcli import GBP
-from gbpcli.utils import green_yes, resolve_build_id, timestr
+from gbpcli.utils import resolve_build_id, styled_yes, timestr
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
@@ -26,32 +26,43 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     grid.add_column()
     grid.add_column()
 
-    grid.add_row("[bold]Build:[/bold] ", f"[blue]{build.machine}/{build.number}[/blue]")
-
-    if build.info.built is not None:
-        grid.add_row("[bold]BuildDate:[/bold] ", timestr(build.info.built))
-
-    grid.add_row("[bold]Submitted:[/bold] ", timestr(build.info.submitted))
-
     grid.add_row(
-        "[bold]Completed:[/bold] ",
-        timestr(build.info.completed) if build.info.completed else "no",
+        "[header]Build:[/header] ",
+        f"[machine]{build.machine}/[build_id]{build.number}[/build_id][/machine]",
     )
 
-    grid.add_row("[bold]Published:[/bold] ", f"{green_yes(build.info.published)}")
-    grid.add_row("[bold]Keep:[/bold] ", f"{green_yes(build.info.keep)}")
-    tags = [f"[yellow]@{tag}[/yellow]" for tag in build.info.tags]
-    grid.add_row("[bold]Tags:[/bold] ", " ".join(tags))
+    if build.info.built is not None:
+        grid.add_row(
+            "[header]BuildDate:[/header] ",
+            f"[timestamp]{timestr(build.info.built)}[/timestamp]",
+        )
+
+    grid.add_row(
+        "[header]Submitted:[/header] ",
+        f"[timestamp]{timestr(build.info.submitted)}[/timestamp]",
+    )
+
+    grid.add_row(
+        "[header]Completed:[/header] ",
+        f"[timestamp]{timestr(build.info.completed)}[/timestamp]"
+        if build.info.completed
+        else styled_yes(False),
+    )
+
+    grid.add_row("[header]Published:[/header] ", f"{styled_yes(build.info.published)}")
+    grid.add_row("[header]Keep:[/header] ", f"{styled_yes(build.info.keep)}")
+    tags = [f"[tag]@{tag}[/tag]" for tag in build.info.tags]
+    grid.add_row("[header]Tags:[/header] ", " ".join(tags))
 
     packages = build.packages_built
     grid.add_row(
-        "[bold]Packages-built:[/bold] ",
-        f"[magenta]{packages[0].cpv}[/magenta]" if packages else "None",
+        "[header]Packages-built:[/header] ",
+        f"[package]{packages[0].cpv}[/package]" if packages else "None",
     )
 
     if packages:
         for package in packages[1:]:
-            grid.add_row("", f"[magenta]{package.cpv}[/magenta]")
+            grid.add_row("", f"[package]{package.cpv}[/package]")
 
     console.print(Panel(grid, expand=False))
 
@@ -59,7 +70,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         console.print()
         table = Table(box=box.ROUNDED, pad_edge=False)
         table.add_column("📎 Notes")
-        table.add_row(note.rstrip("\n"))
+        table.add_row("[note]" + note.rstrip("\n") + "[/note]")
 
         console.print(table)
 

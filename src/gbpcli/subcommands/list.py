@@ -21,14 +21,14 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
-        title=f"\N{PERSONAL COMPUTER} {args.machine}",
+        title=f"\N{PERSONAL COMPUTER} [machine]{args.machine}[/machine]",
         box=box.ROUNDED,
-        title_style="bold",
+        title_style="header",
     )
-    table.add_column("Flags")
-    table.add_column("ID", justify="right")
-    table.add_column("Built")
-    table.add_column("Tags")
+    table.add_column("Flags", header_style="header")
+    table.add_column("ID", justify="right", header_style="header")
+    table.add_column("Built", header_style="header")
+    table.add_column("Tags", header_style="header")
 
     for build in builds:
         assert build.info is not None
@@ -39,15 +39,15 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         )
 
         flags = (
-            f"{'[magenta]*[/magenta]' if build.packages_built else ' '}"
-            f"{'[yellow]K[/yellow]' if build.info.keep else ' '}"
-            f"{'[bold green]P[/bold green]' if build.info.published else ' '}"
-            f"{'[blue]N[/blue]' if build.info.note else ' '}"
+            f"{'[package]*[/package]' if build.packages_built else ' '}"
+            f"{'[keep]K[/keep]' if build.info.keep else ' '}"
+            f"{'[published]P[/published]' if build.info.published else ' '}"
+            f"{'[note_flag]N[/note_flag]' if build.info.note else ' '}"
         )
-        number = f"[bold]{build.number}[/bold]"
-        built = f"{timestamp.strftime('%x %X')}"
+        number = f"[build_id]{build.number}[/build_id]"
+        built = f"[timestamp]{timestamp.strftime('%x %X')}[/timestamp]"
         tag_list = [f"@{tag}" for tag in build.info.tags] if build.info.tags else []
-        tags = f"[yellow]{' '.join(tag_list)}[/yellow]"
+        tags = f"[tag]{' '.join(tag_list)}[/tag]"
         table.add_row(flags, number, built, tags)
 
     console.print(table)

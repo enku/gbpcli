@@ -11,8 +11,9 @@ from unittest import mock
 
 import requests
 from rich.console import Console
+from rich.theme import Theme
 
-from gbpcli import GBP
+from gbpcli import GBP, colormap
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
@@ -111,7 +112,7 @@ class MockConsole:
 
     def __init__(self):
         self.stdout = io.StringIO()
-        self.console = Console(file=self.stdout)
+        self.console = Console(file=self.stdout, theme=Theme(colormap.DEFAULT))
 
     def print(self, *args, **kwargs):
         """Print to self.stdout"""

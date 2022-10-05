@@ -29,12 +29,11 @@ def yesno(value: bool) -> Literal["yes", "no"]:
     return "no"
 
 
-def green_yes(value: bool) -> str:
+def styled_yes(value: bool) -> str:
     """Like yesno() but yes's are wrapped in green"""
-    if (yes_or_no := yesno(value)) == "no":
-        return yes_or_no
+    yes_or_no = yesno(value)
 
-    return "[green]yes[/green]"
+    return f"[{yes_or_no}]{yes_or_no}[/{yes_or_no}]"
 
 
 def build_to_str(build: Build) -> str:

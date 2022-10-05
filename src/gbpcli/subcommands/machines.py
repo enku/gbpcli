@@ -13,24 +13,24 @@ def latest_build_to_str(build: dict) -> str:
     build_id = build["id"].rpartition(".")[2]
 
     if build["published"]:
-        build_id = f"[bold green]{build_id}[/bold green]"
+        build_id = f"[published]{build_id}[/published]"
 
-    return build_id
+    return f"[build_id]{build_id}[/build_id]"
 
 
 def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for machines subcommand"""
     machines = gbp.machines()
     table = Table(
-        title=f"{len(machines)} Machines", box=box.ROUNDED, title_style="bold"
+        title=f"{len(machines)} Machines", box=box.ROUNDED, title_style="header"
     )
-    table.add_column("Machine")
-    table.add_column("Builds", justify="right")
-    table.add_column("Latest", justify="right")
+    table.add_column("Machine", header_style="header")
+    table.add_column("Builds", justify="right", header_style="header")
+    table.add_column("Latest", justify="right", header_style="header")
 
     for machine, builds, latest in machines:
         table.add_row(
-            f"[bold blue]{machine}[/bold blue]",
+            f"[machine]{machine}[/machine]",
             str(builds),
             latest_build_to_str(latest),
         )
