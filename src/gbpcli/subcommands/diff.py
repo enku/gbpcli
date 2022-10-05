@@ -56,14 +56,16 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     assert isinstance(left_build.info.built, dt.datetime)
     assert isinstance(right_build.info.built, dt.datetime)
 
-    console.print(f"diff -r {args.machine}/{left} {args.machine}/{right}", style="bold")
+    console.print(
+        f"diff -r {args.machine}/{left} {args.machine}/{right}", style="header"
+    )
     console.print(
         f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.built)}",
-        style="bold",
+        style="header",
     )
     console.print(
         f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.built)}",
-        style="bold",
+        style="header",
     )
 
     print_diff(diff, console)
@@ -77,14 +79,14 @@ def print_diff(diff: Iterable[Change], console: Console) -> None:
     # for change, item in iter(response["diff"]["items"]):
     for item in diff:
         if item.status == Status.REMOVED:
-            console.print(f"[red]-{item.item}")
+            console.print(f"[removed]-{item.item}")
         elif item.status == Status.ADDED:
-            console.print(f"[green]+{item.item}")
+            console.print(f"[added]+{item.item}")
         else:
             if item == last_modified:
-                console.print(f"[red]-{item.item}")
+                console.print(f"[removed]-{item.item}")
             else:
-                console.print(f"[green]+{item.item}")
+                console.print(f"[added]+{item.item}")
             last_modified = item
 
 

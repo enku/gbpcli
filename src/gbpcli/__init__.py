@@ -32,6 +32,8 @@ DEFAULT_THEME: ColorMap = {
     "timestamp": "default",
     "yes": "green",
     "no": "default",
+    "added": "green",
+    "removed": "red",
 }
 
 
