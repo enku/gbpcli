@@ -24,7 +24,7 @@ class StatusTestCase(TestCase):
 
         expected = """\
 ╭────────────────────────────────────────────────╮
-│ Build:          lighthouse/3587                │
+│ Build:          lighthouse 3587                │
 │ Submitted:      Fri Nov 12 21:25:53 2021 -0700 │
 │ Completed:      Fri Nov 12 21:29:34 2021 -0700 │
 │ Published:      no                             │

@@ -28,7 +28,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     grid.add_row(
         "[header]Build:[/header] ",
-        f"[machine]{build.machine}/[build_id]{build.number}[/build_id][/machine]",
+        f"[machine]{build.machine} [build_id]{build.number}[/build_id][/machine]",
     )
 
     if build.info.built is not None:
