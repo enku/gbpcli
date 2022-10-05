@@ -13,7 +13,7 @@ import requests
 from rich.console import Console
 from rich.theme import Theme
 
-from gbpcli import GBP, colormap
+from gbpcli import DEFAULT_THEME, GBP
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
@@ -112,7 +112,7 @@ class MockConsole:
 
     def __init__(self):
         self.stdout = io.StringIO()
-        self.console = Console(file=self.stdout, theme=Theme(colormap.DEFAULT))
+        self.console = Console(file=self.stdout, theme=Theme(DEFAULT_THEME))
 
     def print(self, *args, **kwargs):
         """Print to self.stdout"""

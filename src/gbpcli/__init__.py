@@ -7,17 +7,32 @@ from dataclasses import dataclass
 from enum import IntEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 import rich.console
 import yarl
 from rich.theme import Theme
 
-from gbpcli import colormap
-
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
+
+ColorMap = Dict[str, str]
+
+DEFAULT_THEME: ColorMap = {
+    "build_id": "bold",
+    "header": "bold",
+    "keep": "yellow",
+    "machine": "blue",
+    "note": "default italic",
+    "note_flag": "blue",
+    "package": "magenta",
+    "published": "bold green",
+    "tag": "yellow",
+    "timestamp": "default",
+    "yes": "green",
+    "no": "default",
+}
 
 
 class APIError(Exception):
@@ -374,7 +389,7 @@ def main(argv: list[str] | None = None) -> int:
         force_terminal=force_terminal,
         color_system="auto",
         highlight=False,
-        theme=Theme(colormap.DEFAULT),
+        theme=Theme(DEFAULT_THEME),
     )
 
     try:
