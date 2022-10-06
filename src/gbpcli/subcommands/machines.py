@@ -39,6 +39,5 @@ def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-def parse_args(parser: argparse.ArgumentParser) -> None:
+def parse_args(_parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    parser.set_defaults(handler=handler)
