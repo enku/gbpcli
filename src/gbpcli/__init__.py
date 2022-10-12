@@ -131,7 +131,7 @@ class Change:
     status: Status
 
 
-class GBP:  # pylint: disable=too-many-public-methods
+class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
     headers = {"Accept-Encoding": "gzip, deflate"}
@@ -220,7 +220,7 @@ class GBP:  # pylint: disable=too-many-public-methods
         builds = data["builds"]
         builds.reverse()
 
-        return [self.api_to_build(i) for i in builds]
+        return [api_to_build(i) for i in builds]
 
     def diff(
         self, machine: str, left: int, right: int
@@ -230,8 +230,8 @@ class GBP:  # pylint: disable=too-many-public-methods
         data = self.check(queries.diff, variables)
 
         return (
-            self.api_to_build(data["diff"]["left"]),
-            self.api_to_build(data["diff"]["right"]),
+            api_to_build(data["diff"]["left"]),
+            api_to_build(data["diff"]["right"]),
             [
                 Change(item=i["item"], status=getattr(Status, i["status"]))
                 for i in data["diff"]["items"]
@@ -258,7 +258,7 @@ class GBP:  # pylint: disable=too-many-public-methods
                 raise APIError(errors, data)
             return None
 
-        return self.api_to_build(data["build"])
+        return api_to_build(data["build"])
 
     def build(self, machine: str) -> str:
         """Schedule a build"""
@@ -297,7 +297,7 @@ class GBP:  # pylint: disable=too-many-public-methods
         response = self.check(query, {"machine": machine, "key": key})
         builds = response["searchNotes"]
 
-        return [self.api_to_build(i) for i in builds]
+        return [api_to_build(i) for i in builds]
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
@@ -309,39 +309,6 @@ class GBP:  # pylint: disable=too-many-public-methods
         """Remove the tag from the given machine"""
         self.check(queries.untag_build, {"machine": machine, "tag": tag})
 
-    @staticmethod
-    def api_to_build(api_response) -> Build:
-        """Return a Build with BuildInfo given the response from the API"""
-        completed = api_response.get("completed")
-        submitted = api_response["submitted"]
-        fromisoformat = datetime.datetime.fromisoformat
-        built = api_response.get("built")
-
-        if api_response.get("packagesBuilt", None) is None:
-            packages_built = None
-        else:
-            packages_built = [
-                Package(
-                    cpv=i["cpv"],
-                    build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
-                )
-                for i in api_response["packagesBuilt"]
-            ]
-
-        return Build.from_id(
-            api_response["id"],
-            info=BuildInfo(
-                api_response.get("keep"),
-                published=api_response.get("published"),
-                tags=api_response.get("tags"),
-                note=api_response.get("notes"),
-                submitted=fromisoformat(submitted),
-                completed=fromisoformat(completed) if completed is not None else None,
-                built=fromisoformat(built) if built is not None else None,
-            ),
-            packages_built=packages_built,
-        )
-
     def check(self, query: str, variables: dict[str, Any] = None) -> dict:
         """Run query and raise exception if there are errors"""
         data, errors = self.query(query, variables)
@@ -349,6 +316,39 @@ class GBP:  # pylint: disable=too-many-public-methods
         if errors:
             raise APIError(errors, data)
         return data
+
+
+def api_to_build(api_response) -> Build:
+    """Return a Build with BuildInfo given the response from the API"""
+    completed = api_response.get("completed")
+    submitted = api_response["submitted"]
+    fromisoformat = datetime.datetime.fromisoformat
+    built = api_response.get("built")
+
+    if api_response.get("packagesBuilt", None) is None:
+        packages_built = None
+    else:
+        packages_built = [
+            Package(
+                cpv=i["cpv"],
+                build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
+            )
+            for i in api_response["packagesBuilt"]
+        ]
+
+    return Build.from_id(
+        api_response["id"],
+        info=BuildInfo(
+            api_response.get("keep"),
+            published=api_response.get("published"),
+            tags=api_response.get("tags"),
+            note=api_response.get("notes"),
+            submitted=fromisoformat(submitted),
+            completed=fromisoformat(completed) if completed is not None else None,
+            built=fromisoformat(built) if built is not None else None,
+        ),
+        packages_built=packages_built,
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
