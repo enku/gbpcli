@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypeVar
 
 import requests
 import rich.console
@@ -93,6 +93,9 @@ class Package:
     build_time: datetime.datetime
 
 
+T = TypeVar("T", bound="Build")
+
+
 @dataclass
 class Build:
     """A GBP Build"""
@@ -108,11 +111,44 @@ class Build:
         return f"{self.machine}.{self.number}"
 
     @classmethod
-    def from_id(cls, build_id: str, **kwargs):
+    def from_id(cls: type[T], build_id: str, **kwargs) -> T:
         """Create from GBP build id"""
         parts = build_id.partition(".")
 
         return cls(machine=parts[0], number=int(parts[2]), **kwargs)
+
+    @classmethod
+    def from_api_response(cls: type[T], api_response) -> T:
+        """Return a Build with BuildInfo given the response from the API"""
+        completed = api_response.get("completed")
+        submitted = api_response["submitted"]
+        fromisoformat = datetime.datetime.fromisoformat
+        built = api_response.get("built")
+
+        if api_response.get("packagesBuilt", None) is None:
+            packages_built = None
+        else:
+            packages_built = [
+                Package(
+                    cpv=i["cpv"],
+                    build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
+                )
+                for i in api_response["packagesBuilt"]
+            ]
+
+        return cls.from_id(
+            api_response["id"],
+            info=BuildInfo(
+                api_response.get("keep"),
+                published=api_response.get("published"),
+                tags=api_response.get("tags"),
+                note=api_response.get("notes"),
+                submitted=fromisoformat(submitted),
+                completed=fromisoformat(completed) if completed is not None else None,
+                built=fromisoformat(built) if built is not None else None,
+            ),
+            packages_built=packages_built,
+        )
 
 
 class Status(IntEnum):
@@ -220,7 +256,7 @@ class GBP:
         builds = data["builds"]
         builds.reverse()
 
-        return [api_to_build(i) for i in builds]
+        return [Build.from_api_response(i) for i in builds]
 
     def diff(
         self, machine: str, left: int, right: int
@@ -230,8 +266,8 @@ class GBP:
         data = self.check(queries.diff, variables)
 
         return (
-            api_to_build(data["diff"]["left"]),
-            api_to_build(data["diff"]["right"]),
+            Build.from_api_response(data["diff"]["left"]),
+            Build.from_api_response(data["diff"]["right"]),
             [
                 Change(item=i["item"], status=getattr(Status, i["status"]))
                 for i in data["diff"]["items"]
@@ -258,7 +294,7 @@ class GBP:
                 raise APIError(errors, data)
             return None
 
-        return api_to_build(data["build"])
+        return Build.from_api_response(data["build"])
 
     def build(self, machine: str) -> str:
         """Schedule a build"""
@@ -297,7 +333,7 @@ class GBP:
         response = self.check(query, {"machine": machine, "key": key})
         builds = response["searchNotes"]
 
-        return [api_to_build(i) for i in builds]
+        return [Build.from_api_response(i) for i in builds]
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
@@ -316,39 +352,6 @@ class GBP:
         if errors:
             raise APIError(errors, data)
         return data
-
-
-def api_to_build(api_response) -> Build:
-    """Return a Build with BuildInfo given the response from the API"""
-    completed = api_response.get("completed")
-    submitted = api_response["submitted"]
-    fromisoformat = datetime.datetime.fromisoformat
-    built = api_response.get("built")
-
-    if api_response.get("packagesBuilt", None) is None:
-        packages_built = None
-    else:
-        packages_built = [
-            Package(
-                cpv=i["cpv"],
-                build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
-            )
-            for i in api_response["packagesBuilt"]
-        ]
-
-    return Build.from_id(
-        api_response["id"],
-        info=BuildInfo(
-            api_response.get("keep"),
-            published=api_response.get("published"),
-            tags=api_response.get("tags"),
-            note=api_response.get("notes"),
-            submitted=fromisoformat(submitted),
-            completed=fromisoformat(completed) if completed is not None else None,
-            built=fromisoformat(built) if built is not None else None,
-        ),
-        packages_built=packages_built,
-    )
 
 
 def build_parser() -> argparse.ArgumentParser:
