@@ -58,12 +58,13 @@ def render_build(build: Build) -> RenderableType:
 
 def render_package(package: Package, build_build_date: dt.date) -> str:
     """Convert `package` into a rich renderable"""
-    if package.build_time.date() != build_build_date:
-        build_time = package.build_time.strftime("%x %X")
+    local_build_time = package.build_time.astimezone(LOCAL_TIMEZONE)
+    if local_build_time.date() != build_build_date:
+        build_time = local_build_time.strftime("%x %X")
     else:
-        build_time = str(package.build_time.time())
+        build_time = str(local_build_time.time())
 
-    return f"[package]{package.cpv}[/package]" f" [timestamp]({build_time})[/timestamp]"
+    return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
@@ -82,7 +83,11 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
             assert build.info
 
             p_branch = branch.add(render_build(build))
-            build_date = (build.info.built or build.info.submitted).date()
+            build_date = (
+                (build.info.built or build.info.submitted)
+                .astimezone(LOCAL_TIMEZONE)
+                .date()
+            )
             packages: List[Package] = build.packages_built or []
             packages = sort_packages_by_build_time(packages)
 
