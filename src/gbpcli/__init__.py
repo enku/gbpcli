@@ -356,6 +356,7 @@ class GBP:
 
 def build_parser() -> argparse.ArgumentParser:
     """Set command-line arguments"""
+    usage = "Command-line interface to Gentoo Build Publisher\n\nCommands:\n\n"
     parser = argparse.ArgumentParser(prog="gbp")
     parser.add_argument(
         "--version", action="version", version=f"gbpcli {version('gbpcli')}"
@@ -382,8 +383,11 @@ def build_parser() -> argparse.ArgumentParser:
             description=module.__doc__,
             formatter_class=argparse.RawTextHelpFormatter,
         )
+        usage = f"{usage}  * {entry_point.name} - {module.handler.__doc__}\n"
         module.parse_args(subparser)
         subparser.set_defaults(func=module.handler)
+
+    parser.usage = usage
 
     return parser
 

@@ -7,7 +7,7 @@ from gbpcli import GBP
 
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
-    """Handler for subcommand"""
+    """Schedule a build for the given machine in CI/CD"""
     gbp.build(args.machine)
 
     return 0

@@ -18,7 +18,7 @@ from gbpcli import GBP, LOCAL_TIMEZONE
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for subcommand"""
+    """List a machine's builds"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
         title=f"\N{PERSONAL COMPUTER} [machine]{args.machine}[/machine]",

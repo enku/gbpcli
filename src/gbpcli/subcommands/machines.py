@@ -19,7 +19,7 @@ def latest_build_to_str(build: dict) -> str:
 
 
 def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for machines subcommand"""
+    """List machines with builds"""
     machines = gbp.machines()
     table = Table(
         title=f"{len(machines)} Machines", box=box.ROUNDED, title_style="header"

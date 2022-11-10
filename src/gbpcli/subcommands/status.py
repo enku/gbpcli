@@ -12,7 +12,7 @@ from gbpcli.utils import resolve_build_id, styled_yes, timestr
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for "status" subcommand"""
+    """Show build details"""
     resolved_build = resolve_build_id(args.machine, args.number, gbp)
     build = gbp.get_build_info(resolved_build)
 

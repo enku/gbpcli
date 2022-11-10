@@ -68,7 +68,7 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for "tree" subcommand"""
+    """Show the machines builds as a tree"""
     tree = Tree("[header]Machines[/header]")
 
     if args.machine:

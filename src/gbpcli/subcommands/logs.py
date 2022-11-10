@@ -8,7 +8,7 @@ from gbpcli import GBP, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for subcommand"""
+    """Show build logs"""
     build = utils.resolve_build_id(args.machine, args.number, gbp)
     text = gbp.logs(build)
 

@@ -9,7 +9,7 @@ from gbpcli import GBP, Build, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
-    """Handler for subcommand"""
+    """Add tags builds"""
     build: Optional[Build]
     machine: str = args.machine
     tag: str = args.tag

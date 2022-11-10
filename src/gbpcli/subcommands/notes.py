@@ -77,7 +77,7 @@ def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """handler for the notes subcommand"""
+    """Show, search, and edit build notes"""
     if args.search:
         return search_notes(gbp, args.machine, args.number, console)
 

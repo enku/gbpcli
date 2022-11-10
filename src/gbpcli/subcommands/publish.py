@@ -11,7 +11,7 @@ from gbpcli.utils import resolve_build_id
 
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
-    """Handler for subcommand"""
+    """Publish a build"""
     build = resolve_build_id(args.machine, args.number, gbp)
 
     gbp.publish(build)
