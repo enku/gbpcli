@@ -49,7 +49,7 @@ def render_build(build: Build) -> RenderableType:
         grid = Table.grid()
         grid.add_column()
         grid.add_row(build_str)
-        grid.add_row(Panel(f"[note]{note}[/note]", expand=False))
+        grid.add_row(Panel(f"[note]{note}[/note]", expand=False, style="box"))
 
         return grid
 
@@ -69,7 +69,7 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the machines builds as a tree"""
-    tree = Tree("[header]Machines[/header]")
+    tree = Tree("[header]Machines[/header]", guide_style="box")
 
     if args.machine:
         machines = args.machine

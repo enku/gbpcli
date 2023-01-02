@@ -64,11 +64,11 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         for package in packages[1:]:
             grid.add_row("", f"[package]{package.cpv}[/package]")
 
-    console.print(Panel(grid, expand=False))
+    console.print(Panel(grid, expand=False, style="box"))
 
     if note := build.info.note:
         console.print()
-        table = Table(box=box.ROUNDED, pad_edge=False)
+        table = Table(box=box.ROUNDED, pad_edge=False, style="box")
         table.add_column("📎 Notes", header_style="header")
         table.add_row("[note]" + note.rstrip("\n") + "[/note]")
 

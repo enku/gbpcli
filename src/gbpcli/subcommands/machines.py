@@ -22,7 +22,10 @@ def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
     machines = gbp.machines()
     table = Table(
-        title=f"{len(machines)} Machines", box=box.ROUNDED, title_style="header"
+        title=f"{len(machines)} Machines",
+        box=box.ROUNDED,
+        title_style="header",
+        style="box",
     )
     table.add_column("Machine", header_style="header")
     table.add_column("Builds", justify="right", header_style="header")

@@ -20,6 +20,7 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 ColorMap = Dict[str, str]
 
 DEFAULT_THEME: ColorMap = {
+    "box": "default",
     "build_id": "bold",
     "header": "bold",
     "keep": "yellow",

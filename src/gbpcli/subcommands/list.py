@@ -24,6 +24,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         title=f"\N{PERSONAL COMPUTER} [machine]{args.machine}[/machine]",
         box=box.ROUNDED,
         title_style="header",
+        style="box",
     )
     table.add_column("Flags", header_style="header")
     table.add_column("ID", justify="right", header_style="header")
