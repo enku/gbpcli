@@ -66,6 +66,17 @@ class InspectTestCase(TestCase):
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_TAIL)
         self.assert_graphql(queries.builds_with_packages, machine="base")
 
+    def test_single_machine_with_build_id(self):
+        args = Namespace(machine=["lighthouse.12672"])
+
+        self.make_response("lighthouse.12672.json")
+
+        status = inspect(args, self.gbp, self.console)
+
+        self.assertEqual(status, 0)
+        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
+        self.assert_graphql(queries.build, id="lighthouse.12672")
+
 
 INSPECT_SINGLE_WITH_TAIL = """\
 Machines
@@ -214,4 +225,10 @@ Machines
     │   └── dev-util/jenkins-bin-2.363 (06:21:16)
     └── 25 (10/11/22 06:03:48) 
         └── dev-python/pydantic-1.10.2 (06:09:34)
+"""
+INSPECT_SINGLE_WITH_BUILD_ID = """\
+Machines
+└── lighthouse
+    └── 12672 (12/30/22 15:03:16) 
+        └── sys-apps/sandbox-2.30 (15:03:48)
 """

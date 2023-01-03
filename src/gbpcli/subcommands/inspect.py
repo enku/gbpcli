@@ -7,6 +7,7 @@ that will be displayed as well.
 """
 import argparse
 import datetime as dt
+import sys
 from typing import List
 
 from rich.console import Console, RenderableType
@@ -77,9 +78,21 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         machines = gbp.machine_names()
 
     for machine in machines:
+        if "." in machine:
+            machine, _, number = machine.partition(".")
+            build = gbp.get_build_info(Build(machine=machine, number=int(number)))
+
+            if build is None:
+                print("Not found", file=sys.stderr)
+                return 1
+
+            builds = [build]
+        else:
+            builds = gbp.builds(machine, with_packages=True)[-1 * args.tail :]
+
         branch = tree.add(f"[machine]{machine}[/machine]")
 
-        for build in gbp.builds(machine, with_packages=True)[-1 * args.tail :]:
+        for build in builds:
             assert build.info
 
             p_branch = branch.add(render_build(build))

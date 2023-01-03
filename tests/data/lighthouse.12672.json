@@ -1,0 +1,1 @@
+{"data": {"build": {"id": "lighthouse.12672", "machine": "lighthouse", "keep": false, "published": false, "tags": [], "notes": null, "built": "2022-12-30T22:03:16.115000+00:00", "submitted": "2022-12-30T22:04:35.943048+00:00", "completed": "2022-12-30T22:04:56.079287+00:00", "packagesBuilt": [{"cpv": "sys-apps/sandbox-2.30", "buildTime": 1672437828}]}}}

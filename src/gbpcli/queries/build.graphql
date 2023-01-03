@@ -11,6 +11,7 @@ query ($id: ID!) {
     completed
     packagesBuilt {
       cpv
+      buildTime
     }
   }
 }
