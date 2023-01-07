@@ -370,6 +370,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="auto",
         help="color output",
     )
+    parser.add_argument("--my-machines", default=os.getenv("GBPCLI_MYMACHINES", ""))
     subparsers = parser.add_subparsers()
 
     try:

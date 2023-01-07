@@ -1,4 +1,5 @@
 """Utility functions"""
+import argparse
 import datetime
 import io
 import sys
@@ -115,3 +116,14 @@ def resolve_build_id(
         raise ValueError(f"Invalid build ID: {build_id}")
 
     return build
+
+
+def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
+    """Return the list of "my machines" attached to parsed args
+
+    If There are no return an empty list.
+    """
+    try:
+        return args.my_machines.split()
+    except AttributeError:
+        return []

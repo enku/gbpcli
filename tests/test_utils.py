@@ -1,10 +1,11 @@
 """Tests for the "utils" module"""
 # pylint: disable=missing-function-docstring
+import argparse
 import datetime
 import unittest
 
 from gbpcli import APIError, Build
-from gbpcli.utils import resolve_build_id, timestr, yesno
+from gbpcli.utils import get_my_machines_from_args, resolve_build_id, timestr, yesno
 
 from . import make_gbp, make_response, mock_print
 
@@ -110,3 +111,49 @@ class ResolveBuildIdTestCase(unittest.TestCase):
             resolve_build_id("lighthouse", "bogus", gbp, abort_on_error=False)
 
         self.assertEqual(context.exception.args, ("Invalid build ID: bogus",))
+
+
+class GetMyMachinesFromArgsTestCase(unittest.TestCase):
+    """Tests for the get_my_machines_from_args method"""
+
+    def test_when_argument_is_none(self):
+        args = argparse.Namespace(my_machines=None)
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, [])
+
+    def test_when_argument_is_empty_string(self):
+        args = argparse.Namespace(my_machines="")
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, [])
+
+    def test_leading_space(self):
+        args = argparse.Namespace(my_machines=" polaris")
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, ["polaris"])
+
+    def test_trailing_space(self):
+        args = argparse.Namespace(my_machines="polaris ")
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, ["polaris"])
+
+    def test_multiple_machines(self):
+        args = argparse.Namespace(my_machines="polaris lighthouse")
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, ["polaris", "lighthouse"])
+
+    def test_when_argument_does_not_exit(self):
+        args = argparse.Namespace()
+
+        machines = get_my_machines_from_args(args)
+
+        self.assertEqual(machines, [])
