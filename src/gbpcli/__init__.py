@@ -25,6 +25,7 @@ DEFAULT_THEME: ColorMap = {
     "header": "bold",
     "keep": "yellow",
     "machine": "blue",
+    "mymachine": "default",
     "note": "default",
     "note_flag": "blue",
     "package": "magenta",

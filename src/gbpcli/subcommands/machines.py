@@ -5,7 +5,7 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP
+from gbpcli import GBP, utils
 
 
 def latest_build_to_str(build: dict) -> str:
@@ -18,7 +18,7 @@ def latest_build_to_str(build: dict) -> str:
     return f"[build_id]{build_id}[/build_id]"
 
 
-def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
     machines = gbp.machines()
     table = Table(
@@ -33,7 +33,7 @@ def handler(_args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     for machine, builds, latest in machines:
         table.add_row(
-            f"[machine]{machine}[/machine]",
+            utils.format_machine(machine, args),
             str(builds),
             latest_build_to_str(latest),
         )

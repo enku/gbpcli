@@ -14,14 +14,14 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP, LOCAL_TIMEZONE
+from gbpcli import GBP, LOCAL_TIMEZONE, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List a machine's builds"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
-        title=f"\N{PERSONAL COMPUTER} [machine]{args.machine}[/machine]",
+        title=f"\N{PERSONAL COMPUTER} {utils.format_machine(args.machine, args)}",
         box=box.ROUNDED,
         title_style="header",
         style="box",

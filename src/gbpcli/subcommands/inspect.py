@@ -15,7 +15,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.tree import Tree
 
-from gbpcli import GBP, LOCAL_TIMEZONE, Build, Package
+from gbpcli import GBP, LOCAL_TIMEZONE, Build, Package, utils
 
 
 def sort_packages_by_build_time(packages: List[Package]) -> List[Package]:
@@ -90,7 +90,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         else:
             builds = gbp.builds(machine, with_packages=True)[-1 * args.tail :]
 
-        branch = tree.add(f"[machine]{machine}[/machine]")
+        branch = tree.add(utils.format_machine(machine, args))
 
         for build in builds:
             assert build.info

@@ -127,3 +127,18 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
         return args.my_machines.split()
     except AttributeError:
         return []
+
+
+def format_machine(machine: str, args: argparse.Namespace) -> str:
+    """Format the given machine name for rich output
+
+    If the given machine is given in the `my_machines` argument then it will have
+    special styling.
+    """
+    pre, post = "", ""
+
+    if machine in get_my_machines_from_args(args):
+        pre = "[mymachine]"
+        post = "[/mymachine]"
+
+    return f"[machine]{pre}{machine}{post}[/machine]"

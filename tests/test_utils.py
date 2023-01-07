@@ -5,7 +5,13 @@ import datetime
 import unittest
 
 from gbpcli import APIError, Build
-from gbpcli.utils import get_my_machines_from_args, resolve_build_id, timestr, yesno
+from gbpcli.utils import (
+    format_machine,
+    get_my_machines_from_args,
+    resolve_build_id,
+    timestr,
+    yesno,
+)
 
 from . import make_gbp, make_response, mock_print
 
@@ -157,3 +163,25 @@ class GetMyMachinesFromArgsTestCase(unittest.TestCase):
         machines = get_my_machines_from_args(args)
 
         self.assertEqual(machines, [])
+
+
+class FormatMachineTest(unittest.TestCase):
+    """Test for the format_machines method"""
+
+    def test_when_machine_is_mymachine(self):
+        machine = "polaris"
+        args = argparse.Namespace(my_machines="polaris")
+
+        formatted = format_machine(machine, args)
+
+        expected = "[machine][mymachine]polaris[/mymachine][/machine]"
+        self.assertEqual(formatted, expected)
+
+    def test_when_machine_is_not_mymachine(self):
+        machine = "polaris"
+        args = argparse.Namespace(my_machines="lighthouse babette")
+
+        formatted = format_machine(machine, args)
+
+        expected = "[machine]polaris[/machine]"
+        self.assertEqual(formatted, expected)
