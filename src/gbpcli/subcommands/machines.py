@@ -20,7 +20,12 @@ def latest_build_to_str(build: dict) -> str:
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
-    machines = gbp.machines()
+    my_machines = utils.get_my_machines_from_args(args)
+    machines = [
+        machine
+        for machine in gbp.machines()
+        if not args.mine or machine[0] in my_machines
+    ]
     table = Table(
         title=f"{len(machines)} Machines",
         box=box.ROUNDED,
@@ -42,5 +47,11 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-def parse_args(_parser: argparse.ArgumentParser) -> None:
+def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
+    parser.add_argument(
+        "--mine",
+        action="store_true",
+        default=False,
+        help="Only display machine info for --my-machines",
+    )

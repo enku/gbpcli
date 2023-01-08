@@ -15,13 +15,33 @@ class MachinesTestCase(TestCase):
 
     @mock_print("gbpcli.subcommands.machines")
     def test(self, _print_mock):
-        args = Namespace()
+        args = Namespace(mine=False)
         self.make_response("machines.json")
 
         status = machines(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
+        self.assert_graphql(queries.machines)
+
+    @mock_print("gbpcli.subcommands.machines")
+    def test_with_mine(self, _print_mock):
+        args = Namespace(mine=True, my_machines="babette lighthouse")
+        self.make_response("machines.json")
+
+        status = machines(args, self.gbp, self.console)
+
+        self.assertEqual(status, 0)
+        expected = """\
+           2 Machines           
+╭────────────┬────────┬────────╮
+│ Machine    │ Builds │ Latest │
+├────────────┼────────┼────────┤
+│ babette    │     14 │    631 │
+│ lighthouse │     29 │  10694 │
+╰────────────┴────────┴────────╯
+"""
+        self.assertEqual(self.console.getvalue(), expected)
         self.assert_graphql(queries.machines)
 
 
