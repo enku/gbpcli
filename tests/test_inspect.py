@@ -17,7 +17,7 @@ class InspectTestCase(TestCase):
     maxDiff = None
 
     def test_entire_tree(self):
-        args = Namespace(machine=None, tail=0)
+        args = Namespace(machine=None, tail=0, mine=False)
         graphql_responses = load_ndjson("inspect.ndjson")
         make_response = self.make_response
 
@@ -76,6 +76,20 @@ class InspectTestCase(TestCase):
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
         self.assert_graphql(queries.build, id="lighthouse.12672")
+
+    def test_with_mine(self):
+        args = Namespace(machine=None, mine=True, tail=0, my_machines="base")
+        graphql_responses = load_ndjson("inspect.ndjson", start=4)
+        make_response = self.make_response
+
+        response = next(graphql_responses)
+        make_response(response)
+
+        status = inspect(args, self.gbp, self.console)
+
+        self.assertEqual(status, 0)
+        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
+        self.assert_graphql(queries.builds_with_packages, machine="base")
 
 
 INSPECT_SINGLE_WITH_TAIL = """\

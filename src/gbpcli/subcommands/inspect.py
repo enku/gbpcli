@@ -74,6 +74,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     if args.machine:
         machines = args.machine
+    elif args.mine:
+        machines = utils.get_my_machines_from_args(args)
     else:
         machines = gbp.machine_names()
 
@@ -114,5 +116,6 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    parser.add_argument("machine", nargs="*")
     parser.add_argument("-t", "--tail", type=int, default=0)
+    parser.add_argument("--mine", action="store_true", default=False)
+    parser.add_argument("machine", nargs="*")
