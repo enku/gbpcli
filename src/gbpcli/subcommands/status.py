@@ -1,6 +1,6 @@
 """Show details for a given build"""
 import argparse
-import sys
+from typing import TextIO
 
 from rich import box
 from rich.console import Console
@@ -11,13 +11,15 @@ from gbpcli import GBP
 from gbpcli.utils import resolve_build_id, styled_yes, timestr
 
 
-def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+def handler(
+    args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
+) -> int:
     """Show build details"""
-    resolved_build = resolve_build_id(args.machine, args.number, gbp)
+    resolved_build = resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
     build = gbp.get_build_info(resolved_build)
 
     if build is None:
-        print("Not found", file=sys.stderr)
+        print("Not found", file=errorf)
         return 1
 
     assert build.info is not None

@@ -29,6 +29,7 @@ class TestCase(unittest.TestCase):
 
         self.gbp = make_gbp()
         self.console = MockConsole()
+        self.errorf = io.StringIO()
 
     def make_response(self, data):
         """Add 200 json response to mock post
@@ -133,33 +134,3 @@ class MockConsole:
     def getvalue(self) -> str:
         """Return everying printed to the console"""
         return self.stdout.getvalue()
-
-
-class MockPrint:  # pylint: disable=too-few-public-methods
-    """mockable print() so that output goes to StringIO"""
-
-    def __init__(self):
-        self.stdout = io.StringIO()
-        self.stderr = io.StringIO()
-        self.file = io.StringIO()
-
-    def __call__(self, value, end="\n", file=sys.stdout):
-        """Mocked print() function"""
-        if file is sys.stdout:
-            file = self.stdout
-        elif file is sys.stderr:
-            file = self.stderr
-        else:
-            file = self.file
-
-        print(value, end=end, file=file)
-
-
-def mock_print(where, *args, **kwargs):
-    """Mocks the print function but keeps the output"""
-    return mock.patch(
-        f"{where}.print",
-        *args,
-        new_callable=MockPrint,
-        **kwargs,
-    )

@@ -1,4 +1,6 @@
 """Command Line interface for Gentoo Build Publisher"""
+from __future__ import annotations
+
 import argparse
 import datetime
 import os
@@ -7,7 +9,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import IO, Any, Callable, Dict, List, Optional, TypeAlias, TypeVar
 
 import requests
 import rich.console
@@ -434,6 +436,8 @@ def get_colormap_from_string(string: str) -> ColorMap:
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
+    errorf: IO[str] = sys.stderr
+
     if argv is None:
         argv = sys.argv[1:]
 
@@ -442,7 +446,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if not hasattr(args, "func"):
-        parser.print_help(file=sys.stderr)
+        parser.print_help(file=errorf)
         return 1
 
     gbp = GBP(args.url)
@@ -462,8 +466,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     try:
-        return args.func(args, gbp, console)
+        return args.func(args, gbp, console, errorf)
     except (APIError, requests.HTTPError) as error:
-        print(str(error), file=sys.stderr)
+        print(str(error), file=errorf)
 
         return 1

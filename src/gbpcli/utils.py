@@ -4,7 +4,7 @@ import datetime
 import io
 import sys
 from functools import partial
-from typing import Literal, Optional
+from typing import Literal, Optional, TextIO
 
 from gbpcli import GBP, LOCAL_TIMEZONE, Build
 
@@ -85,7 +85,11 @@ def build_to_str(build: Build) -> str:
 
 
 def resolve_build_id(
-    machine: str, build_id: Optional[str], gbp: GBP, abort_on_error: bool = True
+    machine: str,
+    build_id: Optional[str],
+    gbp: GBP,
+    abort_on_error: bool = True,
+    errorf: TextIO = sys.stderr,
 ) -> Build:
     """Resolve build ids, tags, and optional numbers into a Build object
 
@@ -98,18 +102,18 @@ def resolve_build_id(
     if build_id is None:
         build = gbp.latest(machine)
         if not build and abort_on_error:
-            print(f"No builds for {machine}", file=sys.stderr)
+            print(f"No builds for {machine}", file=errorf)
             raise error
     elif build_id.startswith(TAG_SYM):
         tag = build_id[1:]
         build = gbp.resolve_tag(machine, tag)
         if not build and abort_on_error:
-            print(f"No such tag for {machine}: {tag}", file=sys.stderr)
+            print(f"No such tag for {machine}: {tag}", file=errorf)
             raise error
     elif build_id.isdigit():
         build = Build(machine, int(build_id))
     elif abort_on_error:
-        print(f"Invalid build ID: {build_id}", file=sys.stderr)
+        print(f"Invalid build ID: {build_id}", file=errorf)
         raise error
 
     if build is None:

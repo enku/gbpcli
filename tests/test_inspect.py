@@ -30,7 +30,7 @@ class InspectTestCase(TestCase):
         for _ in range(machines_count):
             make_response(next(graphql_responses))
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_ALL)
@@ -46,7 +46,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
@@ -60,7 +60,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_TAIL)
@@ -71,7 +71,7 @@ class InspectTestCase(TestCase):
 
         self.make_response("lighthouse.12672.json")
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
@@ -85,7 +85,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)

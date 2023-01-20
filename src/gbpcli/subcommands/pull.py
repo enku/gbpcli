@@ -1,12 +1,15 @@
 """Pull a build"""
 import argparse
+from typing import TextIO
 
 from rich.console import Console
 
 from gbpcli import GBP, Build
 
 
-def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
+def handler(
+    args: argparse.Namespace, gbp: GBP, _console: Console, _errorf: TextIO
+) -> int:
     """Pull a build"""
     build = Build(machine=args.machine, number=args.number)
 

@@ -1,15 +1,17 @@
 """Keep (or release) a build"""
 import argparse
-import sys
+from typing import TextIO
 
 from rich.console import Console
 
 from gbpcli import GBP, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
+def handler(
+    args: argparse.Namespace, gbp: GBP, _console: Console, errorf: TextIO
+) -> int:
     """Keep (or release) a build"""
-    build = utils.resolve_build_id(args.machine, args.number, gbp)
+    build = utils.resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
 
     if args.release:
         result = gbp.release(build)
@@ -17,7 +19,7 @@ def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
         result = gbp.keep(build)
 
     if result is None:
-        print("Not Found", file=sys.stderr)
+        print("Not Found", file=errorf)
         return 1
 
     return 0

@@ -6,15 +6,17 @@ If the "right" argument is omitted, it defaults to the most recent build.
 """
 import argparse
 import datetime as dt
-import sys
 from collections.abc import Iterable
+from typing import TextIO
 
 from rich.console import Console
 
 from gbpcli import GBP, Change, Status, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+def handler(
+    args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
+) -> int:
     """Handler for subcommand"""
     left = args.left
     right = args.right
@@ -24,7 +26,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         published = [i for i in builds if (i.info and i.info.published)]
 
         if not published:
-            print("No origin specified and no builds published", file=sys.stderr)
+            print("No origin specified and no builds published", file=errorf)
             return 1
 
         assert len(published) == 1
@@ -33,18 +35,18 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         assert right is None
         right = str(builds[-1].number)
     else:
-        left = utils.resolve_build_id(args.machine, left, gbp).number
+        left = utils.resolve_build_id(args.machine, left, gbp, errorf=errorf).number
 
     if right is None:
         latest = gbp.latest(args.machine)
 
         if latest is None:
-            print("Need at least two builds to diff", file=sys.stderr)
+            print("Need at least two builds to diff", file=errorf)
             return 1
 
         right = latest.number
     else:
-        right = utils.resolve_build_id(args.machine, right, gbp).number
+        right = utils.resolve_build_id(args.machine, right, gbp, errorf=errorf).number
 
     left_build, right_build, diff = gbp.diff(args.machine, left, right)
 

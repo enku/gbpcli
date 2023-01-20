@@ -66,6 +66,7 @@ class MainTestCase(unittest.TestCase):
             parse_args_mock.return_value,
             gbp_mock.return_value,
             console_mock.return_value,
+            sys.stderr,
         )
         self.assertEqual(status, 0)
 

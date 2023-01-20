@@ -5,18 +5,17 @@ from argparse import Namespace
 from gbpcli import queries
 from gbpcli.subcommands.build import handler as build
 
-from . import TestCase, mock_print
+from . import TestCase
 
 
 class MachinesTestCase(TestCase):
     """machines() tests"""
 
-    @mock_print("gbpcli.subcommands.build")
-    def test(self, _print_mock):
+    def test(self):
         args = Namespace(machine="babette")
         self.make_response("schedule_build.json")
 
-        status = build(args, self.gbp, self.console)
+        status = build(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), "")

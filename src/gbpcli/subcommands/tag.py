@@ -1,14 +1,15 @@
 """Add tag to the given build"""
 import argparse
-import sys
-from typing import Optional
+from typing import Optional, TextIO
 
 from rich.console import Console
 
 from gbpcli import GBP, Build, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
+def handler(
+    args: argparse.Namespace, gbp: GBP, _console: Console, errorf: TextIO
+) -> int:
     """Add tags builds"""
     build: Optional[Build]
     machine: str = args.machine
@@ -16,7 +17,7 @@ def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
 
     if args.remove:
         if args.number is not None:
-            print("When removing a tag, omit the build number", file=sys.stderr)
+            print("When removing a tag, omit the build number", file=errorf)
             return 1
 
         if tag.startswith("@"):
@@ -25,7 +26,7 @@ def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
         gbp.untag(machine, tag)
         return 0
 
-    build = utils.resolve_build_id(machine, args.number, gbp)
+    build = utils.resolve_build_id(machine, args.number, gbp, errorf=errorf)
 
     gbp.tag(build, tag)
 

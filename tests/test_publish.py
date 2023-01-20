@@ -17,7 +17,7 @@ class PublishTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3109")
         self.make_response("publish.json")
 
-        publish(args, self.gbp, self.console)
+        publish(args, self.gbp, self.console, self.errorf)
 
         self.assert_graphql(queries.publish, id="lighthouse.3109")
 
@@ -26,7 +26,7 @@ class PublishTestCase(TestCase):
         self.make_response({"data": {"latest": {"id": "lighthouse.2080"}}})
         self.make_response("publish.json")
 
-        status = publish(args, self.gbp, self.console)
+        status = publish(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assert_graphql(queries.latest, index=0, machine="lighthouse")

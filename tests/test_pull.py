@@ -17,6 +17,6 @@ class PullTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3226")
         self.make_response("pull.json")
 
-        pull(args, self.gbp, self.console)
+        pull(args, self.gbp, self.console, self.errorf)
 
         self.assert_graphql(queries.pull, id="lighthouse.3226")

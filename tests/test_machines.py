@@ -6,30 +6,28 @@ from unittest import mock
 from gbpcli import queries
 from gbpcli.subcommands.machines import handler as machines
 
-from . import LOCAL_TIMEZONE, TestCase, mock_print
+from . import LOCAL_TIMEZONE, TestCase
 
 
 @mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class MachinesTestCase(TestCase):
     """machines() tests"""
 
-    @mock_print("gbpcli.subcommands.machines")
-    def test(self, _print_mock):
+    def test(self):
         args = Namespace(mine=False)
         self.make_response("machines.json")
 
-        status = machines(args, self.gbp, self.console)
+        status = machines(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(queries.machines)
 
-    @mock_print("gbpcli.subcommands.machines")
-    def test_with_mine(self, _print_mock):
+    def test_with_mine(self):
         args = Namespace(mine=True, my_machines="babette lighthouse")
         self.make_response("machines.json")
 
-        status = machines(args, self.gbp, self.console)
+        status = machines(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
         expected = """\

@@ -2,7 +2,6 @@
 # pylint: disable=missing-function-docstring
 import argparse
 import datetime
-import unittest
 
 from gbpcli import APIError, Build
 from gbpcli.utils import (
@@ -13,10 +12,10 @@ from gbpcli.utils import (
     yesno,
 )
 
-from . import make_gbp, make_response, mock_print
+from . import TestCase, make_gbp, make_response
 
 
-class UtilsTestCase(unittest.TestCase):
+class UtilsTestCase(TestCase):
     """Tests for the yesno() function"""
 
     def test_true(self):
@@ -26,7 +25,7 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual("no", yesno(False))
 
 
-class TimestrTestCase(unittest.TestCase):
+class TimestrTestCase(TestCase):
     """timestr() tests"""
 
     def test(self):
@@ -36,7 +35,7 @@ class TimestrTestCase(unittest.TestCase):
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
 
 
-class CheckTestCase(unittest.TestCase):
+class CheckTestCase(TestCase):
     """check() tests"""
 
     def test_should_raise_apierror_if_query_response_has_errors(self):
@@ -54,7 +53,7 @@ class CheckTestCase(unittest.TestCase):
         self.assertEqual(exception.data, {"build": None})
 
 
-class ResolveBuildIdTestCase(unittest.TestCase):
+class ResolveBuildIdTestCase(TestCase):
     """resolve_build_id() tests"""
 
     def test_returns_latest_build_for_machine_when_build_id_is_none(self):
@@ -67,16 +66,15 @@ class ResolveBuildIdTestCase(unittest.TestCase):
 
         self.assertEqual(result, Build(machine="lighthouse", number=123))
 
-    @mock_print("gbpcli.utils")
-    def test_aborts_when_build_id_is_none_and_no_latest(self, print_mock):
+    def test_aborts_when_build_id_is_none_and_no_latest(self):
         gbp = make_gbp()
         gbp.session.post.return_value = make_response(json={"data": {"latest": None}})
 
         with self.assertRaises(SystemExit) as context:
-            resolve_build_id("lighthouse", None, gbp=gbp)
+            resolve_build_id("lighthouse", None, gbp=gbp, errorf=self.errorf)
 
         self.assertEqual(context.exception.args, (1,))
-        self.assertEqual(print_mock.stderr.getvalue(), "No builds for lighthouse\n")
+        self.assertEqual(self.errorf.getvalue(), "No builds for lighthouse\n")
 
     def test_returns_build_when_given_tag(self):
         gbp = make_gbp()
@@ -88,20 +86,17 @@ class ResolveBuildIdTestCase(unittest.TestCase):
 
         self.assertEqual(result, Build(machine="lighthouse", number=123))
 
-    @mock_print("gbpcli.utils")
-    def test_aborts_when_given_tag_that_does_not_exist(self, print_mock):
+    def test_aborts_when_given_tag_that_does_not_exist(self):
         gbp = make_gbp()
         gbp.session.post.return_value = make_response(
             json={"data": {"resolveBuildTag": None}}
         )
 
         with self.assertRaises(SystemExit) as context:
-            resolve_build_id("lighthouse", "@prod", gbp=gbp)
+            resolve_build_id("lighthouse", "@prod", gbp=gbp, errorf=self.errorf)
 
         self.assertEqual(context.exception.args, (1,))
-        self.assertEqual(
-            print_mock.stderr.getvalue(), "No such tag for lighthouse: prod\n"
-        )
+        self.assertEqual(self.errorf.getvalue(), "No such tag for lighthouse: prod\n")
 
     def test_returns_build_with_given_id_if_given_build_id_is_numeric(self):
         gbp = make_gbp()
@@ -119,7 +114,7 @@ class ResolveBuildIdTestCase(unittest.TestCase):
         self.assertEqual(context.exception.args, ("Invalid build ID: bogus",))
 
 
-class GetMyMachinesFromArgsTestCase(unittest.TestCase):
+class GetMyMachinesFromArgsTestCase(TestCase):
     """Tests for the get_my_machines_from_args method"""
 
     def test_when_argument_is_none(self):
@@ -165,7 +160,7 @@ class GetMyMachinesFromArgsTestCase(unittest.TestCase):
         self.assertEqual(machines, [])
 
 
-class FormatMachineTest(unittest.TestCase):
+class FormatMachineTest(TestCase):
     """Test for the format_machines method"""
 
     def test_when_machine_is_mymachine(self):
