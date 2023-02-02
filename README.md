@@ -44,8 +44,9 @@ To list the machines which have builds:
 
 ![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png)
 
-The "Latest" column shows the latest build ID for the given machine. If the ID has a `*`
-beside it that denotes that the latest build is published (available for emerges).
+The "Latest" column shows the latest build ID for the given machine. If the ID
+is in bold it that denotes that the latest build is published (available for
+emerges).
 
 To list the available builds for a given machine:
 
