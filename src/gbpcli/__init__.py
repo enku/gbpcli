@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
-from typing import IO, Any, Callable, Dict, List, Optional, TypeAlias, TypeVar
+from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
 
 import requests
 import rich.console
@@ -19,7 +19,7 @@ from rich.theme import Theme
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
-ColorMap = Dict[str, str]
+ColorMap = dict[str, str]
 
 DEFAULT_THEME: ColorMap = {
     "box": "default",
@@ -216,11 +216,11 @@ class GBP:
 
         return [machine["machine"] for machine in machines]
 
-    def publish(self, build: Build):
+    def publish(self, build: Build) -> None:
         """Publish the given build"""
         self.check(queries.publish, {"id": build.id})
 
-    def pull(self, build: Build):
+    def pull(self, build: Build) -> None:
         """Pull the given build"""
         self.check(queries.pull, {"id": build.id})
 
@@ -240,8 +240,9 @@ class GBP:
 
     def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
         """Return the build of the given machine & tag"""
-        data = self.check(queries.resolve_tag, dict(machine=machine, tag=tag))
-        data = data["resolveBuildTag"]
+        data = self.check(queries.resolve_tag, dict(machine=machine, tag=tag))[
+            "resolveBuildTag"
+        ]
 
         if data is None:
             return None
@@ -281,12 +282,8 @@ class GBP:
     def logs(self, build: Build) -> Optional[str]:
         """Return logs for the given Build"""
         data = self.check(queries.logs, {"id": build.id})
-        build = data["build"]
 
-        if build is None:
-            return None
-
-        return data["build"]["logs"]
+        return None if data["build"] is None else data["build"]["logs"]
 
     def get_build_info(self, build: Build) -> Optional[Build]:
         """Return build with info gained from the GBP API"""
@@ -298,7 +295,7 @@ class GBP:
                 raise APIError(errors, data)
             return None
 
-        return Build.from_api_response(data["build"])
+        return Build.from_api_response(build)
 
     def build(self, machine: str) -> str:
         """Schedule a build"""
@@ -310,15 +307,15 @@ class GBP:
         data = self.check(queries.packages, {"id": build.id})
         return data["build"]["packages"]
 
-    def keep(self, build: Build):
+    def keep(self, build: Build) -> dict[str, bool]:
         """Mark a build as kept"""
         return self.check(queries.keep_build, {"id": build.id})["keepBuild"]
 
-    def release(self, build: Build):
+    def release(self, build: Build) -> dict[str, bool]:
         """Unmark a build as kept"""
         return self.check(queries.release_build, {"id": build.id})["releaseBuild"]
 
-    def create_note(self, build: Build, note: Optional[str]):
+    def create_note(self, build: Build, note: Optional[str]) -> dict[str, str]:
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).
@@ -341,9 +338,7 @@ class GBP:
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
-        query = queries.tag_build
-
-        self.check(query, {"id": build.id, "tag": tag})
+        self.check(queries.tag_build, {"id": build.id, "tag": tag})
 
     def untag(self, machine: str, tag: str) -> None:
         """Remove the tag from the given machine"""
