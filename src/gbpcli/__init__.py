@@ -73,7 +73,7 @@ class Queries:
 queries = Queries()
 
 
-@dataclass
+@dataclass(frozen=True)
 class BuildInfo:
     """Metatada about a Build
 
@@ -83,13 +83,13 @@ class BuildInfo:
     keep: bool
     note: Optional[str]
     published: bool
-    tags: List[str]
+    tags: list[str]
     submitted: datetime.datetime
     completed: Optional[datetime.datetime] = None
     built: Optional[datetime.datetime] = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class Package:
     """A (binary) package"""
 
@@ -100,7 +100,7 @@ class Package:
 T = TypeVar("T", bound="Build")
 
 
-@dataclass
+@dataclass(frozen=True)
 class Build:
     """A GBP Build"""
 
