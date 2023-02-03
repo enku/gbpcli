@@ -24,17 +24,34 @@ $ pip install gbpcli
 The full command set supported:
 
 ```bash
-usage: gbp [-h] [--version] [--url URL] [--color WHEN]
-           {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag} ...
+usage: Command-line interface to Gentoo Build Publisher
+
+Commands:
+
+  * build - Schedule a build for the given machine in CI/CD
+  * diff - Handler for subcommand
+  * inspect - Show the machines builds as a tree
+  * keep - Keep (or release) a build
+  * latest - Show the latest build number for a machine
+  * list - List a machine's builds
+  * logs - Show build logs
+  * machines - List machines with builds
+  * notes - Show, search, and edit build notes
+  * packages - List a build's packages
+  * publish - Publish a build
+  * pull - Pull a build
+  * status - Show build details
+  * tag - Add tags builds
 
 positional arguments:
-  {build,diff,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag}
+  {build,diff,inspect,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag}
 
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --url URL             GBP url
   --color WHEN          color output
+  --my-machines MY_MACHINES
 ```
 
 The URL for the Gentoo Build Publisher may be provided via the command line or
@@ -52,11 +69,11 @@ To list the available builds for a given machine:
 
 ![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png)
 
-In the above example, the `P` output for build `623` signifies that this build
+In the above example, the `P` output for build `150` signifies that this build
 is currently published.  The `*` flag means that the respective build has new
-binary packages. The `K` for build `104` means that the build is marked for
-keeping and will not be removed during the purge process. Build `600` has also
-been given a "stable" tag.  The `N` flag for build `631` means that the build
+binary packages. The `K` for build `64` means that the build is marked for
+keeping and will not be removed during the purge process. Build `2` has also
+been given a "first" tag.  The `N` flag for build `151` means that the build
 has a note attached.
 
 ![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png)
@@ -79,7 +96,7 @@ The `publish` subcommand makes the given build available for syncing and
 updating/downgrading.
 
 ```bash
-$ gbp publish babette 631
+$ gbp publish arm64-base 151
 ```
 
 If the build nubmer is not given, it defaults to the latest build for that machine.
