@@ -42,7 +42,7 @@ def handler(
 
         table.add_row(
             utils.format_flags(build),
-            utils.format_build_build_number(build.number),
+            utils.format_build_number(build.number),
             utils.format_timestamp(timestamp.astimezone(LOCAL_TIMEZONE)),
             utils.format_tags(build.info.tags),
         )

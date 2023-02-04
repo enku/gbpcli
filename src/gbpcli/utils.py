@@ -153,7 +153,7 @@ def format_flags(build: Build) -> str:
     )
 
 
-def format_build_build_number(number: int) -> str:
+def format_build_number(number: int) -> str:
     """Return the (build) number rich'ly formatted"""
     return f"[build_id]{number}[/build_id]"
 
