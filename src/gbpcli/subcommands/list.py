@@ -38,21 +38,14 @@ def handler(
         assert build.info is not None
 
         # In the old days, we didn't have a "built" field. Fall back to submitted
-        timestamp = (build.info.built or build.info.submitted).astimezone(
-            LOCAL_TIMEZONE
-        )
+        timestamp = build.info.built or build.info.submitted
 
-        flags = (
-            f"{'[package]*[/package]' if build.packages_built else ' '}"
-            f"{'[keep]K[/keep]' if build.info.keep else ' '}"
-            f"{'[published]P[/published]' if build.info.published else ' '}"
-            f"{'[note_flag]N[/note_flag]' if build.info.note else ' '}"
+        table.add_row(
+            utils.format_flags(build),
+            utils.format_build_build_number(build.number),
+            utils.format_timestamp(timestamp.astimezone(LOCAL_TIMEZONE)),
+            utils.format_tags(build.info.tags),
         )
-        number = f"[build_id]{build.number}[/build_id]"
-        built = f"[timestamp]{timestamp.strftime('%x %X')}[/timestamp]"
-        tag_list = [f"@{tag}" for tag in build.info.tags] if build.info.tags else []
-        tags = f"[tag]{' '.join(tag_list)}[/tag]"
-        table.add_row(flags, number, built, tags)
 
     console.print(table)
 

@@ -133,6 +133,43 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
         return []
 
 
+## format_**() functions below return rich.Console-enabled format strings
+def format_flags(build: Build) -> str:
+    """Return build (info) as a string of rich'ly formatted symbols.
+
+    For example:
+
+        "* P  "
+
+    Which means that the build has packages built and is published.
+    """
+    assert build.info is not None
+
+    return (
+        f"{'[package]*[/package]' if build.packages_built else ' '}"
+        f"{'[keep]K[/keep]' if build.info.keep else ' '}"
+        f"{'[published]P[/published]' if build.info.published else ' '}"
+        f"{'[note_flag]N[/note_flag]' if build.info.note else ' '}"
+    )
+
+
+def format_build_build_number(number: int) -> str:
+    """Return the (build) number rich'ly formatted"""
+    return f"[build_id]{number}[/build_id]"
+
+
+def format_timestamp(timestamp: datetime.datetime) -> str:
+    """Return the timestamp rich'ly formatted"""
+    return f"[timestamp]{timestamp.strftime('%x %X')}[/timestamp]"
+
+
+def format_tags(tags: list[str]) -> str:
+    """Return the list of build tags rich'ly formatted"""
+    tag_list = [f"@{tag}" for tag in tags]
+
+    return f"[tag]{' '.join(tag_list)}[/tag]"
+
+
 def format_machine(machine: str, args: argparse.Namespace) -> str:
     """Format the given machine name for rich output
 
