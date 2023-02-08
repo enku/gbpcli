@@ -229,7 +229,7 @@ class GBP:
 
         Return None if there are no builds for the given machine
         """
-        data = self.check(queries.latest, dict(machine=machine))
+        data = self.check(queries.latest, {"machine": machine})
         latest = data["latest"]
 
         if latest is None:
@@ -240,7 +240,7 @@ class GBP:
 
     def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
         """Return the build of the given machine & tag"""
-        data = self.check(queries.resolve_tag, dict(machine=machine, tag=tag))[
+        data = self.check(queries.resolve_tag, {"machine": machine, "tag": tag})[
             "resolveBuildTag"
         ]
 
@@ -257,7 +257,7 @@ class GBP:
         If `with_packages` is True, also include the list of packages for the builds
         """
         query = queries.builds_with_packages if with_packages else queries.builds
-        data = self.query(query, dict(machine=machine))[0]
+        data = self.query(query, {"machine": machine})[0]
         builds = data["builds"]
         builds.reverse()
 
@@ -299,7 +299,7 @@ class GBP:
 
     def build(self, machine: str) -> str:
         """Schedule a build"""
-        response = self.check(queries.schedule_build, dict(machine=machine))
+        response = self.check(queries.schedule_build, {"machine": machine})
         return response["scheduleBuild"]
 
     def packages(self, build: Build) -> Optional[list[str]]:
@@ -344,7 +344,7 @@ class GBP:
         """Remove the tag from the given machine"""
         self.check(queries.untag_build, {"machine": machine, "tag": tag})
 
-    def check(self, query: str, variables: dict[str, Any] = None) -> dict:
+    def check(self, query: str, variables: Optional[dict[str, Any]] = None) -> dict:
         """Run query and raise exception if there are errors"""
         data, errors = self.query(query, variables)
 

@@ -85,7 +85,6 @@ def load_ndjson(filename: str, start: int = 1) -> Iterator[Any]:
     """Iterate over a newline-delimited JSON file"""
     with open(DATA_DIR / filename, "r", encoding="UTF-8") as ndjson_file:
         for line_no, line in enumerate(ndjson_file, start=1):
-
             if line_no < start:
                 continue
 
