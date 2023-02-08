@@ -77,7 +77,7 @@ class QueriesTestCase(TestCase):
         queries = Queries()
 
         with self.assertRaises(AttributeError):
-            queries.bogus  # pylint: disable=pointless-statement
+            print(queries.bogus)
 
     def test_to_dict_returns_dict(self):
         queries = Queries()
