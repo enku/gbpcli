@@ -6,7 +6,7 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP, utils
+from gbpcli import GBP, render, utils
 
 
 def latest_build_to_str(build: dict) -> str:
@@ -41,7 +41,7 @@ def handler(
 
     for machine, builds, latest in machines:
         table.add_row(
-            utils.format_machine(machine, args),
+            render.format_machine(machine, args),
             str(builds),
             latest_build_to_str(latest),
         )

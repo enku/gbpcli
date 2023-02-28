@@ -8,7 +8,7 @@ from gbpcli.subcommands.pull import handler as pull
 from . import LOCAL_TIMEZONE, TestCase
 
 
-@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class PullTestCase(TestCase):
     """pull() tests"""
 

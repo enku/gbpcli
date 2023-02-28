@@ -11,7 +11,7 @@ from typing import TextIO
 
 from rich.console import Console
 
-from gbpcli import GBP, Change, Status, utils
+from gbpcli import GBP, Change, Status, render, utils
 
 
 def handler(
@@ -62,11 +62,11 @@ def handler(
         f"diff -r {args.machine}/{left} {args.machine}/{right}", style="header"
     )
     console.print(
-        f"--- a/{args.machine}/{left} {utils.timestr(left_build.info.built)}",
+        f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}",
         style="header",
     )
     console.print(
-        f"+++ b/{args.machine}/{right} {utils.timestr(right_build.info.built)}",
+        f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}",
         style="header",
     )
 

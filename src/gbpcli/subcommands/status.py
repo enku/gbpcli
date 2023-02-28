@@ -8,7 +8,8 @@ from rich.panel import Panel
 from rich.table import Table
 
 from gbpcli import GBP
-from gbpcli.utils import resolve_build_id, styled_yes, timestr
+from gbpcli.render import styled_yes, timestr, yesno
+from gbpcli.utils import resolve_build_id
 
 
 def handler(
@@ -48,11 +49,13 @@ def handler(
         "[header]Completed:[/header] ",
         f"[timestamp]{timestr(build.info.completed)}[/timestamp]"
         if build.info.completed
-        else styled_yes(False),
+        else styled_yes(yesno(False)),
     )
 
-    grid.add_row("[header]Published:[/header] ", f"{styled_yes(build.info.published)}")
-    grid.add_row("[header]Keep:[/header] ", f"{styled_yes(build.info.keep)}")
+    grid.add_row(
+        "[header]Published:[/header] ", f"{styled_yes(yesno(build.info.published))}"
+    )
+    grid.add_row("[header]Keep:[/header] ", f"{styled_yes(yesno(build.info.keep))}")
     tags = [f"[tag]@{tag}[/tag]" for tag in build.info.tags]
     grid.add_row("[header]Tags:[/header] ", " ".join(tags))
 

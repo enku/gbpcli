@@ -8,7 +8,7 @@ from gbpcli.subcommands.status import handler as status
 from . import LOCAL_TIMEZONE, TestCase
 
 
-@mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class StatusTestCase(TestCase):
     """status() tests"""
 

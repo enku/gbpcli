@@ -15,7 +15,7 @@ from rich import box
 from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP, LOCAL_TIMEZONE, utils
+from gbpcli import GBP, render
 
 
 def handler(
@@ -24,7 +24,7 @@ def handler(
     """List a machine's builds"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
-        title=f"\N{PERSONAL COMPUTER} {utils.format_machine(args.machine, args)}",
+        title=f"\N{PERSONAL COMPUTER} {render.format_machine(args.machine, args)}",
         box=box.ROUNDED,
         title_style="header",
         style="box",
@@ -41,10 +41,10 @@ def handler(
         timestamp = build.info.built or build.info.submitted
 
         table.add_row(
-            utils.format_flags(build),
-            utils.format_build_number(build.number),
-            utils.format_timestamp(timestamp.astimezone(LOCAL_TIMEZONE)),
-            utils.format_tags(build.info.tags),
+            render.format_flags(build),
+            render.format_build_number(build.number),
+            render.format_timestamp(timestamp.astimezone(render.LOCAL_TIMEZONE)),
+            render.format_tags(build.info.tags),
         )
 
     console.print(table)

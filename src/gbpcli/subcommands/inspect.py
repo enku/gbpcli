@@ -14,7 +14,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.tree import Tree
 
-from gbpcli import GBP, LOCAL_TIMEZONE, Build, Package, utils
+from gbpcli import GBP, Build, Package, render, utils
 
 
 def sort_packages_by_build_time(packages: List[Package]) -> List[Package]:
@@ -34,7 +34,9 @@ def render_build(build: Build) -> RenderableType:
     if build.info.published:
         build_str = f"[published]{build_str}[/published]"
 
-    timestamp = (build.info.built or build.info.submitted).astimezone(LOCAL_TIMEZONE)
+    timestamp = (build.info.built or build.info.submitted).astimezone(
+        render.LOCAL_TIMEZONE
+    )
     build_str = f"{build_str} [timestamp]({timestamp.strftime('%x %X')})[/timestamp]"
 
     if build.info.tags:
@@ -58,7 +60,7 @@ def render_build(build: Build) -> RenderableType:
 
 def render_package(package: Package, build_build_date: dt.date) -> str:
     """Convert `package` into a rich renderable"""
-    local_build_time = package.build_time.astimezone(LOCAL_TIMEZONE)
+    local_build_time = package.build_time.astimezone(render.LOCAL_TIMEZONE)
     if local_build_time.date() != build_build_date:
         build_time = local_build_time.strftime("%x %X")
     else:
@@ -93,7 +95,7 @@ def handler(
         else:
             builds = gbp.builds(machine, with_packages=True)[-1 * args.tail :]
 
-        branch = tree.add(utils.format_machine(machine, args))
+        branch = tree.add(render.format_machine(machine, args))
 
         for build in builds:
             assert build.info
@@ -101,7 +103,7 @@ def handler(
             p_branch = branch.add(render_build(build))
             build_date = (
                 (build.info.built or build.info.submitted)
-                .astimezone(LOCAL_TIMEZONE)
+                .astimezone(render.LOCAL_TIMEZONE)
                 .date()
             )
             packages: List[Package] = build.packages_built or []

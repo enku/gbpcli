@@ -8,7 +8,7 @@ from gbpcli.subcommands.latest import handler as latest
 from . import LOCAL_TIMEZONE, TestCase
 
 
-@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class LatestTestCase(TestCase):
     """latest() tests"""
 

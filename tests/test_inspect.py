@@ -8,8 +8,7 @@ from gbpcli.subcommands.inspect import handler as inspect
 from . import LOCAL_TIMEZONE, TestCase, load_ndjson
 
 
-@mock.patch("gbpcli.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-@mock.patch("gbpcli.subcommands.inspect.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class InspectTestCase(TestCase):
     """inspect() tests"""
 

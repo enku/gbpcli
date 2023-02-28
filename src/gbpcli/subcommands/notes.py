@@ -8,7 +8,7 @@ from typing import Optional, TextIO
 
 from rich.console import Console
 
-from gbpcli import GBP, utils
+from gbpcli import GBP, render, utils
 
 
 def get_editor():
@@ -72,7 +72,7 @@ def search_notes(
     sep = ""
     for build in builds:
         console.print(sep, end="")
-        console.print(utils.build_to_str(build), end="")
+        console.print(render.build_to_str(build), end="")
         sep = "\n"
 
     return 0

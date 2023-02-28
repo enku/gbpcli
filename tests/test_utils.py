@@ -1,39 +1,12 @@
 """Tests for the "utils" module"""
 # pylint: disable=missing-function-docstring,protected-access
 import argparse
-import datetime
 
 from gbpcli import Build
 from gbpcli.graphql import APIError, check
-from gbpcli.utils import (
-    format_machine,
-    get_my_machines_from_args,
-    resolve_build_id,
-    timestr,
-    yesno,
-)
+from gbpcli.utils import get_my_machines_from_args, resolve_build_id
 
 from . import TestCase, make_gbp, make_response
-
-
-class UtilsTestCase(TestCase):
-    """Tests for the yesno() function"""
-
-    def test_true(self):
-        self.assertEqual("yes", yesno(True))
-
-    def test_false(self):
-        self.assertEqual("no", yesno(False))
-
-
-class TimestrTestCase(TestCase):
-    """timestr() tests"""
-
-    def test(self):
-        timestamp = datetime.datetime.fromisoformat("2021-07-20T16:45:06.445500+00:00")
-        timezone = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
-
-        self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
 
 
 class CheckTestCase(TestCase):
@@ -161,25 +134,3 @@ class GetMyMachinesFromArgsTestCase(TestCase):
         machines = get_my_machines_from_args(args)
 
         self.assertEqual(machines, [])
-
-
-class FormatMachineTest(TestCase):
-    """Test for the format_machines method"""
-
-    def test_when_machine_is_mymachine(self):
-        machine = "polaris"
-        args = argparse.Namespace(my_machines="polaris")
-
-        formatted = format_machine(machine, args)
-
-        expected = "[machine][mymachine]polaris[/mymachine][/machine]"
-        self.assertEqual(formatted, expected)
-
-    def test_when_machine_is_not_mymachine(self):
-        machine = "polaris"
-        args = argparse.Namespace(my_machines="lighthouse babette")
-
-        formatted = format_machine(machine, args)
-
-        expected = "[machine]polaris[/machine]"
-        self.assertEqual(formatted, expected)

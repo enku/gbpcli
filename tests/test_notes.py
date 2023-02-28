@@ -13,7 +13,7 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
-@mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""
 

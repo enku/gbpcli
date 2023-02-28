@@ -8,7 +8,7 @@ from gbpcli.subcommands.list import handler as list_command
 from . import LOCAL_TIMEZONE, TestCase
 
 
-@mock.patch("gbpcli.subcommands.list.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class ListTestCase(TestCase):
     """list() tests"""
 

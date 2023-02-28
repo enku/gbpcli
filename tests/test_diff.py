@@ -10,7 +10,7 @@ from gbpcli.subcommands.diff import handler as diff
 from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response
 
 
-@mock.patch("gbpcli.utils.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class DiffTestCase(TestCase):
     """diff() tests"""
 
