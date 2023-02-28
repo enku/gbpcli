@@ -1,9 +1,8 @@
 """Tests for the latest subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.latest import handler as latest
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -22,7 +21,7 @@ class LatestTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = "3113\n"
         self.assertEqual(self.console.getvalue(), expected)
-        self.assert_graphql(queries.latest, machine="lighthouse")
+        self.assert_graphql(self.gbp.query.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self):
         args = Namespace(machine="bogus")

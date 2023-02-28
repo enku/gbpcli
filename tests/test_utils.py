@@ -1,9 +1,10 @@
 """Tests for the "utils" module"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 import argparse
 import datetime
 
-from gbpcli import APIError, Build
+from gbpcli import Build
+from gbpcli.graphql import APIError, check
 from gbpcli.utils import (
     format_machine,
     get_my_machines_from_args,
@@ -43,10 +44,10 @@ class CheckTestCase(TestCase):
         error2 = {"message": "Oh no!", "locations": [], "path": None}
         response_with_errors = {"data": {"build": None}, "errors": [error1, error2]}
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=response_with_errors)
+        gbp.query._session.post.return_value = make_response(json=response_with_errors)
 
         with self.assertRaises(APIError) as context:
-            gbp.check("{ foo { bar } }")
+            check(gbp.query.machines())
 
         exception = context.exception
         self.assertEqual(exception.args[0], [error1, error2])
@@ -58,7 +59,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_returns_latest_build_for_machine_when_build_id_is_none(self):
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(
+        gbp.query._session.post.return_value = make_response(
             json={"data": {"latest": {"id": "lighthouse.123"}}}
         )
 
@@ -68,7 +69,9 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_aborts_when_build_id_is_none_and_no_latest(self):
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json={"data": {"latest": None}})
+        gbp.query._session.post.return_value = make_response(
+            json={"data": {"latest": None}}
+        )
 
         with self.assertRaises(SystemExit) as context:
             resolve_build_id("lighthouse", None, gbp=gbp, errorf=self.errorf)
@@ -78,7 +81,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_returns_build_when_given_tag(self):
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(
+        gbp.query._session.post.return_value = make_response(
             json={"data": {"resolveBuildTag": {"id": "lighthouse.123"}}}
         )
 
@@ -88,7 +91,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_aborts_when_given_tag_that_does_not_exist(self):
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(
+        gbp.query._session.post.return_value = make_response(
             json={"data": {"resolveBuildTag": None}}
         )
 

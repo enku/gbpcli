@@ -1,8 +1,7 @@
 """Tests for the build subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 
-from gbpcli import queries
 from gbpcli.subcommands.build import handler as build
 
 from . import TestCase
@@ -19,4 +18,4 @@ class MachinesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), "")
-        self.assert_graphql(queries.schedule_build, machine="babette")
+        self.assert_graphql(self.gbp.query.schedule_build, machine="babette")

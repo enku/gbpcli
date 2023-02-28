@@ -1,9 +1,8 @@
 """Tests for the machines subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.machines import handler as machines
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -21,7 +20,7 @@ class MachinesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
-        self.assert_graphql(queries.machines)
+        self.assert_graphql(self.gbp.query.machines)
 
     def test_with_mine(self):
         args = Namespace(mine=True, my_machines="babette lighthouse")
@@ -40,7 +39,7 @@ class MachinesTestCase(TestCase):
 ╰────────────┴────────┴────────╯
 """
         self.assertEqual(self.console.getvalue(), expected)
-        self.assert_graphql(queries.machines)
+        self.assert_graphql(self.gbp.query.machines)
 
 
 EXPECTED_OUTPUT = """\

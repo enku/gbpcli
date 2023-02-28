@@ -1,11 +1,10 @@
 """Tests for the notes subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 import os
 import subprocess
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.notes import handler as create_note
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -31,9 +30,9 @@ class NotesTestCase(TestCase):
 
     def assert_create_note(self, machine="lighthouse", number="3109", note=NOTE):
         """Assert that the note was created by a GraphQL request"""
-        self.assert_graphql(queries.build, index=0, id=f"{machine}.{number}")
+        self.assert_graphql(self.gbp.query.build, index=0, id=f"{machine}.{number}")
         self.assert_graphql(
-            queries.create_note, id=f"{machine}.{number}", index=1, note=note
+            self.gbp.query.create_note, id=f"{machine}.{number}", index=1, note=note
         )
 
     def test_create_with_editor(self):
@@ -59,7 +58,7 @@ class NotesTestCase(TestCase):
                     status = create_note(self.args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 1)
-        self.assertEqual(self.gbp.session.post.call_count, 1)
+        self.assertEqual(self.gbp.query._session.post.call_count, 1)
         run.assert_called_once()
         call_args = run.call_args
         self.assertEqual(call_args[0][0][0], "foo")
@@ -115,7 +114,9 @@ class NotesTestCase(TestCase):
         status = create_note(self.args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.search_notes, machine="lighthouse", key="foo")
+        self.assert_graphql(
+            self.gbp.query.search_notes, machine="lighthouse", key="foo"
+        )
         self.assertEqual(self.console.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
     def test_search_no_matches_found(self):
@@ -127,7 +128,9 @@ class NotesTestCase(TestCase):
         status = create_note(self.args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(queries.search_notes, machine="lighthouse", key="python")
+        self.assert_graphql(
+            self.gbp.query.search_notes, machine="lighthouse", key="python"
+        )
         self.assertEqual(self.errorf.getvalue(), "No matches found\n")
 
 

@@ -1,8 +1,7 @@
 """Tests for the tag subcommand"""
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,protected-access
 from argparse import Namespace
 
-from gbpcli import queries
 from gbpcli.subcommands.tag import handler as tag
 
 from . import TestCase
@@ -18,7 +17,7 @@ class TagTestCase(TestCase):
         status = tag(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.tag_build, id="lighthouse.9400", tag="prod")
+        self.assert_graphql(self.gbp.query.tag_build, id="lighthouse.9400", tag="prod")
 
     def test_untag(self):
         args = Namespace(machine="lighthouse", number=None, tag="prod", remove=True)
@@ -27,7 +26,9 @@ class TagTestCase(TestCase):
         status = tag(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.untag_build, machine="lighthouse", tag="prod")
+        self.assert_graphql(
+            self.gbp.query.untag_build, machine="lighthouse", tag="prod"
+        )
 
     def test_untag_with_string_starting_with_tagsym_works(self):
         args = Namespace(machine="lighthouse", number=None, tag="@prod", remove=True)
@@ -36,7 +37,9 @@ class TagTestCase(TestCase):
         status = tag(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.untag_build, machine="lighthouse", tag="prod")
+        self.assert_graphql(
+            self.gbp.query.untag_build, machine="lighthouse", tag="prod"
+        )
 
     def test_untag_with_build_number_gives_error(self):
         args = Namespace(machine="lighthouse", number="9400", tag="prod", remove=True)

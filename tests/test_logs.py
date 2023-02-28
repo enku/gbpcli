@@ -1,9 +1,8 @@
 """Tests for the logs subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.logs import handler as logs
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -21,7 +20,7 @@ class LogsTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), "This is a test!\n")
-        self.assert_graphql(queries.logs, id="lighthouse.3113")
+        self.assert_graphql(self.gbp.query.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self):
         args = Namespace(machine="lighthouse", number="9999")

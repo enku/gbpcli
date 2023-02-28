@@ -1,12 +1,13 @@
 """Tests for the main module"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 import argparse
 import importlib
 import sys
 import unittest
 from unittest import mock
 
-from gbpcli import APIError, build_parser, main
+from gbpcli import build_parser, main
+from gbpcli.graphql import APIError
 
 SUBCOMMANDS = [
     "build",

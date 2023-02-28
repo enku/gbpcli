@@ -1,9 +1,8 @@
 """Tests for the publish subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.publish import handler as publish
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -19,7 +18,7 @@ class PublishTestCase(TestCase):
 
         publish(args, self.gbp, self.console, self.errorf)
 
-        self.assert_graphql(queries.publish, id="lighthouse.3109")
+        self.assert_graphql(self.gbp.query.publish, id="lighthouse.3109")
 
     def test_should_get_latest_when_number_is_none(self):
         args = Namespace(machine="lighthouse", number=None)
@@ -29,5 +28,5 @@ class PublishTestCase(TestCase):
         status = publish(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.latest, index=0, machine="lighthouse")
-        self.assert_graphql(queries.publish, index=1, id="lighthouse.2080")
+        self.assert_graphql(self.gbp.query.latest, index=0, machine="lighthouse")
+        self.assert_graphql(self.gbp.query.publish, index=1, id="lighthouse.2080")

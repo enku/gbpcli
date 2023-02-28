@@ -1,4 +1,5 @@
 """Tests for the Gentoo Build Publisher CLI"""
+# pylint: disable=protected-access
 import datetime
 import io
 import sys
@@ -14,7 +15,7 @@ import requests
 from rich.console import Console
 from rich.theme import Theme
 
-from gbpcli import DEFAULT_THEME, GBP
+from gbpcli import DEFAULT_THEME, GBP, graphql
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
@@ -40,7 +41,7 @@ class TestCase(unittest.TestCase):
         then any previously configured responses are cleared
         """
         if data is None:
-            self.gbp.session.post.side_effect = None
+            self.gbp.query._session.post.side_effect = None
             return
 
         if isinstance(data, str):
@@ -48,30 +49,27 @@ class TestCase(unittest.TestCase):
         else:
             mock_json = data
 
-        if not self.gbp.session.post.side_effect:
-            self.gbp.session.post.side_effect = (make_response(json=mock_json),)
+        if not self.gbp.query._session.post.side_effect:
+            self.gbp.query._session.post.side_effect = (make_response(json=mock_json),)
         else:
-            self.gbp.session.post.side_effect = (
-                *self.gbp.session.post.side_effect,
+            self.gbp.query._session.post.side_effect = (
+                *self.gbp.query._session.post.side_effect,
                 make_response(json=mock_json),
             )
 
-    def assert_graphql(self, query: str, index=0, **variables):
+    def assert_graphql(self, query: graphql.Query, index=0, **variables):
         """Assert that self.gbp made a the given graphql query"""
-        calls = self.gbp.session.post.call_args_list
+        calls = self.gbp.query._session.post.call_args_list
 
         try:
             call = calls[index]
         except IndexError:
             self.fail("Query not called")
 
-        assert call[0] == (self.gbp.url,)
+        assert call[0] == (self.gbp.query._url,)
 
-        json = {"query": query, "variables": None}
-        expected = {"json": json, "headers": self.gbp.headers}
-
-        if variables:
-            json["variables"] = variables
+        json = {"query": str(query), "variables": variables}
+        expected = {"json": json, "headers": graphql.Query.headers}
 
         self.assertEqual(call[1], expected)
 
@@ -111,7 +109,7 @@ def make_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
 def make_gbp(url: str = "http://test.invalid/") -> GBP:
     """Return a GBP instance with a mock session attribute"""
     gbp = GBP(url)
-    gbp.session = mock.Mock()
+    gbp.query._session = mock.Mock()
 
     return gbp
 

@@ -16,6 +16,8 @@ import rich.console
 import yarl
 from rich.theme import Theme
 
+from gbpcli import graphql
+
 LOCAL_TIMEZONE = datetime.datetime.now().astimezone().tzinfo
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
@@ -39,38 +41,6 @@ DEFAULT_THEME: ColorMap = {
     "added": "green",
     "removed": "red",
 }
-
-
-class APIError(Exception):
-    """When an error is returned by the REST API"""
-
-    def __init__(self, errors, data) -> None:
-        super().__init__(errors)
-        self.data = data
-
-
-class Queries:
-    """Python interface to raw queries/*.graphql files"""
-
-    def __getattr__(self, name: str) -> str:
-        query_file = resources.files("gbpcli") / "queries" / f"{name}.graphql"
-        try:
-            return query_file.read_text(encoding="UTF-8")
-        except FileNotFoundError:
-            raise AttributeError(name) from None
-
-    def to_dict(self) -> dict[str, str]:
-        """Return the queries as a dict"""
-        files = (resources.files("gbpcli") / "queries").iterdir()
-
-        return {
-            filename.name[:-8]: getattr(self, filename.name[:-8])
-            for filename in files
-            if filename.name.endswith(".graphql")
-        }
-
-
-queries = Queries()
 
 
 @dataclass(frozen=True)
@@ -174,34 +144,12 @@ class Change:
 class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
-    headers = {"Accept-Encoding": "gzip, deflate"}
-
-    def __init__(self, url: str, exit_gracefully_on_requests_errors=True) -> None:
-        self.url = str(yarl.URL(url) / "graphql")
-        self.session = requests.Session()
-        self.exit_gracefully_on_requests_errors = exit_gracefully_on_requests_errors
-
-    def query(self, query: str, variables: dict[str, Any] | None = None):
-        """Execute the given GraphQL query using the given input variables"""
-        json = {"query": query, "variables": variables}
-
-        try:
-            response = self.session.post(self.url, json=json, headers=self.headers)
-        except requests.exceptions.ConnectionError as error:
-            if self.exit_gracefully_on_requests_errors:
-                error_message = str(error)
-                print(error_message, file=sys.stderr)
-                raise SystemExit(-1) from None
-
-            raise
-
-        response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("data"), response_json.get("errors")
+    def __init__(self, url: str) -> None:
+        self.query = graphql.Queries(yarl.URL(url) / "graphql")
 
     def machines(self) -> list[tuple[str, int, dict]]:
         """Handler for subcommand"""
-        data = self.check(queries.machines)
+        data = graphql.check(self.query.machines())
 
         return [
             (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]
@@ -212,24 +160,24 @@ class GBP:
 
         Machines having builds.
         """
-        machines = self.check(queries.machine_names)["machines"]
+        machines = graphql.check(self.query.machine_names())["machines"]
 
         return [machine["machine"] for machine in machines]
 
     def publish(self, build: Build) -> None:
         """Publish the given build"""
-        self.check(queries.publish, {"id": build.id})
+        graphql.check(self.query.publish(id=build.id))
 
     def pull(self, build: Build) -> None:
         """Pull the given build"""
-        self.check(queries.pull, {"id": build.id})
+        graphql.check(self.query.pull(id=build.id))
 
     def latest(self, machine: str) -> Optional[Build]:
         """Return the latest build for machine
 
         Return None if there are no builds for the given machine
         """
-        data = self.check(queries.latest, {"machine": machine})
+        data = graphql.check(self.query.latest(machine=machine))
         latest = data["latest"]
 
         if latest is None:
@@ -240,7 +188,7 @@ class GBP:
 
     def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
         """Return the build of the given machine & tag"""
-        data = self.check(queries.resolve_tag, {"machine": machine, "tag": tag})[
+        data = graphql.check(self.query.resolve_tag(machine=machine, tag=tag))[
             "resolveBuildTag"
         ]
 
@@ -256,8 +204,8 @@ class GBP:
 
         If `with_packages` is True, also include the list of packages for the builds
         """
-        query = queries.builds_with_packages if with_packages else queries.builds
-        data = self.query(query, {"machine": machine})[0]
+        query = self.query.builds_with_packages if with_packages else self.query.builds
+        data = query(machine=machine)[0]
         builds = data["builds"]
         builds.reverse()
 
@@ -267,8 +215,9 @@ class GBP:
         self, machine: str, left: int, right: int
     ) -> tuple[Build, Build, list[Change]]:
         """Return difference between two builds"""
-        variables = {"left": f"{machine}.{left}", "right": f"{machine}.{right}"}
-        data = self.check(queries.diff, variables)
+        data = graphql.check(
+            self.query.diff(left=f"{machine}.{left}", right=f"{machine}.{right}")
+        )
 
         return (
             Build.from_api_response(data["diff"]["left"]),
@@ -281,46 +230,46 @@ class GBP:
 
     def logs(self, build: Build) -> Optional[str]:
         """Return logs for the given Build"""
-        data = self.check(queries.logs, {"id": build.id})
+        data = graphql.check(self.query.logs(id=build.id))
 
         return None if data["build"] is None else data["build"]["logs"]
 
     def get_build_info(self, build: Build) -> Optional[Build]:
         """Return build with info gained from the GBP API"""
-        data, errors = self.query(queries.build, {"id": build.id})
+        data, errors = self.query.build(id=build.id)
         build = data["build"]
 
         if build is None:
             if errors:
-                raise APIError(errors, data)
+                raise graphql.APIError(errors, data)
             return None
 
         return Build.from_api_response(build)
 
     def build(self, machine: str) -> str:
         """Schedule a build"""
-        response = self.check(queries.schedule_build, {"machine": machine})
+        response = graphql.check(self.query.schedule_build(machine=machine))
         return response["scheduleBuild"]
 
     def packages(self, build: Build) -> Optional[list[str]]:
         """Return the list of packages for a build"""
-        data = self.check(queries.packages, {"id": build.id})
+        data = graphql.check(self.query.packages(id=build.id))
         return data["build"]["packages"]
 
     def keep(self, build: Build) -> dict[str, bool]:
         """Mark a build as kept"""
-        return self.check(queries.keep_build, {"id": build.id})["keepBuild"]
+        return graphql.check(self.query.keep_build(id=build.id))["keepBuild"]
 
     def release(self, build: Build) -> dict[str, bool]:
         """Unmark a build as kept"""
-        return self.check(queries.release_build, {"id": build.id})["releaseBuild"]
+        return graphql.check(self.query.release_build(id=build.id))["releaseBuild"]
 
     def create_note(self, build: Build, note: Optional[str]) -> dict[str, str]:
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).
         """
-        return self.check(queries.create_note, {"id": build.id, "note": note})[
+        return graphql.check(self.query.create_note(id=build.id, note=note))[
             "createNote"
         ]
 
@@ -329,28 +278,20 @@ class GBP:
 
         Return a list of Builds who's notes match the (case-insensitive) string.
         """
-        query = queries.search_notes
+        query = self.query.search_notes
 
-        response = self.check(query, {"machine": machine, "key": key})
+        response = graphql.check(query(machine=machine, key=key))
         builds = response["searchNotes"]
 
         return [Build.from_api_response(i) for i in builds]
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
-        self.check(queries.tag_build, {"id": build.id, "tag": tag})
+        graphql.check(self.query.tag_build(id=build.id, tag=tag))
 
     def untag(self, machine: str, tag: str) -> None:
         """Remove the tag from the given machine"""
-        self.check(queries.untag_build, {"machine": machine, "tag": tag})
-
-    def check(self, query: str, variables: Optional[dict[str, Any]] = None) -> dict:
-        """Run query and raise exception if there are errors"""
-        data, errors = self.query(query, variables)
-
-        if errors:
-            raise APIError(errors, data)
-        return data
+        graphql.check(self.query.untag_build(machine=machine, tag=tag))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -462,7 +403,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         return args.func(args, gbp, console, errorf)
-    except (APIError, requests.HTTPError) as error:
+    except (graphql.APIError, requests.HTTPError) as error:
         print(str(error), file=errorf)
 
         return 1

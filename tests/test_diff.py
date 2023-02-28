@@ -1,10 +1,10 @@
 """Tests for the diff subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
-from gbpcli import queries
+from gbpcli import graphql
 from gbpcli.subcommands.diff import handler as diff
 
 from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response
@@ -38,14 +38,14 @@ diff -r lighthouse/3111 lighthouse/3112
 """
         self.assertEqual(self.console.getvalue(), expected)
         self.assert_graphql(
-            queries.diff, left="lighthouse.3111", right="lighthouse.3112"
+            self.gbp.query.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
     def test_should_print_nothing_when_no_diffs(self):
         args = Namespace(machine="lighthouse", left="3111", right="3111")
         no_diffs_json = parse(load_data("diff_no_content.json"))
         gbp = make_gbp()
-        gbp.session.post.return_value = make_response(json=no_diffs_json)
+        gbp.query._session.post.return_value = make_response(json=no_diffs_json)
 
         diff(args, gbp, self.console, self.errorf)
 
@@ -56,7 +56,7 @@ diff -r lighthouse/3111 lighthouse/3112
         latest_json = parse(load_data("latest.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
-        gbp.session.post.side_effect = (
+        gbp.query._session.post.side_effect = (
             make_response(json=latest_json),
             make_response(json=mock_diff_json),
         )
@@ -66,30 +66,33 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(status, 0)
         expected_calls = [
             mock.call(
-                gbp.url,
-                json={"query": queries.latest, "variables": {"machine": "lighthouse"}},
-                headers=gbp.headers,
+                gbp.query._url,
+                json={
+                    "query": gbp.query.latest.query,
+                    "variables": {"machine": "lighthouse"},
+                },
+                headers=graphql.Query.headers,
             ),
             mock.call(
-                gbp.url,
+                gbp.query._url,
                 json={
-                    "query": queries.diff,
+                    "query": gbp.query.diff.query,
                     "variables": {
                         "left": "lighthouse.3111",
                         "right": "lighthouse.3113",
                     },
                 },
-                headers=gbp.headers,
+                headers=graphql.Query.headers,
             ),
         ]
-        gbp.session.post.assert_has_calls(expected_calls)
+        gbp.query._session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_should_use_published(self):
         args = Namespace(machine="lighthouse", left=None, right=None)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
-        gbp.session.post.side_effect = (
+        gbp.query._session.post.side_effect = (
             make_response(json=list_json),
             make_response(json=mock_diff_json),
         )
@@ -99,23 +102,26 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(status, 0)
         expected_calls = [
             mock.call(
-                gbp.url,
-                json={"query": queries.builds, "variables": {"machine": "lighthouse"}},
-                headers=gbp.headers,
+                gbp.query._url,
+                json={
+                    "query": gbp.query.builds.query,
+                    "variables": {"machine": "lighthouse"},
+                },
+                headers=graphql.Query.headers,
             ),
             mock.call(
-                gbp.url,
+                gbp.query._url,
                 json={
-                    "query": queries.diff,
+                    "query": gbp.query.diff.query,
                     "variables": {
                         "left": "lighthouse.10678",
                         "right": "lighthouse.10694",
                     },
                 },
-                headers=gbp.headers,
+                headers=graphql.Query.headers,
             ),
         ]
-        gbp.session.post.assert_has_calls(expected_calls)
+        gbp.query._session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_and_not_published(self):
         args = Namespace(machine="jenkins", left=None, right=None)
@@ -130,7 +136,7 @@ diff -r lighthouse/3111 lighthouse/3112
         status = diff(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(queries.builds, machine="jenkins")
+        self.assert_graphql(self.gbp.query.builds, machine="jenkins")
         self.assertEqual(
             self.errorf.getvalue(), "No origin specified and no builds published\n"
         )

@@ -1,9 +1,8 @@
 """Tests for the list subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.list import handler as list_command
 
 from . import LOCAL_TIMEZONE, TestCase
@@ -23,7 +22,7 @@ class ListTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
-        self.assert_graphql(queries.builds_with_packages, machine="jenkins")
+        self.assert_graphql(self.gbp.query.builds_with_packages, machine="jenkins")
 
 
 EXPECTED_OUTPUT = """\

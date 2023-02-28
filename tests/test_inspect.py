@@ -1,9 +1,8 @@
 """Tests for the inspect subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock
 
-from gbpcli import queries
 from gbpcli.subcommands.inspect import handler as inspect
 
 from . import LOCAL_TIMEZONE, TestCase, load_ndjson
@@ -34,9 +33,13 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_ALL)
-        self.assert_graphql(queries.machine_names)
-        self.assert_graphql(queries.builds_with_packages, index=1, machine="base")
-        self.assert_graphql(queries.builds_with_packages, index=2, machine="gbpbox")
+        self.assert_graphql(self.gbp.query.machine_names)
+        self.assert_graphql(
+            self.gbp.query.builds_with_packages, index=1, machine="base"
+        )
+        self.assert_graphql(
+            self.gbp.query.builds_with_packages, index=2, machine="gbpbox"
+        )
 
     def test_single_machine(self):
         args = Namespace(machine=["base"], tail=0)
@@ -50,7 +53,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
-        self.assert_graphql(queries.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_tail(self):
         args = Namespace(machine=["base"], tail=2)
@@ -64,7 +67,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_TAIL)
-        self.assert_graphql(queries.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_build_id(self):
         args = Namespace(machine=["lighthouse.12672"])
@@ -75,7 +78,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
-        self.assert_graphql(queries.build, id="lighthouse.12672")
+        self.assert_graphql(self.gbp.query.build, id="lighthouse.12672")
 
     def test_with_mine(self):
         args = Namespace(machine=None, mine=True, tail=0, my_machines="base")
@@ -89,7 +92,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
-        self.assert_graphql(queries.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
 
 INSPECT_SINGLE_WITH_TAIL = """\

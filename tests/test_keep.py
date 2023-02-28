@@ -1,8 +1,7 @@
 """Tests for the keep subcommand"""
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 
-from gbpcli import queries
 from gbpcli.subcommands.keep import handler as keep
 
 from . import TestCase
@@ -20,7 +19,7 @@ class KeepTestCase(TestCase):
         status = keep(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.keep_build, id="lighthouse.3210")
+        self.assert_graphql(self.gbp.query.keep_build, id="lighthouse.3210")
 
     def test_keep_should_print_error_when_build_does_not_exist(self):
         args = Namespace(machine="lighthouse", number="3210", release=False)
@@ -37,7 +36,7 @@ class KeepTestCase(TestCase):
         status = keep(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 0)
-        self.assert_graphql(queries.release_build, id="lighthouse.3210")
+        self.assert_graphql(self.gbp.query.release_build, id="lighthouse.3210")
 
     def test_release_should_print_error_when_build_does_not_exist(self):
         args = Namespace(machine="lighthouse", number="3210", release=True)
