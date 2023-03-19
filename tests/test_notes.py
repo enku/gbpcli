@@ -107,7 +107,7 @@ class NotesTestCase(TestCase):
 
     def test_search_notes(self):
         self.args.search = True
-        self.args.number = "foo"
+        self.args.number = "10,000"
         self.make_response(None)
         self.make_response("search_notes.json")
 
@@ -115,7 +115,7 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assert_graphql(
-            self.gbp.query.search_notes, machine="lighthouse", key="foo"
+            self.gbp.query.search, machine="lighthouse", field="NOTES", key="10,000"
         )
         self.assertEqual(self.console.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
@@ -123,13 +123,13 @@ class NotesTestCase(TestCase):
         self.args.search = True
         self.args.number = "python"
         self.make_response(None)
-        self.make_response({"data": {"searchNotes": []}})
+        self.make_response({"data": {"search": []}})
 
         status = create_note(self.args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(status, 1)
         self.assert_graphql(
-            self.gbp.query.search_notes, machine="lighthouse", key="python"
+            self.gbp.query.search, machine="lighthouse", field="NOTES", key="python"
         )
         self.assertEqual(self.errorf.getvalue(), "No matches found\n")
 
@@ -148,27 +148,14 @@ def fake_editor(text=NOTE, returncode=0):
 
 
 EXPECTED_SEARCH_OUTPUT = """\
-Build: lighthouse/3363
-Submitted: Sun Oct 24 01:18:45 2021 -0700
-Completed: Sun Oct 24 01:24:08 2021 -0700
-Published: no
-Keep: no
-Tags: 
-Packages-built: None
-
-foo
-
-
-
-Build: lighthouse/3360
-Submitted: Sat Oct 23 19:29:38 2021 -0700
-Completed: Sat Oct 23 19:34:25 2021 -0700
+Build: lighthouse/10000
+Submitted: Thu Sep  1 09:28:12 2022 -0700
+Completed: Thu Sep  1 09:47:34 2022 -0700
 Published: no
 Keep: yes
-Tags: 
+Tags: 10000
 Packages-built: None
 
-foobar
-
+This is a note!
 
 """

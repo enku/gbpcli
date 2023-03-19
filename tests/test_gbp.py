@@ -10,6 +10,18 @@ from gbpcli import build_parser
 from . import TestCase
 
 
+class GGPTestCase(TestCase):
+    def test_search_notes_deprecation(self):
+        self.make_response("search_notes.json")
+
+        with self.assertWarns(DeprecationWarning) as context:
+            self.gbp.search_notes("lighthouse", "test")
+
+        self.assertEqual(
+            context.warning.args[0], "This method is deprecated. Use search() instead"
+        )
+
+
 class GBPQueryTestCase(TestCase):
     """Tests for the .query method"""
 

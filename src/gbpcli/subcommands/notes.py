@@ -8,7 +8,7 @@ from typing import Optional, TextIO
 
 from rich.console import Console
 
-from gbpcli import GBP, render, utils
+from gbpcli import GBP, SearchField, render, utils
 
 
 def get_editor():
@@ -63,7 +63,7 @@ def search_notes(
     gbp: GBP, machine: str, key: str, console: Console, errorf: TextIO
 ) -> int:
     """--search handler for the notes subcommand"""
-    builds = gbp.search_notes(machine, key)
+    builds = gbp.search(machine, SearchField.notes, key)
 
     if not builds:
         print("No matches found", file=errorf)

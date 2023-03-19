@@ -1,26 +1,19 @@
 {
-    "data": {
-        "searchNotes": [
-            {
-                "id": "lighthouse.3363",
-                "machine": "lighthouse",
-                "keep": false,
-                "published": false,
-                "tags": [],
-                "notes": "foo\n",
-                "submitted": "2021-10-24T08:18:45.094877+00:00",
-                "completed": "2021-10-24T08:24:08.143730+00:00"
-            },
-            {
-                "id": "lighthouse.3360",
-                "machine": "lighthouse",
-                "keep": true,
-                "published": false,
-                "tags": [],
-                "notes": "foobar\n",
-                "submitted": "2021-10-24T02:29:38.461098+00:00",
-                "completed": "2021-10-24T02:34:25.511073+00:00"
-            }
-        ]
-    }
+   "data" : {
+      "search" : [
+         {
+            "completed" : "2022-09-01T16:47:34.291792+00:00",
+            "id" : "lighthouse.10000",
+            "keep" : true,
+            "machine" : "lighthouse",
+            "notes" : "This is a note!",
+            "packagesBuilt" : [],
+            "published" : false,
+            "submitted" : "2022-09-01T16:28:12.713042+00:00",
+            "tags" : [
+               "10000"
+            ]
+         }
+      ]
+   }
 }

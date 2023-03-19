@@ -5,8 +5,9 @@ import argparse
 import datetime
 import os
 import sys
+import warnings
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
 from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
@@ -109,6 +110,14 @@ class Status(IntEnum):
     REMOVED = -1
     CHANGED = 0
     ADDED = 1
+
+
+class SearchField(StrEnum):
+    """Search fields"""
+
+    # pylint: disable=invalid-name
+
+    notes = "NOTES"
 
 
 @dataclass
@@ -251,17 +260,27 @@ class GBP:
             "createNote"
         ]
 
-    def search_notes(self, machine: str, key: str) -> list[Build]:
-        """Search buids for the given machine name for notes containing key.
+    def search(self, machine: str, field: SearchField, key: str) -> list[Build]:
+        """Search builds for the given machine name in fields containing key.
 
-        Return a list of Builds who's notes match the (case-insensitive) string.
+        Return a list of Builds who's given field match the (case-insensitive) string.
         """
-        query = self.query.search_notes
-
-        response = graphql.check(query(machine=machine, key=key))
-        builds = response["searchNotes"]
+        response = graphql.check(
+            self.query.search(machine=machine, field=field, key=key)
+        )
+        builds = response["search"]
 
         return [Build.from_api_response(i) for i in builds]
+
+    def search_notes(self, machine: str, key: str) -> list[Build]:
+        """Search builds for the given machine name for notes containing key.
+
+        This method is deprecated. Use search() instead.
+        """
+        message = "This method is deprecated. Use search() instead"
+        warnings.warn(message, DeprecationWarning, stacklevel=2)
+
+        return self.search(machine, SearchField.notes, key)
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
