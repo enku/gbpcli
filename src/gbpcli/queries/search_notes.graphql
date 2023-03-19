@@ -4,6 +4,7 @@ query ($machine: String!, $key: String!) {
     machine
     keep
     published
+    tags
     notes
     submitted
     completed
