@@ -117,6 +117,7 @@ class SearchField(Enum):
 
     # pylint: disable=invalid-name
 
+    logs = "LOGS"
     notes = "NOTES"
 
 

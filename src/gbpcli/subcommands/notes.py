@@ -9,6 +9,7 @@ from typing import Optional, TextIO
 from rich.console import Console
 
 from gbpcli import GBP, SearchField, render, utils
+from gbpcli.subcommands import make_searchable
 
 
 def get_editor():
@@ -108,12 +109,4 @@ def handler(
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
     parser.add_argument("--delete", "-d", action="store_true", default=False)
-    parser.add_argument(
-        "--search",
-        "-s",
-        action="store_true",
-        default=False,
-        help="Search build notes for the given text.",
-    )
-    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
-    parser.add_argument("number", metavar="KEY|NUMBER", help="build number")
+    make_searchable(parser)

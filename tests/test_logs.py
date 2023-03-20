@@ -13,7 +13,7 @@ class LogsTestCase(TestCase):
     """logs() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number="3113")
+        args = Namespace(machine="lighthouse", number="3113", search=False)
         self.make_response("logs.json")
 
         status = logs(args, self.gbp, self.console, self.errorf)
@@ -23,10 +23,27 @@ class LogsTestCase(TestCase):
         self.assert_graphql(self.gbp.query.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self):
-        args = Namespace(machine="lighthouse", number="9999")
+        args = Namespace(machine="lighthouse", number="9999", search=False)
         self.make_response({"data": {"build": None}})
 
         status = logs(args, self.gbp, self.console, self.errorf)
 
         self.assertEqual(self.errorf.getvalue(), "Not Found\n")
         self.assertEqual(status, 1)
+
+    def test_search_logs(self):
+        args = Namespace(machine="lighthouse", number="this is a test", search=True)
+        self.make_response("search_notes.json")
+        self.make_response("logs.json")
+
+        status = logs(args, self.gbp, self.console, self.errorf)
+
+        self.assertEqual(status, 0)
+        self.assert_graphql(
+            self.gbp.query.search,
+            machine="lighthouse",
+            field="LOGS",
+            key="this is a test",
+        )
+        expected = "lighthouse/10000\nThis is a test!\n"
+        self.assertEqual(self.console.getvalue(), expected)
