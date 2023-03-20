@@ -7,7 +7,7 @@ import os
 import sys
 import warnings
 from dataclasses import dataclass
-from enum import IntEnum, StrEnum
+from enum import Enum, IntEnum
 from importlib import resources
 from importlib.metadata import entry_points, version
 from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
@@ -112,7 +112,7 @@ class Status(IntEnum):
     ADDED = 1
 
 
-class SearchField(StrEnum):
+class SearchField(Enum):
     """Search fields"""
 
     # pylint: disable=invalid-name
@@ -266,7 +266,7 @@ class GBP:
         Return a list of Builds who's given field match the (case-insensitive) string.
         """
         response = graphql.check(
-            self.query.search(machine=machine, field=field, key=key)
+            self.query.search(machine=machine, field=field.value, key=key)
         )
         builds = response["search"]
 
