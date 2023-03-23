@@ -45,9 +45,7 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assert_create_note()
-        run.assert_called_once()
-        call_args = run.call_args
-        self.assertEqual(call_args[0][0][0], "foo")
+        run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_create_with_editor_but_editor_fails_does_not_create_note(self):
         editor = fake_editor(returncode=1)
@@ -59,9 +57,7 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 1)
         self.assertEqual(self.gbp.query._session.post.call_count, 1)
-        run.assert_called_once()
-        call_args = run.call_args
-        self.assertEqual(call_args[0][0][0], "foo")
+        run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_when_isatty_but_no_editor_reads_from_stdin(self):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
