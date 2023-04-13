@@ -307,7 +307,15 @@ def build_parser() -> argparse.ArgumentParser:
         default="auto",
         help="color output",
     )
-    parser.add_argument("--my-machines", default=os.getenv("GBPCLI_MYMACHINES", ""))
+    parser.add_argument(
+        "--my-machines",
+        default=os.getenv("GBPCLI_MYMACHINES", ""),
+        help=(
+            "whitespace-delimited list of machine names to filter on "
+            "when using the --mine argument. Typically one would instead use "
+            "the GBPCLI_MYMACHINES environment variable."
+        ),
+    )
     subparsers = parser.add_subparsers()
 
     try:
