@@ -16,7 +16,7 @@ def handler(
     args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
 ) -> int:
     """Show build details"""
-    resolved_build = resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
+    resolved_build = resolve_build_id(args.machine, args.number, gbp)
     build = gbp.get_build_info(resolved_build)
 
     if build is None:

@@ -96,10 +96,10 @@ class NotesTestCase(TestCase):
     def test_should_print_error_when_invalid_number_given(self):
         self.args.number = "foo"
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit) as context:
             create_note(self.args, self.gbp, self.console, self.errorf)
 
-        self.assertEqual(self.errorf.getvalue(), "Invalid build ID: foo\n")
+        self.assertEqual(context.exception.args, ("Invalid build ID: foo",))
 
     def test_search_notes(self):
         self.args.search = True

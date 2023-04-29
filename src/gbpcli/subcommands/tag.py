@@ -26,7 +26,7 @@ def handler(
         gbp.untag(machine, tag)
         return 0
 
-    build = utils.resolve_build_id(machine, args.number, gbp, errorf=errorf)
+    build = utils.resolve_build_id(machine, args.number, gbp)
 
     gbp.tag(build, tag)
 

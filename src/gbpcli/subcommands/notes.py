@@ -86,7 +86,7 @@ def handler(
     if args.search:
         return search_notes(gbp, args.machine, args.number, console, errorf)
 
-    build = utils.resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
     existing = gbp.get_build_info(build)
 
     if not existing or not existing.info:

@@ -38,7 +38,7 @@ def handler(
     if args.search:
         return search_logs(gbp, args, console, errorf)
 
-    build = utils.resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
     text = gbp.logs(build)
 
     if text is None:

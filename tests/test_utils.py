@@ -47,10 +47,9 @@ class ResolveBuildIdTestCase(TestCase):
         )
 
         with self.assertRaises(SystemExit) as context:
-            resolve_build_id("lighthouse", None, gbp=gbp, errorf=self.errorf)
+            resolve_build_id("lighthouse", None, gbp=gbp)
 
-        self.assertEqual(context.exception.args, (1,))
-        self.assertEqual(self.errorf.getvalue(), "No builds for lighthouse\n")
+        self.assertEqual(context.exception.args, ("No builds for lighthouse",))
 
     def test_returns_build_when_given_tag(self):
         gbp = make_gbp()
@@ -69,10 +68,9 @@ class ResolveBuildIdTestCase(TestCase):
         )
 
         with self.assertRaises(SystemExit) as context:
-            resolve_build_id("lighthouse", "@prod", gbp=gbp, errorf=self.errorf)
+            resolve_build_id("lighthouse", "@prod", gbp=gbp)
 
-        self.assertEqual(context.exception.args, (1,))
-        self.assertEqual(self.errorf.getvalue(), "No such tag for lighthouse: prod\n")
+        self.assertEqual(context.exception.args, ("No such tag for lighthouse: prod",))
 
     def test_returns_build_with_given_id_if_given_build_id_is_numeric(self):
         gbp = make_gbp()
@@ -80,14 +78,6 @@ class ResolveBuildIdTestCase(TestCase):
         result = resolve_build_id("lighthouse", "456", gbp)
 
         self.assertEqual(result, Build("lighthouse", 456))
-
-    def test_raises_valueerror_when_abort_on_error_is_false_and_bad_id(self):
-        gbp = make_gbp()
-
-        with self.assertRaises(ValueError) as context:
-            resolve_build_id("lighthouse", "bogus", gbp, abort_on_error=False)
-
-        self.assertEqual(context.exception.args, ("Invalid build ID: bogus",))
 
 
 class GetMyMachinesFromArgsTestCase(TestCase):

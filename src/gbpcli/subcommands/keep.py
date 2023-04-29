@@ -11,7 +11,7 @@ def handler(
     args: argparse.Namespace, gbp: GBP, _console: Console, errorf: TextIO
 ) -> int:
     """Keep (or release) a build"""
-    build = utils.resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
 
     if args.release:
         result = gbp.release(build)

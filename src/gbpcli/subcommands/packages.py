@@ -11,7 +11,7 @@ def handler(
     args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
 ) -> int:
     """List a build's packages"""
-    build = utils.resolve_build_id(args.machine, args.number, gbp, errorf=errorf)
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
     packages = gbp.packages(build)
 
     if packages is None:

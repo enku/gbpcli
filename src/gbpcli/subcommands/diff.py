@@ -35,7 +35,7 @@ def handler(
         assert right is None
         right = str(builds[-1].number)
     else:
-        left = utils.resolve_build_id(args.machine, left, gbp, errorf=errorf).number
+        left = utils.resolve_build_id(args.machine, left, gbp).number
 
     if right is None:
         latest = gbp.latest(args.machine)
@@ -46,7 +46,7 @@ def handler(
 
         right = latest.number
     else:
-        right = utils.resolve_build_id(args.machine, right, gbp, errorf=errorf).number
+        right = utils.resolve_build_id(args.machine, right, gbp).number
 
     left_build, right_build, diff = gbp.diff(args.machine, left, right)
 

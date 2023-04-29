@@ -1,7 +1,6 @@
 """Utility functions"""
 import argparse
-import sys
-from typing import Optional, TextIO
+from typing import Optional
 
 from gbpcli import GBP, Build
 
@@ -9,40 +8,35 @@ JSON_CONTENT_TYPE = "application/json"
 TAG_SYM = "@"
 
 
-def resolve_build_id(
-    machine: str,
-    build_id: Optional[str],
-    gbp: GBP,
-    abort_on_error: bool = True,
-    errorf: TextIO = sys.stderr,
-) -> Build:
+class ResolveBuildError(SystemExit):
+    """Exception raised when a build id cannot be resolved
+
+    Note this is a subclass of SystemExit, and therefore not a subclass of
+    Exception and therefore will not be caught by "except Exception"
+    """
+
+
+def resolve_build_id(machine: str, build_id: Optional[str], gbp: GBP) -> Build:
     """Resolve build ids, tags, and optional numbers into a Build object
 
-    If abort_on_error is True and there is an error finding/calculating the build, then
-    an error is printed to sys.stderr and SystemExit is raised.
+    If there is an finding/calculating the build, then ResolveBuildError, which a
+    subclass of SystemExit.
     """
     build = None
-    error = SystemExit(1)
 
     if build_id is None:
         build = gbp.latest(machine)
-        if not build and abort_on_error:
-            print(f"No builds for {machine}", file=errorf)
-            raise error
+        if not build:
+            raise ResolveBuildError(f"No builds for {machine}")
     elif build_id.startswith(TAG_SYM):
         tag = build_id[1:]
         build = gbp.resolve_tag(machine, tag)
-        if not build and abort_on_error:
-            print(f"No such tag for {machine}: {tag}", file=errorf)
-            raise error
+        if not build:
+            raise ResolveBuildError(f"No such tag for {machine}: {tag}")
     elif build_id.isdigit():
         build = Build(machine, int(build_id))
-    elif abort_on_error:
-        print(f"Invalid build ID: {build_id}", file=errorf)
-        raise error
-
-    if build is None:
-        raise ValueError(f"Invalid build ID: {build_id}")
+    else:
+        raise ResolveBuildError(f"Invalid build ID: {build_id}")
 
     return build
 
