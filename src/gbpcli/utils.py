@@ -4,7 +4,6 @@ from typing import Optional
 
 from gbpcli import GBP, Build
 
-JSON_CONTENT_TYPE = "application/json"
 TAG_SYM = "@"
 
 
