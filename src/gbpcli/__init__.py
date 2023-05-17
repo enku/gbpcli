@@ -8,7 +8,6 @@ import sys
 import warnings
 from dataclasses import dataclass
 from enum import Enum, IntEnum
-from importlib import resources
 from importlib.metadata import entry_points, version
 from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
 
