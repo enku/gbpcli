@@ -8,12 +8,10 @@ import argparse
 import datetime as dt
 from collections.abc import Iterable
 
-from rich.console import Console
-
-from gbpcli import GBP, Change, Status, render, utils
+from gbpcli import GBP, Change, Console, Status, render, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     left = args.left
     right = args.right
@@ -23,7 +21,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> i
         published = [i for i in builds if (i.info and i.info.published)]
 
         if not published:
-            err.print("No origin specified and no builds published")
+            console.err.print("No origin specified and no builds published")
             return 1
 
         assert len(published) == 1
@@ -38,7 +36,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> i
         latest = gbp.latest(args.machine)
 
         if latest is None:
-            err.print("Need at least two builds to diff")
+            console.err.print("Need at least two builds to diff")
             return 1
 
         right = latest.number
@@ -55,35 +53,37 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> i
     assert isinstance(left_build.info.built, dt.datetime)
     assert isinstance(right_build.info.built, dt.datetime)
 
-    out.print(f"diff -r {args.machine}/{left} {args.machine}/{right}", style="header")
-    out.print(
+    console.out.print(
+        f"diff -r {args.machine}/{left} {args.machine}/{right}", style="header"
+    )
+    console.out.print(
         f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}",
         style="header",
     )
-    out.print(
+    console.out.print(
         f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}",
         style="header",
     )
 
-    print_diff(diff, out)
+    print_diff(diff, console)
 
     return 0
 
 
-def print_diff(diff: Iterable[Change], out: Console) -> None:
+def print_diff(diff: Iterable[Change], console: Console) -> None:
     """Given the list of changes, pretty-print the diff to the console"""
     last_modified: Change | None = None
     # for change, item in iter(response["diff"]["items"]):
     for item in diff:
         if item.status == Status.REMOVED:
-            out.print(f"[removed]-{item.item}")
+            console.out.print(f"[removed]-{item.item}")
         elif item.status == Status.ADDED:
-            out.print(f"[added]+{item.item}")
+            console.out.print(f"[added]+{item.item}")
         else:
             if item == last_modified:
-                out.print(f"[removed]-{item.item}")
+                console.out.print(f"[removed]-{item.item}")
             else:
-                out.print(f"[added]+{item.item}")
+                console.out.print(f"[added]+{item.item}")
             last_modified = item
 
 

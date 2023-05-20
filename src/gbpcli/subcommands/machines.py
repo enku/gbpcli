@@ -2,10 +2,9 @@
 import argparse
 
 from rich import box
-from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP, render, utils
+from gbpcli import GBP, Console, render, utils
 
 
 def latest_build_to_str(build: dict) -> str:
@@ -18,7 +17,7 @@ def latest_build_to_str(build: dict) -> str:
     return f"[build_id]{build_id}[/build_id]"
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
     my_machines = utils.get_my_machines_from_args(args)
     machines = [
@@ -43,7 +42,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> 
             latest_build_to_str(latest),
         )
 
-    out.print(table)
+    console.out.print(table)
     return 0
 
 

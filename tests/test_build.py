@@ -14,8 +14,8 @@ class MachinesTestCase(TestCase):
         args = Namespace(machine="babette")
         self.make_response("schedule_build.json")
 
-        status = build(args, self.gbp, self.out, self.err)
+        status = build(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.out.getvalue(), "")
+        self.assertEqual(self.console.out.getvalue(), "")
         self.assert_graphql(self.gbp.query.schedule_build, machine="babette")

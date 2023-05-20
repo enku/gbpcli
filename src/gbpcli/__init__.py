@@ -128,6 +128,14 @@ class Change:
     status: Status
 
 
+@dataclass(frozen=True)
+class Console:
+    """Output sinks for handlers"""
+
+    out: rich.console.Console
+    err: rich.console.Console
+
+
 class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
@@ -360,17 +368,19 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         console_theme = theme.DEFAULT_THEME
 
-    out = rich.console.Console(
-        force_terminal=force_terminal,
-        color_system="auto",
-        highlight=False,
-        theme=Theme(console_theme),
+    console = Console(
+        out=rich.console.Console(
+            force_terminal=force_terminal,
+            color_system="auto",
+            highlight=False,
+            theme=Theme(console_theme),
+        ),
+        err=rich.console.Console(file=sys.stderr),
     )
-    err = rich.console.Console(file=sys.stderr)
 
     try:
-        return args.func(args, gbp, out, err)
+        return args.func(args, gbp, console)
     except (graphql.APIError, requests.HTTPError) as error:
-        err.print(str(error))
+        console.err.print(str(error))
 
         return 1

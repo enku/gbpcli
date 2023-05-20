@@ -18,7 +18,7 @@ class DiffTestCase(TestCase):
         args = Namespace(machine="lighthouse", left="3111", right="3112")
         self.make_response("diff.json")
 
-        status = diff(args, self.gbp, self.out, self.err)
+        status = diff(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -36,7 +36,7 @@ diff -r lighthouse/3111 lighthouse/3112
 -sys-kernel/vanilla-sources-5.19.12-1
 +sys-kernel/vanilla-sources-6.0.0-1
 """
-        self.assertEqual(self.out.getvalue(), expected)
+        self.assertEqual(self.console.out.getvalue(), expected)
         self.assert_graphql(
             self.gbp.query.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
@@ -47,9 +47,9 @@ diff -r lighthouse/3111 lighthouse/3112
         gbp = make_gbp()
         gbp.query._session.post.return_value = make_response(json=no_diffs_json)
 
-        diff(args, gbp, self.out, self.err)
+        diff(args, gbp, self.console)
 
-        self.assertEqual(self.out.getvalue(), "")
+        self.assertEqual(self.console.out.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self):
         args = Namespace(machine="lighthouse", left="3111", right=None)
@@ -61,7 +61,7 @@ diff -r lighthouse/3111 lighthouse/3112
             make_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp, self.out, self.err)
+        status = diff(args, gbp, self.console)
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -97,7 +97,7 @@ diff -r lighthouse/3111 lighthouse/3112
             make_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp, self.out, self.err)
+        status = diff(args, gbp, self.console)
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -133,10 +133,10 @@ diff -r lighthouse/3111 lighthouse/3112
 
         self.make_response(list_json)
 
-        status = diff(args, self.gbp, self.out, self.err)
+        status = diff(args, self.gbp, self.console)
 
         self.assertEqual(status, 1)
         self.assert_graphql(self.gbp.query.builds, machine="jenkins")
         self.assertEqual(
-            self.err.getvalue(), "No origin specified and no builds published\n"
+            self.console.err.getvalue(), "No origin specified and no builds published\n"
         )

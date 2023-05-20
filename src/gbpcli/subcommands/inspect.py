@@ -9,12 +9,12 @@ import argparse
 import datetime as dt
 from typing import List
 
-from rich.console import Console, RenderableType
+from rich.console import RenderableType
 from rich.panel import Panel
 from rich.table import Table
 from rich.tree import Tree
 
-from gbpcli import GBP, Build, Package, render, utils
+from gbpcli import GBP, Build, Console, Package, render, utils
 
 
 def sort_packages_by_build_time(packages: List[Package]) -> List[Package]:
@@ -69,7 +69,7 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the machines builds as a tree"""
     tree = Tree("[header]Machines[/header]", guide_style="box")
 
@@ -86,7 +86,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> i
             build = gbp.get_build_info(Build(machine=machine, number=int(number)))
 
             if build is None:
-                err.print("Not found")
+                console.err.print("Not found")
                 return 1
 
             builds = [build]
@@ -110,7 +110,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> i
             for package in packages:
                 p_branch.add(render_package(package, build_date))
 
-    out.print(tree)
+    console.out.print(tree)
 
     return 0
 

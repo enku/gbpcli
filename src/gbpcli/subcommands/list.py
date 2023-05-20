@@ -11,13 +11,12 @@ Key for the "Flags" column:
 import argparse
 
 from rich import box
-from rich.console import Console
 from rich.table import Table
 
-from gbpcli import GBP, render
+from gbpcli import GBP, Console, render
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List a machine's builds"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
@@ -44,7 +43,7 @@ def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> 
             render.format_tags(build.info.tags),
         )
 
-    out.print(table)
+    console.out.print(table)
 
     return 0
 

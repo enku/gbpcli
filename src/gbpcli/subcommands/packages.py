@@ -1,22 +1,20 @@
 """Display the list of packages for a given build"""
 import argparse
 
-from rich.console import Console
-
-from gbpcli import GBP, utils
+from gbpcli import GBP, Console, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List a build's packages"""
     build = utils.resolve_build_id(args.machine, args.number, gbp)
     packages = gbp.packages(build)
 
     if packages is None:
-        err.print("Not Found")
+        console.err.print("Not Found")
         return 1
 
     for package in packages:
-        out.print(f"[package]{package}[/package]")
+        console.out.print(f"[package]{package}[/package]")
 
     return 0
 

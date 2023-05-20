@@ -4,13 +4,11 @@ If NUMBER is not specified, defaults to the latest build for the given machine.
 """
 import argparse
 
-from rich.console import Console
-
-from gbpcli import GBP
+from gbpcli import GBP, Console
 from gbpcli.utils import resolve_build_id
 
 
-def handler(args: argparse.Namespace, gbp: GBP, _out: Console, _err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     """Publish a build"""
     build = resolve_build_id(args.machine, args.number, gbp)
 

@@ -16,17 +16,17 @@ class MachinesTestCase(TestCase):
         args = Namespace(mine=False)
         self.make_response("machines.json")
 
-        status = machines(args, self.gbp, self.out, self.err)
+        status = machines(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.out.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(self.console.out.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(self.gbp.query.machines)
 
     def test_with_mine(self):
         args = Namespace(mine=True, my_machines="babette lighthouse")
         self.make_response("machines.json")
 
-        status = machines(args, self.gbp, self.out, self.err)
+        status = machines(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -38,7 +38,7 @@ class MachinesTestCase(TestCase):
 │ lighthouse │     29 │  10694 │
 ╰────────────┴────────┴────────╯
 """
-        self.assertEqual(self.out.getvalue(), expected)
+        self.assertEqual(self.console.out.getvalue(), expected)
         self.assert_graphql(self.gbp.query.machines)
 
 

@@ -2,12 +2,10 @@
 import argparse
 from typing import Optional
 
-from rich.console import Console
-
-from gbpcli import GBP, Build, utils
+from gbpcli import GBP, Build, Console, utils
 
 
-def handler(args: argparse.Namespace, gbp: GBP, _out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Add tags builds"""
     build: Optional[Build]
     machine: str = args.machine
@@ -15,7 +13,7 @@ def handler(args: argparse.Namespace, gbp: GBP, _out: Console, err: Console) -> 
 
     if args.remove:
         if args.number is not None:
-            err.print("When removing a tag, omit the build number")
+            console.err.print("When removing a tag, omit the build number")
             return 1
 
         if tag.startswith("@"):

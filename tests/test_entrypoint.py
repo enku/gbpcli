@@ -55,7 +55,7 @@ class MainTestCase(unittest.TestCase):
 
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
-    @mock.patch("gbpcli.rich.console.Console")
+    @mock.patch("gbpcli.Console")
     def test(self, console_mock, parse_args_mock, gbp_mock):
         parse_args_mock.return_value.url = "http://test.invalid/"
         func = parse_args_mock.return_value.func
@@ -67,9 +67,7 @@ class MainTestCase(unittest.TestCase):
             parse_args_mock.return_value,
             gbp_mock.return_value,
             console_mock.return_value,
-            console_mock.return_value,
         )
-        self.assertEqual(console_mock.call_count, 2)
         self.assertEqual(status, 0)
 
     def test_should_print_help_when_no_func(self):

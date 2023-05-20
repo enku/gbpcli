@@ -12,10 +12,10 @@ from typing import Any, Iterator
 from unittest import mock
 
 import requests
-from rich.console import Console
+import rich.console
 from rich.theme import Theme
 
-from gbpcli import GBP, graphql
+from gbpcli import GBP, Console, graphql
 from gbpcli.theme import DEFAULT_THEME
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
@@ -30,8 +30,7 @@ class TestCase(unittest.TestCase):
         super().setUp()
 
         self.gbp = make_gbp()
-        self.out = MockConsole()
-        self.err = MockConsole()
+        self.console = mock.Mock(spec=Console, out=MockConsole(), err=MockConsole())
 
     def make_response(self, data):
         """Add 200 json response to mock post
@@ -123,7 +122,9 @@ class MockConsole:
 
     def __init__(self):
         self.string_io = io.StringIO()
-        self.console = Console(file=self.string_io, theme=Theme(DEFAULT_THEME))
+        self.console = rich.console.Console(
+            file=self.string_io, theme=Theme(DEFAULT_THEME)
+        )
 
     def print(self, *args, **kwargs):
         """Print to self.stdout"""

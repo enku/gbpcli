@@ -6,9 +6,7 @@ import sys
 import tempfile
 from typing import Optional
 
-from rich.console import Console
-
-from gbpcli import GBP, SearchField, render, utils
+from gbpcli import GBP, Console, SearchField, render, utils
 from gbpcli.subcommands import make_searchable
 
 
@@ -60,33 +58,33 @@ def get_note(existing_note: Optional[str]) -> str:
     return note
 
 
-def search_notes(gbp: GBP, machine: str, key: str, out: Console, err: Console) -> int:
+def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
     """--search handler for the notes subcommand"""
     builds = gbp.search(machine, SearchField.notes, key)
 
     if not builds:
-        err.print("No matches found")
+        console.err.print("No matches found")
         return 1
 
     sep = ""
     for build in builds:
-        out.print(sep, end="")
-        out.print(render.build_to_str(build), end="")
+        console.out.print(sep, end="")
+        console.out.print(render.build_to_str(build), end="")
         sep = "\n"
 
     return 0
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show, search, and edit build notes"""
     if args.search:
-        return search_notes(gbp, args.machine, args.number, out, err)
+        return search_notes(gbp, args.machine, args.number, console)
 
     build = utils.resolve_build_id(args.machine, args.number, gbp)
     existing = gbp.get_build_info(build)
 
     if not existing or not existing.info:
-        err.print("Build not found")
+        console.err.print("Build not found")
         return 1
 
     if args.delete:

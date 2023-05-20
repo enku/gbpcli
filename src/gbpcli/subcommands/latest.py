@@ -1,19 +1,17 @@
 """Show the latest build number for the given machine"""
 import argparse
 
-from rich.console import Console
-
-from gbpcli import GBP
+from gbpcli import GBP, Console
 
 
-def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the latest build number for a machine"""
     latest_build = gbp.latest(args.machine)
     if not latest_build:
-        err.print("No builds exist for the given machine")
+        console.err.print("No builds exist for the given machine")
         return 1
 
-    out.print(latest_build.number)
+    console.out.print(latest_build.number)
 
     return 0
 
