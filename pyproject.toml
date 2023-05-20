@@ -8,8 +8,7 @@ license = {text = "GPL3+"}
 dependencies = [
     "requests",
     "rich>=12.5.1",
-    "yarl",
-    "urllib3<2.0.0"
+    "yarl"
 ]
 requires-python = ">=3.10"
 classifiers = [
