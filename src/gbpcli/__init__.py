@@ -340,8 +340,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
-    errorf: IO[str] = sys.stderr
-
     if argv is None:
         argv = sys.argv[1:]
 
@@ -350,7 +348,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if not hasattr(args, "func"):
-        parser.print_help(file=errorf)
+        parser.print_help(file=sys.stderr)
         return 1
 
     gbp = GBP(args.url)
@@ -362,16 +360,17 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         console_theme = theme.DEFAULT_THEME
 
-    console = rich.console.Console(
+    out = rich.console.Console(
         force_terminal=force_terminal,
         color_system="auto",
         highlight=False,
         theme=Theme(console_theme),
     )
+    err = rich.console.Console(file=sys.stderr)
 
     try:
-        return args.func(args, gbp, console, errorf)
+        return args.func(args, gbp, out, err)
     except (graphql.APIError, requests.HTTPError) as error:
-        print(str(error), file=errorf)
+        err.print(str(error))
 
         return 1

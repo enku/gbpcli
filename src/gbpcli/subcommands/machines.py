@@ -1,6 +1,5 @@
 """List machines with builds"""
 import argparse
-from typing import TextIO
 
 from rich import box
 from rich.console import Console
@@ -19,9 +18,7 @@ def latest_build_to_str(build: dict) -> str:
     return f"[build_id]{build_id}[/build_id]"
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, console: Console, _errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> int:
     """List machines with builds"""
     my_machines = utils.get_my_machines_from_args(args)
     machines = [
@@ -46,7 +43,7 @@ def handler(
             latest_build_to_str(latest),
         )
 
-    console.print(table)
+    out.print(table)
     return 0
 
 

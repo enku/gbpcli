@@ -18,10 +18,10 @@ class ListTestCase(TestCase):
         args = Namespace(machine="jenkins")
         self.make_response("list_with_packages.json")
 
-        status = list_command(args, self.gbp, self.console, self.errorf)
+        status = list_command(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(self.out.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="jenkins")
 
 

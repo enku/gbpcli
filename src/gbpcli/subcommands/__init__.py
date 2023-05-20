@@ -7,8 +7,8 @@ A "subcommand" for gbpcli is a Python module that has the following interface:
         def handler(
             args: argparse.Namespace,
             gbp: gbpcli.GBP,
-            console: rich.console.Console,
-            errorf: typing.TextIO
+            out: rich.console.Console,
+            err: rich.console.Console,
         ) -> int:
 
     The handler is the function called from the cli to handle the subcommand. It is

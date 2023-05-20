@@ -3,7 +3,6 @@
 If NUMBER is not specified, defaults to the latest build for the given machine.
 """
 import argparse
-from typing import TextIO
 
 from rich.console import Console
 
@@ -11,9 +10,7 @@ from gbpcli import GBP
 from gbpcli.utils import resolve_build_id
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, _console: Console, _errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, _out: Console, _err: Console) -> int:
     """Publish a build"""
     build = resolve_build_id(args.machine, args.number, gbp)
 

@@ -41,7 +41,7 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"EDITOR": "foo"}, clear=True):
-                    status = create_note(self.args, self.gbp, self.console, self.errorf)
+                    status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         self.assert_create_note()
@@ -53,7 +53,7 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"VISUAL": "foo"}, clear=True):
-                    status = create_note(self.args, self.gbp, self.console, self.errorf)
+                    status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 1)
         self.assertEqual(self.gbp.query._session.post.call_count, 1)
@@ -63,14 +63,14 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch.dict(os.environ, {}, clear=True):
                 with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                    status = create_note(self.args, self.gbp, self.console, self.errorf)
+                    status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         self.assert_create_note()
 
     def test_delete_deletes_note(self):
         self.args.delete = True
-        create_note(self.args, self.gbp, self.console, self.errorf)
+        create_note(self.args, self.gbp, self.out, self.err)
 
         self.assert_create_note(note=None)
 
@@ -80,7 +80,7 @@ class NotesTestCase(TestCase):
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                create_note(self.args, self.gbp, self.console, self.errorf)
+                create_note(self.args, self.gbp, self.out, self.err)
 
         self.assert_create_note()
 
@@ -88,16 +88,16 @@ class NotesTestCase(TestCase):
         self.make_response(None)
         self.make_response({"data": {"build": None}})
 
-        status = create_note(self.args, self.gbp, self.console, self.errorf)
+        status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 1)
-        self.assertEqual(self.errorf.getvalue(), "Build not found\n")
+        self.assertEqual(self.err.getvalue(), "Build not found\n")
 
     def test_should_print_error_when_invalid_number_given(self):
         self.args.number = "foo"
 
         with self.assertRaises(SystemExit) as context:
-            create_note(self.args, self.gbp, self.console, self.errorf)
+            create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(context.exception.args, ("Invalid build ID: foo",))
 
@@ -107,13 +107,13 @@ class NotesTestCase(TestCase):
         self.make_response(None)
         self.make_response("search_notes.json")
 
-        status = create_note(self.args, self.gbp, self.console, self.errorf)
+        status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         self.assert_graphql(
             self.gbp.query.search, machine="lighthouse", field="NOTES", key="10,000"
         )
-        self.assertEqual(self.console.getvalue(), EXPECTED_SEARCH_OUTPUT)
+        self.assertEqual(self.out.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
     def test_search_no_matches_found(self):
         self.args.search = True
@@ -121,13 +121,13 @@ class NotesTestCase(TestCase):
         self.make_response(None)
         self.make_response({"data": {"search": []}})
 
-        status = create_note(self.args, self.gbp, self.console, self.errorf)
+        status = create_note(self.args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 1)
         self.assert_graphql(
             self.gbp.query.search, machine="lighthouse", field="NOTES", key="python"
         )
-        self.assertEqual(self.errorf.getvalue(), "No matches found\n")
+        self.assertEqual(self.err.getvalue(), "No matches found\n")
 
 
 def fake_editor(text=NOTE, returncode=0):

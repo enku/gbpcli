@@ -67,8 +67,9 @@ class MainTestCase(unittest.TestCase):
             parse_args_mock.return_value,
             gbp_mock.return_value,
             console_mock.return_value,
-            sys.stderr,
+            console_mock.return_value,
         )
+        self.assertEqual(console_mock.call_count, 2)
         self.assertEqual(status, 0)
 
     def test_should_print_help_when_no_func(self):
@@ -79,12 +80,14 @@ class MainTestCase(unittest.TestCase):
         print_help_mock.assert_called_once_with(file=sys.stderr)
 
     @mock.patch("gbpcli.GBP")
-    @mock.patch("gbpcli.print")
-    def test_should_print_to_stderr_and_exit_1_on_exception(self, print_mock, gbp_mock):
+    @mock.patch("gbpcli.rich.console.Console")
+    def test_should_print_to_stderr_and_exit_1_on_exception(
+        self, console_mock, gbp_mock
+    ):
         error = APIError("blah", {})
         message = "blah"
 
         gbp_mock.return_value.get_build_info.side_effect = error
         status = main(["status", "lighthouse"])
         self.assertEqual(status, 1)
-        print_mock.assert_called_once_with(message, file=sys.stderr)
+        console_mock.return_value.print.assert_called_once_with(message)

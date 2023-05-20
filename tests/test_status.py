@@ -18,7 +18,7 @@ class StatusTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3587")
         self.make_response("status.json")
 
-        status(args, self.gbp, self.console, self.errorf)
+        status(args, self.gbp, self.out, self.err)
 
         expected = """\
 ╭────────────────────────────────────────────────╮
@@ -39,7 +39,7 @@ class StatusTestCase(TestCase):
 │Hello world!         │
 ╰─────────────────────╯
 """
-        self.assertEqual(self.console.getvalue(), expected)
+        self.assertEqual(self.out.getvalue(), expected)
         self.assert_graphql(self.gbp.query.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self):
@@ -47,7 +47,7 @@ class StatusTestCase(TestCase):
         self.make_response({"data": {"latest": {"id": "lighthouse.3587"}}})
         self.make_response("status.json")
 
-        return_status = status(args, self.gbp, self.console, self.errorf)
+        return_status = status(args, self.gbp, self.out, self.err)
 
         self.assert_graphql(self.gbp.query.latest, index=0, machine="lighthouse")
         self.assert_graphql(self.gbp.query.build, index=1, id="lighthouse.3587")
@@ -57,7 +57,7 @@ class StatusTestCase(TestCase):
         args = Namespace(machine="bogus", number="934")
         self.make_response({"data": {"build": None}})
 
-        return_status = status(args, self.gbp, self.console, self.errorf)
+        return_status = status(args, self.gbp, self.out, self.err)
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(self.errorf.getvalue(), "Not found\n")
+        self.assertEqual(self.err.getvalue(), "Not found\n")

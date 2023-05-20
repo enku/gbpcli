@@ -30,8 +30,8 @@ class TestCase(unittest.TestCase):
         super().setUp()
 
         self.gbp = make_gbp()
-        self.console = MockConsole()
-        self.errorf = io.StringIO()
+        self.out = MockConsole()
+        self.err = MockConsole()
 
     def make_response(self, data):
         """Add 200 json response to mock post
@@ -122,8 +122,8 @@ class MockConsole:
     """
 
     def __init__(self):
-        self.stdout = io.StringIO()
-        self.console = Console(file=self.stdout, theme=Theme(DEFAULT_THEME))
+        self.string_io = io.StringIO()
+        self.console = Console(file=self.string_io, theme=Theme(DEFAULT_THEME))
 
     def print(self, *args, **kwargs):
         """Print to self.stdout"""
@@ -131,4 +131,4 @@ class MockConsole:
 
     def getvalue(self) -> str:
         """Return everying printed to the console"""
-        return self.stdout.getvalue()
+        return self.string_io.getvalue()

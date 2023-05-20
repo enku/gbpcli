@@ -28,10 +28,10 @@ class InspectTestCase(TestCase):
         for _ in range(machines_count):
             make_response(next(graphql_responses))
 
-        status = inspect(args, self.gbp, self.console, self.errorf)
+        status = inspect(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), INSPECT_ALL)
+        self.assertEqual(self.out.getvalue(), INSPECT_ALL)
         self.assert_graphql(self.gbp.query.machine_names)
         self.assert_graphql(
             self.gbp.query.builds_with_packages, index=1, machine="base"
@@ -48,10 +48,10 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console, self.errorf)
+        status = inspect(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(self.out.getvalue(), INSPECT_SINGLE)
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_tail(self):
@@ -62,10 +62,10 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console, self.errorf)
+        status = inspect(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_TAIL)
+        self.assertEqual(self.out.getvalue(), INSPECT_SINGLE_WITH_TAIL)
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_build_id(self):
@@ -73,10 +73,10 @@ class InspectTestCase(TestCase):
 
         self.make_response("lighthouse.12672.json")
 
-        status = inspect(args, self.gbp, self.console, self.errorf)
+        status = inspect(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
+        self.assertEqual(self.out.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
         self.assert_graphql(self.gbp.query.build, id="lighthouse.12672")
 
     def test_with_mine(self):
@@ -87,10 +87,10 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(response)
 
-        status = inspect(args, self.gbp, self.console, self.errorf)
+        status = inspect(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(self.out.getvalue(), INSPECT_SINGLE)
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
 

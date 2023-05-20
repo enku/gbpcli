@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
-from typing import Optional, TextIO
+from typing import Optional
 
 from rich.console import Console
 
@@ -60,37 +60,33 @@ def get_note(existing_note: Optional[str]) -> str:
     return note
 
 
-def search_notes(
-    gbp: GBP, machine: str, key: str, console: Console, errorf: TextIO
-) -> int:
+def search_notes(gbp: GBP, machine: str, key: str, out: Console, err: Console) -> int:
     """--search handler for the notes subcommand"""
     builds = gbp.search(machine, SearchField.notes, key)
 
     if not builds:
-        print("No matches found", file=errorf)
+        err.print("No matches found")
         return 1
 
     sep = ""
     for build in builds:
-        console.print(sep, end="")
-        console.print(render.build_to_str(build), end="")
+        out.print(sep, end="")
+        out.print(render.build_to_str(build), end="")
         sep = "\n"
 
     return 0
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
     """Show, search, and edit build notes"""
     if args.search:
-        return search_notes(gbp, args.machine, args.number, console, errorf)
+        return search_notes(gbp, args.machine, args.number, out, err)
 
     build = utils.resolve_build_id(args.machine, args.number, gbp)
     existing = gbp.get_build_info(build)
 
     if not existing or not existing.info:
-        print("Build not found", file=errorf)
+        err.print("Build not found")
         return 1
 
     if args.delete:

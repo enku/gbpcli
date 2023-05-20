@@ -16,20 +16,18 @@ class LatestTestCase(TestCase):
         args = Namespace(machine="lighthouse")
         self.make_response("latest.json")
 
-        status = latest(args, self.gbp, self.console, self.errorf)
+        status = latest(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         expected = "3113\n"
-        self.assertEqual(self.console.getvalue(), expected)
+        self.assertEqual(self.out.getvalue(), expected)
         self.assert_graphql(self.gbp.query.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self):
         args = Namespace(machine="bogus")
         self.make_response({"data": {"latest": None}})
 
-        status = latest(args, self.gbp, self.console, self.errorf)
+        status = latest(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 1)
-        self.assertEqual(
-            self.errorf.getvalue(), "No builds exist for the given machine\n"
-        )
+        self.assertEqual(self.err.getvalue(), "No builds exist for the given machine\n")

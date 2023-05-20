@@ -1,6 +1,5 @@
 """Show details for a given build"""
 import argparse
-from typing import TextIO
 
 from rich import box
 from rich.console import Console
@@ -12,15 +11,13 @@ from gbpcli.render import styled_yes, timestr, yesno
 from gbpcli.utils import resolve_build_id
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
     """Show build details"""
     resolved_build = resolve_build_id(args.machine, args.number, gbp)
     build = gbp.get_build_info(resolved_build)
 
     if build is None:
-        print("Not found", file=errorf)
+        err.print("Not found")
         return 1
 
     assert build.info is not None
@@ -69,15 +66,15 @@ def handler(
         for package in packages[1:]:
             grid.add_row("", f"[package]{package.cpv}[/package]")
 
-    console.print(Panel(grid, expand=False, style="box"))
+    out.print(Panel(grid, expand=False, style="box"))
 
     if note := build.info.note:
-        console.print()
+        out.print()
         table = Table(box=box.ROUNDED, pad_edge=False, style="box")
         table.add_column("📎 Notes", header_style="header")
         table.add_row("[note]" + note.rstrip("\n") + "[/note]")
 
-        console.print(table)
+        out.print(table)
 
     return 0
 

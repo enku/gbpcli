@@ -7,7 +7,7 @@ that will be displayed as well.
 """
 import argparse
 import datetime as dt
-from typing import List, TextIO
+from typing import List
 
 from rich.console import Console, RenderableType
 from rich.panel import Panel
@@ -69,9 +69,7 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, console: Console, errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, out: Console, err: Console) -> int:
     """Show the machines builds as a tree"""
     tree = Tree("[header]Machines[/header]", guide_style="box")
 
@@ -88,7 +86,7 @@ def handler(
             build = gbp.get_build_info(Build(machine=machine, number=int(number)))
 
             if build is None:
-                print("Not found", file=errorf)
+                err.print("Not found")
                 return 1
 
             builds = [build]
@@ -112,7 +110,7 @@ def handler(
             for package in packages:
                 p_branch.add(render_package(package, build_date))
 
-    console.print(tree)
+    out.print(tree)
 
     return 0
 

@@ -1,15 +1,12 @@
 """Schedule a build for the given machine in CI/CD"""
 import argparse
-from typing import TextIO
 
 from rich.console import Console
 
 from gbpcli import GBP
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, _console: Console, _errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, _out: Console, _err: Console) -> int:
     """Schedule a build for the given machine in CI/CD"""
     gbp.build(args.machine)
 

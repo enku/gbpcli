@@ -16,7 +16,7 @@ class KeepTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3210", release=False)
         self.make_response("keep_build.json")
 
-        status = keep(args, self.gbp, self.console, self.errorf)
+        status = keep(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         self.assert_graphql(self.gbp.query.keep_build, id="lighthouse.3210")
@@ -25,15 +25,15 @@ class KeepTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3210", release=False)
         self.make_response({"data": {"keepBuild": None}})
 
-        status = keep(args, self.gbp, self.console, self.errorf)
+        status = keep(args, self.gbp, self.out, self.err)
         self.assertEqual(status, 1)
-        self.assertEqual(self.errorf.getvalue(), "Not Found\n")
+        self.assertEqual(self.err.getvalue(), "Not Found\n")
 
     def test_release(self):
         args = Namespace(machine="lighthouse", number="3210", release=True)
         self.make_response("release_build.json")
 
-        status = keep(args, self.gbp, self.console, self.errorf)
+        status = keep(args, self.gbp, self.out, self.err)
 
         self.assertEqual(status, 0)
         self.assert_graphql(self.gbp.query.release_build, id="lighthouse.3210")
@@ -42,6 +42,6 @@ class KeepTestCase(TestCase):
         args = Namespace(machine="lighthouse", number="3210", release=True)
         self.make_response({"data": {"releaseBuild": None}})
 
-        status = keep(args, self.gbp, self.console, self.errorf)
+        status = keep(args, self.gbp, self.out, self.err)
         self.assertEqual(status, 1)
-        self.assertEqual(self.errorf.getvalue(), "Not Found\n")
+        self.assertEqual(self.err.getvalue(), "Not Found\n")

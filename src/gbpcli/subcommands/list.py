@@ -9,7 +9,6 @@ Key for the "Flags" column:
 
 """
 import argparse
-from typing import TextIO
 
 from rich import box
 from rich.console import Console
@@ -18,9 +17,7 @@ from rich.table import Table
 from gbpcli import GBP, render
 
 
-def handler(
-    args: argparse.Namespace, gbp: GBP, console: Console, _errorf: TextIO
-) -> int:
+def handler(args: argparse.Namespace, gbp: GBP, out: Console, _err: Console) -> int:
     """List a machine's builds"""
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
@@ -47,7 +44,7 @@ def handler(
             render.format_tags(build.info.tags),
         )
 
-    console.print(table)
+    out.print(table)
 
     return 0
 
