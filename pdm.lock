@@ -267,8 +267,9 @@ dependencies = [
 
 [metadata]
 lock_version = "4.2"
+cross_platform = true
 groups = ["default", "dev"]
-content_hash = "sha256:14ee46ff4289600dd985be66b2cc34c9c2531d33f8463ac7891aa9e404358b8e"
+content_hash = "sha256:5baf8f5503cebff371bb4e4005ad3f586beb710926da417a87f53e2c9ceaec19"
 
 [metadata.files]
 "astroid 2.15.4" = [
