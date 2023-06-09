@@ -22,7 +22,7 @@ class Query:
     For example::
 
         >>> qs = "query ($machine: String!) { latest(machine: $machine) { id } }"
-        >>> query = Query(s, "https://gbp/graphql", requests.Session())
+        >>> query = Query(qs, "https://gbp/graphql", requests.Session())
         >>> query(machine="lighthouse")
         ({'latest': {'id': 'lighthouse.14205'}}, None)
     """
