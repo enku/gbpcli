@@ -139,8 +139,10 @@ class Console:
 class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
-    def __init__(self, url: str) -> None:
-        self.query = graphql.Queries(yarl.URL(url) / "graphql")
+    def __init__(self, url: str, distribution: str = "gbpcli") -> None:
+        self.query = graphql.Queries(
+            yarl.URL(url) / "graphql", distribution=distribution
+        )
 
     def machines(self) -> list[tuple[str, int, dict]]:
         """Handler for subcommand"""

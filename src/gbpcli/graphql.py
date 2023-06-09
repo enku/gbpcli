@@ -51,12 +51,18 @@ class Query:
 class Queries:
     """Python interface to raw queries/*.graphql files"""
 
-    def __init__(self, url: yarl.URL) -> None:
+    def __init__(self, url: yarl.URL, distribution: str = "gbpcli") -> None:
+        """A namespace for queries.
+
+        url: the url to the graphql endpoint
+        distribution: name of python package to search for queries/*.graphql files
+        """
         self._url = str(url)
         self._session = requests.Session()
+        self._distribution = distribution
 
     def __getattr__(self, name: str) -> Query:
-        query_file = resources.files("gbpcli") / "queries" / f"{name}.graphql"
+        query_file = resources.files(self._distribution) / "queries" / f"{name}.graphql"
         try:
             query_str = query_file.read_text(encoding="UTF-8")
         except FileNotFoundError:
@@ -66,7 +72,7 @@ class Queries:
 
     def to_dict(self) -> dict[str, str]:
         """Return the queries as a dict"""
-        files = (resources.files("gbpcli") / "queries").iterdir()
+        files = (resources.files(self._distribution) / "queries").iterdir()
 
         return {
             filename.name[:-8]: getattr(self, filename.name[:-8])
