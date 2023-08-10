@@ -21,7 +21,7 @@ DEFAULT_THEME: ColorMap = {
 
 
 def get_colormap_from_string(string: str) -> ColorMap:
-    """Given the text sring return a gbp ColorMap
+    """Given the text string return a gbp ColorMap
 
     String is expected to be a colon-delimited (":") set of name=value pairs. So for
     example:

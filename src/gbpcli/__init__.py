@@ -23,7 +23,7 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 @dataclass(frozen=True)
 class BuildInfo:
-    """Metatada about a Build
+    """Metadata about a Build
 
     Retrieved from the API.
     """
