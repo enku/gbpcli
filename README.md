@@ -99,7 +99,8 @@ updating/downgrading.
 $ gbp publish arm64-base 151
 ```
 
-If the build nubmer is not given, it defaults to the latest build for that machine.
+If the build number is not given, it defaults to the latest build for that
+machine.
 
 The `build` subcommand can schedule a build in CI/CD for the given machine,
 e.g.:
