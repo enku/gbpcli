@@ -2,9 +2,7 @@
 # pylint: disable=protected-access
 import datetime
 import io
-import sys
 import unittest
-from functools import partial
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
