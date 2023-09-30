@@ -1,6 +1,5 @@
 """Utility functions"""
 import argparse
-from typing import Optional
 
 from gbpcli import GBP, Build
 
@@ -15,7 +14,7 @@ class ResolveBuildError(SystemExit):
     """
 
 
-def resolve_build_id(machine: str, build_id: Optional[str], gbp: GBP) -> Build:
+def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
     """Resolve build ids, tags, and optional numbers into a Build object
 
     If there is an finding/calculating the build, then ResolveBuildError, which a
@@ -24,20 +23,20 @@ def resolve_build_id(machine: str, build_id: Optional[str], gbp: GBP) -> Build:
     build = None
 
     if build_id is None:
-        build = gbp.latest(machine)
-        if not build:
+        if not (build := gbp.latest(machine)):
             raise ResolveBuildError(f"No builds for {machine}")
-    elif build_id.startswith(TAG_SYM):
-        tag = build_id[1:]
-        build = gbp.resolve_tag(machine, tag)
-        if not build:
-            raise ResolveBuildError(f"No such tag for {machine}: {tag}")
-    elif build_id.isdigit():
-        build = Build(machine, int(build_id))
-    else:
-        raise ResolveBuildError(f"Invalid build ID: {build_id}")
+        return build
 
-    return build
+    if build_id.startswith(TAG_SYM):
+        tag = build_id[1:]
+        if not (build := gbp.resolve_tag(machine, tag)):
+            raise ResolveBuildError(f"No such tag for {machine}: {tag}")
+        return build
+
+    if build_id.isdigit():
+        return Build(machine, int(build_id))
+
+    raise ResolveBuildError(f"Invalid build ID: {build_id}")
 
 
 def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:

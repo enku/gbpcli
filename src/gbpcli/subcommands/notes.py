@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 import tempfile
-from typing import Optional
 
 from gbpcli import GBP, Console, SearchField, render, utils
 from gbpcli.subcommands import make_searchable
@@ -27,7 +26,7 @@ def get_editor():
     return None
 
 
-def open_editor(editor: str, text: Optional[str]) -> str:
+def open_editor(editor: str, text: str | None) -> str:
     """Open the given `editor` and return the text after the editor exits.
 
     The optional `text` argument is the existing text to be edited. If not given then
@@ -41,28 +40,25 @@ def open_editor(editor: str, text: Optional[str]) -> str:
             note_file.flush()
         proc = subprocess.run([editor, note_file.name], check=False)
 
-        if proc.returncode == 0:
+        if not proc.returncode:
             note_file.seek(0)
             return note_file.read()
 
     raise EnvironmentError("Editor failed")
 
 
-def get_note(existing_note: Optional[str]) -> str:
+def get_note(existing_note: str | None) -> str:
     """Get a note either from standard input or editor"""
-    if sys.stdin.isatty() and (editor := get_editor()):
-        note = open_editor(editor, existing_note)
-    else:
-        note = sys.stdin.read()
-
-    return note
+    return (
+        open_editor(editor, existing_note)
+        if sys.stdin.isatty() and (editor := get_editor())
+        else sys.stdin.read()
+    )
 
 
 def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
     """--search handler for the notes subcommand"""
-    builds = gbp.search(machine, SearchField.notes, key)
-
-    if not builds:
+    if not (builds := gbp.search(machine, SearchField.notes, key)):
         console.err.print("No matches found")
         return 1
 

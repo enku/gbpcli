@@ -1,13 +1,12 @@
 """Add tag to the given build"""
 import argparse
-from typing import Optional
 
 from gbpcli import GBP, Build, Console, utils
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Add tags builds"""
-    build: Optional[Build]
+    build: (Build | None)
     machine: str = args.machine
     tag: str = args.tag
 

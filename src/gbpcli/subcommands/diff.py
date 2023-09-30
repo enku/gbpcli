@@ -18,32 +18,29 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     if left is None:
         builds = gbp.builds(args.machine)
-        published = [i for i in builds if (i.info and i.info.published)]
 
-        if not published:
+        if not (published := [i for i in builds if (i.info and i.info.published)]):
             console.err.print("No origin specified and no builds published")
             return 1
 
         assert len(published) == 1
-        left = published[0].number
+        left_id = published[0].number
 
         assert right is None
         right = str(builds[-1].number)
     else:
-        left = utils.resolve_build_id(args.machine, left, gbp).number
+        left_id = utils.resolve_build_id(args.machine, left, gbp).number
 
     if right is None:
-        latest = gbp.latest(args.machine)
-
-        if latest is None:
+        if (latest := gbp.latest(args.machine)) is None:
             console.err.print("Need at least two builds to diff")
             return 1
 
-        right = latest.number
+        right_id = latest.number
     else:
-        right = utils.resolve_build_id(args.machine, right, gbp).number
+        right_id = utils.resolve_build_id(args.machine, right, gbp).number
 
-    left_build, right_build, diff = gbp.diff(args.machine, left, right)
+    left_build, right_build, diff = gbp.diff(args.machine, left_id, right_id)
 
     if not diff:
         return 0

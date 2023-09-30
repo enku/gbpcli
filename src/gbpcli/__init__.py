@@ -9,7 +9,7 @@ import warnings
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 from importlib.metadata import entry_points, version
-from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
+from typing import IO, Any, Callable, TypeAlias, TypeVar
 
 import requests
 import rich.console
@@ -29,12 +29,12 @@ class BuildInfo:
     """
 
     keep: bool
-    note: Optional[str]
+    note: str | None
     published: bool
     tags: list[str]
     submitted: datetime.datetime
-    completed: Optional[datetime.datetime] = None
-    built: Optional[datetime.datetime] = None
+    completed: datetime.datetime | None = None
+    built: datetime.datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -54,8 +54,8 @@ class Build:
 
     machine: str
     number: int
-    info: Optional[BuildInfo] = None
-    packages_built: Optional[list[Package]] = None
+    info: BuildInfo | None = None
+    packages_built: list[Package] | None = None
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
@@ -77,16 +77,17 @@ class Build:
         fromisoformat = datetime.datetime.fromisoformat
         built = api_response.get("built")
 
-        if api_response.get("packagesBuilt", None) is None:
-            packages_built = None
-        else:
-            packages_built = [
+        packages_built = (
+            None
+            if (packages := api_response.get("packagesBuilt", None)) is None
+            else [
                 Package(
                     cpv=i["cpv"],
                     build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
                 )
-                for i in api_response["packagesBuilt"]
+                for i in packages
             ]
+        )
 
         return cls.from_id(
             api_response["id"],
@@ -169,21 +170,20 @@ class GBP:
         """Pull the given build"""
         graphql.check(self.query.pull(id=build.id))
 
-    def latest(self, machine: str) -> Optional[Build]:
+    def latest(self, machine: str) -> Build | None:
         """Return the latest build for machine
 
         Return None if there are no builds for the given machine
         """
         data = graphql.check(self.query.latest(machine=machine))
-        latest = data["latest"]
 
-        if latest is None:
+        if data["latest"] is None:
             return None
 
         build_id = data["latest"]["id"]
         return Build.from_id(build_id)
 
-    def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
+    def resolve_tag(self, machine: str, tag: str) -> Build | None:
         """Return the build of the given machine & tag"""
         data = graphql.check(self.query.resolve_tag(machine=machine, tag=tag))[
             "resolveBuildTag"
@@ -225,18 +225,17 @@ class GBP:
             ],
         )
 
-    def logs(self, build: Build) -> Optional[str]:
+    def logs(self, build: Build) -> str | None:
         """Return logs for the given Build"""
         data = graphql.check(self.query.logs(id=build.id))
 
         return None if data["build"] is None else data["build"]["logs"]
 
-    def get_build_info(self, build: Build) -> Optional[Build]:
+    def get_build_info(self, build: Build) -> Build | None:
         """Return build with info gained from the GBP API"""
         data, errors = self.query.build(id=build.id)
-        build = data["build"]
 
-        if build is None:
+        if (build := data["build"]) is None:
             if errors:
                 raise graphql.APIError(errors, data)
             return None
@@ -248,7 +247,7 @@ class GBP:
         response = graphql.check(self.query.schedule_build(machine=machine))
         return response["scheduleBuild"]
 
-    def packages(self, build: Build) -> Optional[list[str]]:
+    def packages(self, build: Build) -> list[str] | None:
         """Return the list of packages for a build"""
         data = graphql.check(self.query.packages(id=build.id))
         return data["build"]["packages"]
@@ -261,7 +260,7 @@ class GBP:
         """Unmark a build as kept"""
         return graphql.check(self.query.release_build(id=build.id))["releaseBuild"]
 
-    def create_note(self, build: Build, note: Optional[str]) -> dict[str, str]:
+    def create_note(self, build: Build, note: str | None) -> dict[str, str]:
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).

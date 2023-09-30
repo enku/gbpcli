@@ -7,9 +7,7 @@ from gbpcli.subcommands import make_searchable
 
 def search_logs(gbp: GBP, args: argparse.Namespace, console: Console) -> int:
     """--search handler for the notes subcommand"""
-    builds = gbp.search(args.machine, SearchField.logs, args.number)
-
-    if not builds:
+    if not (builds := gbp.search(args.machine, SearchField.logs, args.number)):
         console.err.print("No matches found")
         return 1
 
@@ -32,9 +30,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         return search_logs(gbp, args, console)
 
     build = utils.resolve_build_id(args.machine, args.number, gbp)
-    text = gbp.logs(build)
 
-    if text is None:
+    if (text := gbp.logs(build)) is None:
         console.err.print("Not Found")
         return 1
 
