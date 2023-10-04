@@ -374,13 +374,12 @@ def get_console(
     If force_terminal is true, force a tty on the console.
     If the ColorMap is given this is used as the Console theme
     """
-    color_map = color_map or theme.DEFAULT_THEME
     return Console(
         out=rich.console.Console(
             force_terminal=force_terminal,
             color_system="auto",
             highlight=False,
-            theme=Theme(color_map),
+            theme=Theme(color_map or theme.DEFAULT_THEME),
         ),
         err=rich.console.Console(file=sys.stderr),
     )
