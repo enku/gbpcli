@@ -153,7 +153,7 @@ class GBP:
             (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]
         ]
 
-    def machine_names(self) -> list["str"]:
+    def machine_names(self) -> list[str]:
         """Return the list of machine names
 
         Machines having builds.
