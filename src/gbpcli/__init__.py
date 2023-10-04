@@ -347,12 +347,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_arguments(argv: list[str] | None = None) -> argparse.Namespace | None:
+def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     """Return command line arguments given the argv
 
     This method ensures that args.func is defined as it's mandatory for calling
-    subcommands. If there are none the help message is printed to stderr and None is
-    returned.
+    subcommands. If there are none the help message is printed to stderr and SystemExit
+    is raised.
     """
     argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser()
@@ -361,7 +361,7 @@ def get_arguments(argv: list[str] | None = None) -> argparse.Namespace | None:
     # ensure we have a "func" target
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
-        return None
+        raise SystemExit(1)
 
     return args
 
@@ -388,9 +388,7 @@ def get_console(
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
-    if (args := get_arguments(argv)) is None:
-        return 1
-
+    args = get_arguments(argv)
     color_map = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
     force_terminal = {"always": True, "never": False}.get(args.color, None)
     console = get_console(force_terminal, color_map)

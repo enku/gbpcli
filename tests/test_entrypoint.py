@@ -126,9 +126,10 @@ class MainTestCase(unittest.TestCase):
 
     def test_should_print_help_when_no_func(self):
         with mock.patch("gbpcli.argparse.ArgumentParser.print_help") as print_help_mock:
-            status = main([])
+            with self.assertRaises(SystemExit) as context:
+                main([])
 
-        self.assertEqual(status, 1)
+        self.assertEqual(context.exception.args, (1,))
         print_help_mock.assert_called_once_with(file=sys.stderr)
 
     @mock.patch("gbpcli.GBP")
