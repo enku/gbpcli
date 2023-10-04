@@ -87,19 +87,15 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def print_diff(diff: Iterable[Change], console: Console) -> None:
     """Given the list of changes, pretty-print the diff to the console"""
-    last_modified: Change | None = None
-    # for change, item in iter(response["diff"]["items"]):
     for item in diff:
-        if item.status == Status.REMOVED:
-            console.out.print(f"[removed]-{item.item}")
-        elif item.status == Status.ADDED:
-            console.out.print(f"[added]+{item.item}")
-        else:
-            if item == last_modified:
+        match item.status:
+            case Status.REMOVED:
                 console.out.print(f"[removed]-{item.item}")
-            else:
+            case Status.ADDED:
                 console.out.print(f"[added]+{item.item}")
-            last_modified = item
+            case Status.CHANGED:
+                console.out.print(f"[removed]-{item.item}")
+                console.out.print(f"[added]+{item.item}")
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
