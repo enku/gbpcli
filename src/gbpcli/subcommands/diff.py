@@ -58,7 +58,7 @@ def get_right_build(machine: str, requested: str, gbp: GBP) -> int | None:
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
     if (left := get_left_build(args.machine, args.left, gbp)) is None:
-        console.err.print("No origin found or no builds published")
+        console.err.print("No builds given and no builds published")
         return 1
 
     if (right := get_right_build(args.machine, args.right, gbp)) is None:

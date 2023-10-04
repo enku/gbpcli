@@ -138,5 +138,5 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(status, 1)
         self.assert_graphql(self.gbp.query.builds, machine="jenkins")
         self.assertEqual(
-            self.console.err.getvalue(), "No origin found or no builds published\n"
+            self.console.err.getvalue(), "No builds given and no builds published\n"
         )
