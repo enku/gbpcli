@@ -112,6 +112,7 @@ class MainTestCase(unittest.TestCase):
     @mock.patch("gbpcli.Console")
     def test(self, console_mock, parse_args_mock, gbp_mock):
         parse_args_mock.return_value.url = "http://test.invalid/"
+        parse_args_mock.return_value.color = "auto"
         func = parse_args_mock.return_value.func
         func.return_value = 0
         argv = ["status", "lighthouse"]

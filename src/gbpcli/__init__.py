@@ -18,6 +18,7 @@ from rich.theme import Theme
 
 from gbpcli import graphql, theme
 
+COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 
@@ -311,9 +312,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--color",
         metavar="WHEN",
-        choices=["never", "always", "auto"],
+        choices=COLOR_CHOICES,
         default="auto",
-        help="color output",
+        help=f"colorize output {tuple(COLOR_CHOICES)}",
     )
     parser.add_argument(
         "--my-machines",
@@ -389,8 +390,7 @@ def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
     args = get_arguments(argv)
     color_map = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
-    force_terminal = {"always": True, "never": False}.get(args.color, None)
-    console = get_console(force_terminal, color_map)
+    console = get_console(COLOR_CHOICES[args.color], color_map)
 
     try:
         return args.func(args, GBP(args.url), console)
