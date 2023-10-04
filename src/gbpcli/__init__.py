@@ -397,6 +397,6 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         return args.func(args, GBP(args.url), console)
-    except (graphql.APIError, requests.HTTPError) as error:
+    except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
         console.err.print(str(error))
         return 1
