@@ -347,41 +347,56 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Main entry point"""
-    if argv is None:
-        argv = sys.argv[1:]
+def get_arguments(argv: list[str] | None = None) -> argparse.Namespace | None:
+    """Return command line arguments given the argv
 
+    This method ensures that args.func is defined as it's mandatory for calling
+    subcommands. If there are none the help message is printed to stderr and None is
+    returned.
+    """
+    argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser()
-
     args = parser.parse_args(argv)
 
+    # ensure we have a "func" target
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
-        return 1
+        return None
 
-    gbp = GBP(args.url)
+    return args
 
-    force_terminal = {"always": True, "never": False}.get(args.color, None)
 
-    try:
-        console_theme = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
-    except ValueError:
-        console_theme = theme.DEFAULT_THEME
+def get_console(
+    force_terminal: bool | None, color_map: theme.ColorMap | None = None
+) -> Console:
+    """Return a rich.Console instance
 
-    console = Console(
+    If force_terminal is true, force a tty on the console.
+    If the ColorMap is given this is used as the Console theme
+    """
+    color_map = color_map or theme.DEFAULT_THEME
+    return Console(
         out=rich.console.Console(
             force_terminal=force_terminal,
             color_system="auto",
             highlight=False,
-            theme=Theme(console_theme),
+            theme=Theme(color_map),
         ),
         err=rich.console.Console(file=sys.stderr),
     )
 
+
+def main(argv: list[str] | None = None) -> int:
+    """Main entry point"""
+    if (args := get_arguments(argv)) is None:
+        return 1
+
+    color_map = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
+    force_terminal = {"always": True, "never": False}.get(args.color, None)
+    console = get_console(force_terminal, color_map)
+
     try:
-        return args.func(args, gbp, console)
+        return args.func(args, GBP(args.url), console)
     except (graphql.APIError, requests.HTTPError) as error:
         console.err.print(str(error))
-
         return 1
