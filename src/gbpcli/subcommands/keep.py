@@ -3,6 +3,8 @@ import argparse
 
 from gbpcli import GBP, Console, utils
 
+HELP = """Keep (or release) a build"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Keep (or release) a build"""

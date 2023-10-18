@@ -336,7 +336,7 @@ def build_parser() -> argparse.ArgumentParser:
         module = entry_point.load()
         subparser = subparsers.add_parser(
             entry_point.name,
-            description=module.__doc__,
+            description=getattr(module, "HELP", None),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         usage = f"{usage}  * {entry_point.name} - {module.handler.__doc__}\n"

@@ -8,6 +8,8 @@ import tempfile
 from gbpcli import GBP, Console, SearchField, render, utils
 from gbpcli.subcommands import make_searchable
 
+HELP = """notes subcommand for gbpcli"""
+
 
 def get_editor():
     """Return the user's editor preference.

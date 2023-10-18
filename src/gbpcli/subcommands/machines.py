@@ -6,6 +6,8 @@ from rich.table import Table
 
 from gbpcli import GBP, Console, render, utils
 
+HELP = """List machines with builds"""
+
 
 def latest_build_to_str(build: dict) -> str:
     """Return the "Latest" column for the given build"""

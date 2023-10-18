@@ -1,15 +1,17 @@
-"""Show differences between two builds
-
-If the "left" argument is omitted, it defaults to the build which is published.
-
-If the "right" argument is omitted, it defaults to the most recent build.
-"""
+"""Show differences between two builds"""
 import argparse
 import datetime as dt
 from collections.abc import Iterable
 from functools import cache, partial
 
 from gbpcli import GBP, Change, Console, Status, render, utils
+
+HELP = """Show differences between two builds
+
+If the "left" argument is omitted, it defaults to the build which is published.
+
+If the "right" argument is omitted, it defaults to the most recent build.
+"""
 
 
 @cache

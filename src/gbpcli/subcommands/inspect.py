@@ -1,10 +1,4 @@
-"""Show the GBP builds as a tree
-
-Display all the builds (or the last n builds if --tail is given) for all the
-machines (or only the machines given).  Display the build's timestamp as well as
-the timestamp for each build's packages' completion.  If the build has a note
-that will be displayed as well.
-"""
+"""Show the GBP builds as a tree"""
 import argparse
 import datetime as dt
 
@@ -14,6 +8,14 @@ from rich.table import Table
 from rich.tree import Tree
 
 from gbpcli import GBP, Build, Console, Package, render, utils
+
+HELP = """Show the GBP builds as a tree
+
+Display all the builds (or the last n builds if --tail is given) for all the
+machines (or only the machines given).  Display the build's timestamp as well as
+the timestamp for each build's packages' completion.  If the build has a note
+that will be displayed as well.
+"""
 
 
 def sort_packages_by_build_time(packages: list[Package]) -> list[Package]:

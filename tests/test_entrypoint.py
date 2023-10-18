@@ -45,7 +45,7 @@ class BuildParserTestCase(unittest.TestCase):
                 module = importlib.import_module(f"gbpcli.subcommands.{subcommand}")
                 subparsers.add_parser.assert_any_call(
                     subcommand,
-                    description=module.__doc__,
+                    description=module.HELP,
                     formatter_class=argparse.RawTextHelpFormatter,
                 )
                 subparser = subparsers.add_parser.return_value

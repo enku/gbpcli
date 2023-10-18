@@ -4,6 +4,8 @@ import argparse
 from gbpcli import GBP, Console, SearchField, render, utils
 from gbpcli.subcommands import make_searchable
 
+HELP = """Display logs for the given build"""
+
 
 def search_logs(gbp: GBP, args: argparse.Namespace, console: Console) -> int:
     """--search handler for the notes subcommand"""

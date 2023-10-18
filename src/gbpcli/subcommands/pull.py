@@ -3,6 +3,8 @@ import argparse
 
 from gbpcli import GBP, Build, Console
 
+HELP = """Pull a build"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     """Pull a build"""

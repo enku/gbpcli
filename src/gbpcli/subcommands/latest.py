@@ -3,6 +3,8 @@ import argparse
 
 from gbpcli import GBP, Console
 
+HELP = """Show the latest build number for the given machine"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the latest build number for a machine"""

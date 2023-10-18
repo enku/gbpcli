@@ -3,6 +3,8 @@ import argparse
 
 from gbpcli import GBP, Console
 
+HELP = "Schedule a build for the given machine in CI/CD"
+
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     """Schedule a build for the given machine in CI/CD"""
