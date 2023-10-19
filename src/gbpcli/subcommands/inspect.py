@@ -70,18 +70,27 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
 
 
+def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
+    """Return the list of machines requested by the arguments
+
+    - If --mine is passed then use --my-machines is returned
+    - If machine[s] are passed on the command-line they are returned
+    - Otherwise returns the list of all machines on the server
+    """
+    if args.mine:
+        return utils.get_my_machines_from_args(args)
+
+    if args.machine:
+        return args.machine
+
+    return gbp.machine_names()
+
+
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the machines builds as a tree"""
     tree = Tree("[header]Machines[/header]", guide_style="box")
 
-    if args.machine:
-        machines = args.machine
-    elif args.mine:
-        machines = utils.get_my_machines_from_args(args)
-    else:
-        machines = gbp.machine_names()
-
-    for machine in machines:
+    for machine in get_machines(args, gbp):
         if "." in machine:
             machine, _, number = machine.partition(".")
 
