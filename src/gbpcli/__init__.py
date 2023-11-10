@@ -9,7 +9,7 @@ import warnings
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 from importlib.metadata import entry_points, version
-from typing import IO, Any, Callable, TypeAlias, TypeVar
+from typing import IO, Any, Callable, TypeAlias, TypeVar, cast
 
 import requests
 import rich.console
@@ -64,14 +64,14 @@ class Build:
         return f"{self.machine}.{self.number}"
 
     @classmethod
-    def from_id(cls: type[T], build_id: str, **kwargs) -> T:
+    def from_id(cls: type[T], build_id: str, **kwargs: Any) -> T:
         """Create from GBP build id"""
         parts = build_id.partition(".")
 
         return cls(machine=parts[0], number=int(parts[2]), **kwargs)
 
     @classmethod
-    def from_api_response(cls: type[T], api_response) -> T:
+    def from_api_response(cls: type[T], api_response: dict[str, Any]) -> T:
         """Return a Build with BuildInfo given the response from the API"""
         completed = api_response.get("completed")
         submitted = api_response["submitted"]
@@ -93,9 +93,9 @@ class Build:
         return cls.from_id(
             api_response["id"],
             info=BuildInfo(
-                api_response.get("keep"),
-                published=api_response.get("published"),
-                tags=api_response.get("tags"),
+                api_response.get("keep", False),
+                published=api_response.get("published", False),
+                tags=api_response.get("tags", []),
                 note=api_response.get("notes"),
                 submitted=fromisoformat(submitted),
                 completed=fromisoformat(completed) if completed is not None else None,
@@ -146,7 +146,7 @@ class GBP:
             yarl.URL(url) / "graphql", distribution=distribution
         )
 
-    def machines(self) -> list[tuple[str, int, dict]]:
+    def machines(self) -> list[tuple[str, int, dict[str, Any]]]:
         """Handler for subcommand"""
         data = graphql.check(self.query.machines())
 
@@ -246,29 +246,36 @@ class GBP:
     def build(self, machine: str) -> str:
         """Schedule a build"""
         response = graphql.check(self.query.schedule_build(machine=machine))
-        return response["scheduleBuild"]
+        return cast(str, response["scheduleBuild"])
 
     def packages(self, build: Build) -> list[str] | None:
         """Return the list of packages for a build"""
         data = graphql.check(self.query.packages(id=build.id))
-        return data["build"]["packages"]
+        return cast(list[str] | None, data["build"]["packages"])
 
     def keep(self, build: Build) -> dict[str, bool]:
         """Mark a build as kept"""
-        return graphql.check(self.query.keep_build(id=build.id))["keepBuild"]
+        return cast(
+            dict[str, bool],
+            graphql.check(self.query.keep_build(id=build.id))["keepBuild"],
+        )
 
     def release(self, build: Build) -> dict[str, bool]:
         """Unmark a build as kept"""
-        return graphql.check(self.query.release_build(id=build.id))["releaseBuild"]
+        return cast(
+            dict[str, bool],
+            graphql.check(self.query.release_build(id=build.id))["releaseBuild"],
+        )
 
     def create_note(self, build: Build, note: str | None) -> dict[str, str]:
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).
         """
-        return graphql.check(self.query.create_note(id=build.id, note=note))[
-            "createNote"
-        ]
+        return cast(
+            dict[str, str],
+            graphql.check(self.query.create_note(id=build.id, note=note))["createNote"],
+        )
 
     def search(self, machine: str, field: SearchField, key: str) -> list[Build]:
         """Search builds for the given machine name in fields containing key.
@@ -393,7 +400,7 @@ def main(argv: list[str] | None = None) -> int:
     console = get_console(COLOR_CHOICES[args.color], color_map)
 
     try:
-        return args.func(args, GBP(args.url), console)
+        return cast(int, args.func(args, GBP(args.url), console))
     except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
         console.err.print(str(error))
         return 1

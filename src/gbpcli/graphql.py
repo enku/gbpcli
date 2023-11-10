@@ -9,7 +9,7 @@ import yarl
 class APIError(Exception):
     """When an error is returned by the REST API"""
 
-    def __init__(self, errors, data) -> None:
+    def __init__(self, errors: dict[str, Any], data: dict[str, Any]) -> None:
         super().__init__(errors)
         self.data = data
 
@@ -29,7 +29,9 @@ class Query:
 
     headers = {"Accept-Encoding": "gzip, deflate"}
 
-    def __init__(self, query: str, url, session) -> None:
+    def __init__(
+        self, query: str, url: yarl.URL | str, session: requests.Session
+    ) -> None:
         self.query = query
         self.session = session
         self.url = str(url)
@@ -37,7 +39,7 @@ class Query:
     def __str__(self) -> str:
         return self.query
 
-    def __call__(self, **kwargs: Any) -> tuple[dict, dict]:
+    def __call__(self, **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
         json = {"query": self.query, "variables": kwargs}
 
         response = self.session.post(self.url, json=json, headers=self.headers)
@@ -45,7 +47,7 @@ class Query:
         response.raise_for_status()
         response_json = response.json()
 
-        return response_json.get("data"), response_json.get("errors")
+        return response_json.get("data", {}), response_json.get("errors", {})
 
 
 class Queries:
@@ -81,7 +83,7 @@ class Queries:
         }
 
 
-def check(query_result: tuple[dict, dict]) -> dict:
+def check(query_result: tuple[dict[str, Any], dict[str, Any]]) -> dict[str, Any]:
     """Run query and raise exception if there are errors"""
     data, errors = query_result
 

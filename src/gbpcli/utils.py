@@ -1,5 +1,6 @@
 """Utility functions"""
 import argparse
+from typing import cast
 
 from gbpcli import GBP, Build
 
@@ -45,6 +46,6 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
     If There are no return an empty list.
     """
     try:
-        return args.my_machines.split()
+        return cast(list[str], args.my_machines.split())
     except AttributeError:
         return []
