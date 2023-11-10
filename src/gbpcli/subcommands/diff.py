@@ -4,7 +4,7 @@ import datetime as dt
 from collections.abc import Iterable
 from functools import cache, partial
 
-from gbpcli import GBP, Change, Console, Status, render, utils
+from gbpcli import GBP, Build, Change, Console, Status, render, utils
 
 HELP = """Show differences between two builds
 
@@ -15,7 +15,7 @@ If the "right" argument is omitted, it defaults to the most recent build.
 
 
 @cache
-def cached_builds(machine, gbp):
+def cached_builds(machine: str, gbp: GBP) -> list[Build]:
     """Return the list of builds for the given machine.
 
     This is a cached version of GBP.builds()

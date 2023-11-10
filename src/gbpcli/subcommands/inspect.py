@@ -80,8 +80,9 @@ def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
     if args.mine:
         return utils.get_my_machines_from_args(args)
 
-    if args.machine:
-        return args.machine
+    machine: list[str] = args.machine
+    if machine:
+        return machine
 
     return gbp.machine_names()
 

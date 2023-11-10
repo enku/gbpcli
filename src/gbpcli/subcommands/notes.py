@@ -11,7 +11,7 @@ from gbpcli.subcommands import make_searchable
 HELP = """notes subcommand for gbpcli"""
 
 
-def get_editor():
+def get_editor() -> str | None:
     """Return the user's editor preference.
 
     Does this by inpsecting first the VISUAL environment variable then the EDITOR

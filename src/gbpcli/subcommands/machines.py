@@ -1,5 +1,6 @@
 """List machines with builds"""
 import argparse
+from typing import Any
 
 from rich import box
 from rich.table import Table
@@ -9,7 +10,7 @@ from gbpcli import GBP, Console, render, utils
 HELP = """List machines with builds"""
 
 
-def latest_build_to_str(build: dict) -> str:
+def latest_build_to_str(build: dict[str, Any]) -> str:
     """Return the "Latest" column for the given build"""
     build_id = build["id"].rpartition(".")[2]
 
