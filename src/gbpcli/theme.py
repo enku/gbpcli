@@ -17,6 +17,21 @@ DEFAULT_THEME: ColorMap = {
     "no": "default",
     "added": "green",
     "removed": "red",
+    #
+    # The following are used by the gbp-ps extension
+    "clean_phase": "yellow",
+    "cleanrm_phase": "yellow",
+    "compile_phase": "yellow",
+    "configure_phase": "yellow",
+    "install_phase": "yellow",
+    "instprep_phase": "yellow",
+    "postinst_phase": "yellow",
+    "preinst_phase": "yellow",
+    "prepare_phase": "yellow",
+    "prerm_phase": "yellow",
+    "setup_phase": "yellow",
+    "test_phase": "yellow",
+    "unpack_phase": "yellow",
 }
 
 
