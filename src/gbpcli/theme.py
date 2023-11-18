@@ -17,23 +17,6 @@ DEFAULT_THEME: ColorMap = {
     "no": "default",
     "added": "green",
     "removed": "red",
-    #
-    # The following are used by the gbp-ps extension
-    "clean_phase": "yellow",
-    "cleanrm_phase": "yellow",
-    "compile_phase": "yellow",
-    "configure_phase": "yellow",
-    "install_phase": "yellow",
-    "instprep_phase": "yellow",
-    "package_phase": "yellow",
-    "postinst_phase": "yellow",
-    "pretend_phase": "yellow",
-    "preinst_phase": "yellow",
-    "prepare_phase": "yellow",
-    "prerm_phase": "yellow",
-    "setup_phase": "yellow",
-    "test_phase": "yellow",
-    "unpack_phase": "yellow",
 }
 
 
@@ -46,7 +29,7 @@ def get_colormap_from_string(string: str) -> ColorMap:
         "build_id=bold:header=bold:keep=yellow:machine=blue"
 
     Values are stripped of whitespace. If the fields cannot be parsed a `ValueError` is
-    raised.  Empty names/values are ignored as are unrecognized names.
+    raised.  Empty names/values are ignored.
     """
     colormap = DEFAULT_THEME.copy()
     error = ValueError(f"Invalid color map: {string!r}")
@@ -68,7 +51,6 @@ def get_colormap_from_string(string: str) -> ColorMap:
         if not name or not value:
             continue
 
-        if name in colormap:
-            colormap[name] = value.strip()
+        colormap[name] = value.strip()
 
     return colormap
