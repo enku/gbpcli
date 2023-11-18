@@ -50,8 +50,12 @@ options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --url URL             GBP url
-  --color WHEN          color output
+  --color WHEN          colorize output ('always', 'never', 'auto')
   --my-machines MY_MACHINES
+                        whitespace-delimited list of machine names to filter
+                        on when using the --mine argument. Typically one would
+                        instead use the GBPCLI_MYMACHINES environment
+                        variable.
 ```
 
 The URL for the Gentoo Build Publisher may be provided via the command line or
