@@ -1,5 +1,5 @@
 """graphql library for gbpcli"""
-from importlib import resources
+from importlib import metadata, resources
 from typing import Any
 
 import requests
@@ -61,6 +61,7 @@ class Queries:
         """
         self._url = str(url)
         self._session = requests.Session()
+        self._session.headers["User-Agent"] = f"gbpcli/{metadata.version('gbpcli')}"
         self._distribution = distribution
 
     def __getattr__(self, name: str) -> Query:
