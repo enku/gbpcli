@@ -35,7 +35,7 @@ def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
         return build
 
     if build_id.isdigit():
-        return Build(machine, int(build_id))
+        return Build(machine=machine, number=int(build_id))
 
     raise ResolveBuildError(f"Invalid build ID: {build_id}")
 
