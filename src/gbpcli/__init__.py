@@ -22,7 +22,7 @@ COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class BuildInfo:
     """Metatada about a Build
 
@@ -38,7 +38,7 @@ class BuildInfo:
     built: datetime.datetime | None = None
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Package:
     """A (binary) package"""
 
@@ -49,7 +49,7 @@ class Package:
 T = TypeVar("T", bound="Build")
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Build:
     """A GBP Build"""
 
@@ -122,7 +122,7 @@ class SearchField(Enum):
     notes = "NOTES"
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Change:
     """Item in a diff"""
 
@@ -130,7 +130,7 @@ class Change:
     status: Status
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Console:
     """Output sinks for handlers"""
 
