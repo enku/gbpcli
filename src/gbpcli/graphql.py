@@ -85,7 +85,10 @@ class Queries:
 
 
 def check(query_result: tuple[dict[str, Any], dict[str, Any]]) -> dict[str, Any]:
-    """Run query and raise exception if there are errors"""
+    """Raise exception if there are errors in the query_result
+
+    Otherwise return the data portion of the query_result.
+    """
     data, errors = query_result
 
     if errors:
