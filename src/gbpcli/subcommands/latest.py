@@ -3,11 +3,12 @@ import argparse
 
 from gbpcli import GBP, Console
 
+HELP = """Show the latest build number for the given machine"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the latest build number for a machine"""
-    latest_build = gbp.latest(args.machine)
-    if not latest_build:
+    if not (latest_build := gbp.latest(args.machine)):
         console.err.print("No builds exist for the given machine")
         return 1
 

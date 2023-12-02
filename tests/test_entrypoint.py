@@ -6,6 +6,8 @@ import sys
 import unittest
 from unittest import mock
 
+import gbpcli
+import gbpcli.subcommands.list as list_subcommand
 from gbpcli import build_parser, main
 from gbpcli.graphql import APIError
 
@@ -43,11 +45,63 @@ class BuildParserTestCase(unittest.TestCase):
                 module = importlib.import_module(f"gbpcli.subcommands.{subcommand}")
                 subparsers.add_parser.assert_any_call(
                     subcommand,
-                    description=module.__doc__,
+                    description=module.HELP,
                     formatter_class=argparse.RawTextHelpFormatter,
                 )
                 subparser = subparsers.add_parser.return_value
                 subparser.set_defaults.assert_any_call(func=module.handler)
+
+
+class GetArgumentsTestCase(unittest.TestCase):
+    """Tests for the get_arguments function"""
+
+    def test(self):
+        argv = [
+            "--url",
+            "https://gbp.invalid/",
+            "--my-machines",
+            "lighthouse polaris",
+            "list",
+            "lighthouse",
+        ]
+
+        result = gbpcli.get_arguments(argv)
+
+        expected = argparse.Namespace(
+            url="https://gbp.invalid/",
+            color="auto",
+            my_machines="lighthouse polaris",
+            machine="lighthouse",
+            func=list_subcommand.handler,
+        )
+        self.assertEqual(result, expected)
+
+
+class GetConsoleTestCase(unittest.TestCase):
+    """Tests for the get_console function"""
+
+    def test_force_terminal_true(self):
+        console = gbpcli.get_console(True)
+
+        self.assertEqual(console.out.is_terminal, True)
+
+    def test_force_terminal_false(self):
+        console = gbpcli.get_console(False)
+
+        self.assertEqual(console.out.is_terminal, False)
+
+    def test_with_colormap(self):
+        color_map = {"rose": "red", "violet": "blue"}
+        console = gbpcli.get_console(True, color_map)
+        output = [*console.out.render("[rose]rose[/rose][violet]violet[/violet]")]
+
+        rose = output[0]
+        self.assertEqual(rose.text, "rose")
+        self.assertEqual(rose.style.color.name, "red")
+
+        violet = output[1]
+        self.assertEqual(violet.text, "violet")
+        self.assertEqual(violet.style.color.name, "blue")
 
 
 class MainTestCase(unittest.TestCase):
@@ -58,6 +112,7 @@ class MainTestCase(unittest.TestCase):
     @mock.patch("gbpcli.Console")
     def test(self, console_mock, parse_args_mock, gbp_mock):
         parse_args_mock.return_value.url = "http://test.invalid/"
+        parse_args_mock.return_value.color = "auto"
         func = parse_args_mock.return_value.func
         func.return_value = 0
         argv = ["status", "lighthouse"]
@@ -72,9 +127,10 @@ class MainTestCase(unittest.TestCase):
 
     def test_should_print_help_when_no_func(self):
         with mock.patch("gbpcli.argparse.ArgumentParser.print_help") as print_help_mock:
-            status = main([])
+            with self.assertRaises(SystemExit) as context:
+                main([])
 
-        self.assertEqual(status, 1)
+        self.assertEqual(context.exception.args, (1,))
         print_help_mock.assert_called_once_with(file=sys.stderr)
 
     @mock.patch("gbpcli.GBP")

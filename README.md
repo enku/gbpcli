@@ -50,8 +50,12 @@ options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --url URL             GBP url
-  --color WHEN          color output
+  --color WHEN          colorize output ('always', 'never', 'auto')
   --my-machines MY_MACHINES
+                        whitespace-delimited list of machine names to filter
+                        on when using the --mine argument. Typically one would
+                        instead use the GBPCLI_MYMACHINES environment
+                        variable.
 ```
 
 The URL for the Gentoo Build Publisher may be provided via the command line or
@@ -99,7 +103,9 @@ updating/downgrading.
 $ gbp publish arm64-base 151
 ```
 
-If the build number is not given, it defaults to the latest build for that machine.
+
+If the build number is not given, it defaults to the latest build for that
+machine.
 
 The `build` subcommand can schedule a build in CI/CD for the given machine,
 e.g.:

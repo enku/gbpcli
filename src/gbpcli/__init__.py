@@ -9,7 +9,7 @@ import warnings
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 from importlib.metadata import entry_points, version
-from typing import IO, Any, Callable, Optional, TypeAlias, TypeVar
+from typing import Any, TypeVar, cast
 
 import requests
 import rich.console
@@ -18,10 +18,11 @@ from rich.theme import Theme
 
 from gbpcli import graphql, theme
 
+COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class BuildInfo:
     """Metadata about a Build
 
@@ -29,15 +30,15 @@ class BuildInfo:
     """
 
     keep: bool
-    note: Optional[str]
+    note: str | None
     published: bool
     tags: list[str]
     submitted: datetime.datetime
-    completed: Optional[datetime.datetime] = None
-    built: Optional[datetime.datetime] = None
+    completed: datetime.datetime | None = None
+    built: datetime.datetime | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Package:
     """A (binary) package"""
 
@@ -48,14 +49,14 @@ class Package:
 T = TypeVar("T", bound="Build")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Build:
     """A GBP Build"""
 
     machine: str
     number: int
-    info: Optional[BuildInfo] = None
-    packages_built: Optional[list[Package]] = None
+    info: BuildInfo | None = None
+    packages_built: list[Package] | None = None
 
     @property
     def id(self) -> str:  # pylint: disable=invalid-name
@@ -63,37 +64,38 @@ class Build:
         return f"{self.machine}.{self.number}"
 
     @classmethod
-    def from_id(cls: type[T], build_id: str, **kwargs) -> T:
+    def from_id(cls: type[T], build_id: str, **kwargs: Any) -> T:
         """Create from GBP build id"""
         parts = build_id.partition(".")
 
         return cls(machine=parts[0], number=int(parts[2]), **kwargs)
 
     @classmethod
-    def from_api_response(cls: type[T], api_response) -> T:
+    def from_api_response(cls: type[T], api_response: dict[str, Any]) -> T:
         """Return a Build with BuildInfo given the response from the API"""
         completed = api_response.get("completed")
         submitted = api_response["submitted"]
         fromisoformat = datetime.datetime.fromisoformat
         built = api_response.get("built")
 
-        if api_response.get("packagesBuilt", None) is None:
-            packages_built = None
-        else:
-            packages_built = [
+        packages_built = (
+            None
+            if (packages := api_response.get("packagesBuilt", None)) is None
+            else [
                 Package(
                     cpv=i["cpv"],
                     build_time=datetime.datetime.fromtimestamp(i.get("buildTime", 0)),
                 )
-                for i in api_response["packagesBuilt"]
+                for i in packages
             ]
+        )
 
         return cls.from_id(
             api_response["id"],
             info=BuildInfo(
-                api_response.get("keep"),
-                published=api_response.get("published"),
-                tags=api_response.get("tags"),
+                keep=api_response.get("keep", False),
+                published=api_response.get("published", False),
+                tags=api_response.get("tags", []),
                 note=api_response.get("notes"),
                 submitted=fromisoformat(submitted),
                 completed=fromisoformat(completed) if completed is not None else None,
@@ -120,7 +122,7 @@ class SearchField(Enum):
     notes = "NOTES"
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Change:
     """Item in a diff"""
 
@@ -128,7 +130,7 @@ class Change:
     status: Status
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True, slots=True)
 class Console:
     """Output sinks for handlers"""
 
@@ -144,7 +146,7 @@ class GBP:
             yarl.URL(url) / "graphql", distribution=distribution
         )
 
-    def machines(self) -> list[tuple[str, int, dict]]:
+    def machines(self) -> list[tuple[str, int, dict[str, Any]]]:
         """Handler for subcommand"""
         data = graphql.check(self.query.machines())
 
@@ -152,7 +154,7 @@ class GBP:
             (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]
         ]
 
-    def machine_names(self) -> list["str"]:
+    def machine_names(self) -> list[str]:
         """Return the list of machine names
 
         Machines having builds.
@@ -165,25 +167,24 @@ class GBP:
         """Publish the given build"""
         graphql.check(self.query.publish(id=build.id))
 
-    def pull(self, build: Build) -> None:
+    def pull(self, build: Build, *, note: str | None = None) -> None:
         """Pull the given build"""
-        graphql.check(self.query.pull(id=build.id))
+        graphql.check(self.query.pull(id=build.id, note=note))
 
-    def latest(self, machine: str) -> Optional[Build]:
+    def latest(self, machine: str) -> Build | None:
         """Return the latest build for machine
 
         Return None if there are no builds for the given machine
         """
         data = graphql.check(self.query.latest(machine=machine))
-        latest = data["latest"]
 
-        if latest is None:
+        if data["latest"] is None:
             return None
 
         build_id = data["latest"]["id"]
         return Build.from_id(build_id)
 
-    def resolve_tag(self, machine: str, tag: str) -> Optional[Build]:
+    def resolve_tag(self, machine: str, tag: str) -> Build | None:
         """Return the build of the given machine & tag"""
         data = graphql.check(self.query.resolve_tag(machine=machine, tag=tag))[
             "resolveBuildTag"
@@ -225,18 +226,17 @@ class GBP:
             ],
         )
 
-    def logs(self, build: Build) -> Optional[str]:
+    def logs(self, build: Build) -> str | None:
         """Return logs for the given Build"""
         data = graphql.check(self.query.logs(id=build.id))
 
         return None if data["build"] is None else data["build"]["logs"]
 
-    def get_build_info(self, build: Build) -> Optional[Build]:
+    def get_build_info(self, build: Build) -> Build | None:
         """Return build with info gained from the GBP API"""
         data, errors = self.query.build(id=build.id)
-        build = data["build"]
 
-        if build is None:
+        if (build := data["build"]) is None:
             if errors:
                 raise graphql.APIError(errors, data)
             return None
@@ -246,29 +246,36 @@ class GBP:
     def build(self, machine: str) -> str:
         """Schedule a build"""
         response = graphql.check(self.query.schedule_build(machine=machine))
-        return response["scheduleBuild"]
+        return cast(str, response["scheduleBuild"])
 
-    def packages(self, build: Build) -> Optional[list[str]]:
+    def packages(self, build: Build) -> list[str] | None:
         """Return the list of packages for a build"""
         data = graphql.check(self.query.packages(id=build.id))
-        return data["build"]["packages"]
+        return cast(list[str] | None, data["build"]["packages"])
 
     def keep(self, build: Build) -> dict[str, bool]:
         """Mark a build as kept"""
-        return graphql.check(self.query.keep_build(id=build.id))["keepBuild"]
+        return cast(
+            dict[str, bool],
+            graphql.check(self.query.keep_build(id=build.id))["keepBuild"],
+        )
 
     def release(self, build: Build) -> dict[str, bool]:
         """Unmark a build as kept"""
-        return graphql.check(self.query.release_build(id=build.id))["releaseBuild"]
+        return cast(
+            dict[str, bool],
+            graphql.check(self.query.release_build(id=build.id))["releaseBuild"],
+        )
 
-    def create_note(self, build: Build, note: Optional[str]) -> dict[str, str]:
+    def create_note(self, build: Build, note: str | None) -> dict[str, str]:
         """Create or delete note for the given build.
 
         If note is None, the note is deleted (if it exists).
         """
-        return graphql.check(self.query.create_note(id=build.id, note=note))[
-            "createNote"
-        ]
+        return cast(
+            dict[str, str],
+            graphql.check(self.query.create_note(id=build.id, note=note))["createNote"],
+        )
 
     def search(self, machine: str, field: SearchField, key: str) -> list[Build]:
         """Search builds for the given machine name in fields containing key.
@@ -312,9 +319,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--color",
         metavar="WHEN",
-        choices=["never", "always", "auto"],
+        choices=COLOR_CHOICES,
         default="auto",
-        help="color output",
+        help=f"colorize output {tuple(COLOR_CHOICES)}",
     )
     parser.add_argument(
         "--my-machines",
@@ -327,16 +334,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers()
 
-    try:
-        eps = entry_points().select(group="gbpcli.subcommands")
-    except AttributeError:
-        eps = entry_points()["gbpcli.subcommands"]
+    eps = entry_points().select(group="gbpcli.subcommands")
 
     for entry_point in eps:
         module = entry_point.load()
         subparser = subparsers.add_parser(
             entry_point.name,
-            description=module.__doc__,
+            description=getattr(module, "HELP", None),
             formatter_class=argparse.RawTextHelpFormatter,
         )
         usage = f"{usage}  * {entry_point.name} - {module.handler.__doc__}\n"
@@ -348,41 +352,52 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Main entry point"""
-    if argv is None:
-        argv = sys.argv[1:]
+def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
+    """Return command line arguments given the argv
 
+    This method ensures that args.func is defined as it's mandatory for calling
+    subcommands. If there are none the help message is printed to stderr and SystemExit
+    is raised.
+    """
+    argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser()
-
     args = parser.parse_args(argv)
 
+    # ensure we have a "func" target
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
-        return 1
+        raise SystemExit(1)
 
-    gbp = GBP(args.url)
+    return args
 
-    force_terminal = {"always": True, "never": False}.get(args.color, None)
 
-    try:
-        console_theme = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
-    except ValueError:
-        console_theme = theme.DEFAULT_THEME
+def get_console(
+    force_terminal: bool | None, color_map: theme.ColorMap | None = None
+) -> Console:
+    """Return a rich.Console instance
 
-    console = Console(
+    If force_terminal is true, force a tty on the console.
+    If the ColorMap is given this is used as the Console theme
+    """
+    return Console(
         out=rich.console.Console(
             force_terminal=force_terminal,
             color_system="auto",
             highlight=False,
-            theme=Theme(console_theme),
+            theme=Theme(color_map or theme.DEFAULT_THEME),
         ),
         err=rich.console.Console(file=sys.stderr),
     )
 
-    try:
-        return args.func(args, gbp, console)
-    except (graphql.APIError, requests.HTTPError) as error:
-        console.err.print(str(error))
 
+def main(argv: list[str] | None = None) -> int:
+    """Main entry point"""
+    args = get_arguments(argv)
+    color_map = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
+    console = get_console(COLOR_CHOICES[args.color], color_map)
+
+    try:
+        return cast(int, args.func(args, GBP(args.url), console))
+    except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
+        console.err.print(str(error))
         return 1

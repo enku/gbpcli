@@ -1,13 +1,6 @@
-"""Show the GBP builds as a tree
-
-Display all the builds (or the last n builds if --tail is given) for all the
-machines (or only the machines given).  Display the build's timestamp as well as
-the timestamp for each build's packages' completion.  If the build has a note
-that will be displayed as well.
-"""
+"""Show the GBP builds as a tree"""
 import argparse
 import datetime as dt
-from typing import List
 
 from rich.console import RenderableType
 from rich.panel import Panel
@@ -16,8 +9,16 @@ from rich.tree import Tree
 
 from gbpcli import GBP, Build, Console, Package, render, utils
 
+HELP = """Show the GBP builds as a tree
 
-def sort_packages_by_build_time(packages: List[Package]) -> List[Package]:
+Display all the builds (or the last n builds if --tail is given) for all the
+machines (or only the machines given).  Display the build's timestamp as well as
+the timestamp for each build's packages' completion.  If the build has a note
+that will be displayed as well.
+"""
+
+
+def sort_packages_by_build_time(packages: list[Package]) -> list[Package]:
     """Missing docstring"""
     sorted_packages = [*packages]
     sorted_packages.sort(key=lambda p: getattr(p, "build_time", dt.datetime.min))
@@ -39,10 +40,9 @@ def render_build(build: Build) -> RenderableType:
     )
     build_str = f"{build_str} [timestamp]({timestamp.strftime('%x %X')})[/timestamp]"
 
-    if build.info.tags:
-        tag_strs = [f"[tag]@{tag}[/tag]" for tag in build.info.tags]
-    else:
-        tag_strs = []
+    tag_strs = (
+        [f"[tag]@{tag}[/tag]" for tag in build.info.tags] if build.info.tags else []
+    )
 
     build_str = f"{build_str} {' '.join(tag_strs)}"
 
@@ -61,31 +61,43 @@ def render_build(build: Build) -> RenderableType:
 def render_package(package: Package, build_build_date: dt.date) -> str:
     """Convert `package` into a rich renderable"""
     local_build_time = package.build_time.astimezone(render.LOCAL_TIMEZONE)
-    if local_build_time.date() != build_build_date:
-        build_time = local_build_time.strftime("%x %X")
-    else:
-        build_time = str(local_build_time.time())
+    build_time = (
+        local_build_time.strftime("%x %X")
+        if local_build_time.date() != build_build_date
+        else str(local_build_time.time())
+    )
 
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
+
+
+def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
+    """Return the list of machines requested by the arguments
+
+    - If --mine is passed then use --my-machines is returned
+    - If machine[s] are passed on the command-line they are returned
+    - Otherwise returns the list of all machines on the server
+    """
+    if args.mine:
+        return utils.get_my_machines_from_args(args)
+
+    machine: list[str] = args.machine
+    if machine:
+        return machine
+
+    return gbp.machine_names()
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show the machines builds as a tree"""
     tree = Tree("[header]Machines[/header]", guide_style="box")
 
-    if args.machine:
-        machines = args.machine
-    elif args.mine:
-        machines = utils.get_my_machines_from_args(args)
-    else:
-        machines = gbp.machine_names()
-
-    for machine in machines:
+    for machine in get_machines(args, gbp):
         if "." in machine:
             machine, _, number = machine.partition(".")
-            build = gbp.get_build_info(Build(machine=machine, number=int(number)))
 
-            if build is None:
+            if (
+                build := gbp.get_build_info(Build(machine=machine, number=int(number)))
+            ) is None:
                 console.err.print("Not found")
                 return 1
 
@@ -104,7 +116,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
                 .astimezone(render.LOCAL_TIMEZONE)
                 .date()
             )
-            packages: List[Package] = build.packages_built or []
+            packages: list[Package] = build.packages_built or []
             packages = sort_packages_by_build_time(packages)
 
             for package in packages:

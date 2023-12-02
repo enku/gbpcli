@@ -9,13 +9,14 @@ from gbpcli import GBP, Console
 from gbpcli.render import styled_yes, timestr, yesno
 from gbpcli.utils import resolve_build_id
 
+HELP = """Show details for a given build"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Show build details"""
     resolved_build = resolve_build_id(args.machine, args.number, gbp)
-    build = gbp.get_build_info(resolved_build)
 
-    if build is None:
+    if (build := gbp.get_build_info(resolved_build)) is None:
         console.err.print("Not found")
         return 1
 

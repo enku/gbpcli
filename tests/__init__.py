@@ -2,9 +2,7 @@
 # pylint: disable=protected-access
 import datetime
 import io
-import sys
 import unittest
-from functools import partial
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
@@ -40,14 +38,14 @@ class TestCase(unittest.TestCase):
         and adds responses for subsequent calls. If called with `None` as an argument,
         then any previously configured responses are cleared
         """
-        if data is None:
-            self.gbp.query._session.post.side_effect = None
-            return
-
-        if isinstance(data, str):
-            mock_json = parse(load_data(data))
-        else:
-            mock_json = data
+        match data:
+            case None:
+                self.gbp.query._session.post.side_effect = None
+                return
+            case str():
+                mock_json = parse(load_data(data))
+            case _:
+                mock_json = data
 
         if not self.gbp.query._session.post.side_effect:
             self.gbp.query._session.post.side_effect = (make_response(json=mock_json),)

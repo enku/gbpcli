@@ -41,7 +41,7 @@ class InspectTestCase(TestCase):
         )
 
     def test_single_machine(self):
-        args = Namespace(machine=["base"], tail=0)
+        args = Namespace(machine=["base"], mine=False, tail=0)
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
         make_response = self.make_response
 
@@ -55,7 +55,7 @@ class InspectTestCase(TestCase):
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_tail(self):
-        args = Namespace(machine=["base"], tail=2)
+        args = Namespace(machine=["base"], mine=False, tail=2)
         graphql_responses = load_ndjson("inspect.ndjson", start=5)
         make_response = self.make_response
 
@@ -69,7 +69,7 @@ class InspectTestCase(TestCase):
         self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
 
     def test_single_machine_with_build_id(self):
-        args = Namespace(machine=["lighthouse.12672"])
+        args = Namespace(machine=["lighthouse.12672"], mine=False)
 
         self.make_response("lighthouse.12672.json")
 

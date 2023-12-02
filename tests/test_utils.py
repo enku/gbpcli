@@ -77,7 +77,7 @@ class ResolveBuildIdTestCase(TestCase):
 
         result = resolve_build_id("lighthouse", "456", gbp)
 
-        self.assertEqual(result, Build("lighthouse", 456))
+        self.assertEqual(result, Build(machine="lighthouse", number=456))
 
 
 class GetMyMachinesFromArgsTestCase(TestCase):

@@ -1,47 +1,71 @@
-"""Show differences between two builds
+"""Show differences between two builds"""
+import argparse
+import datetime as dt
+from collections.abc import Iterable
+from functools import cache, partial
+
+from gbpcli import GBP, Build, Change, Console, Status, render, utils
+
+HELP = """Show differences between two builds
 
 If the "left" argument is omitted, it defaults to the build which is published.
 
 If the "right" argument is omitted, it defaults to the most recent build.
 """
-import argparse
-import datetime as dt
-from collections.abc import Iterable
 
-from gbpcli import GBP, Change, Console, Status, render, utils
+
+@cache
+def cached_builds(machine: str, gbp: GBP) -> list[Build]:
+    """Return the list of builds for the given machine.
+
+    This is a cached version of GBP.builds()
+    """
+    return gbp.builds(machine)
+
+
+def get_left_build(machine: str, requested: str, gbp: GBP) -> int | None:
+    """Return the requested left build number
+
+    - If requested is not None, returns to the requested build (number)
+    - If requested is None, return to the published build for the machine
+    - If neither of this is possible, return None
+    """
+    if requested is not None:
+        return utils.resolve_build_id(machine, requested, gbp).number
+
+    builds = cached_builds(machine, gbp)
+    published = [i for i in builds if (i.info and i.info.published)]
+
+    if not published:
+        return None
+
+    return published[0].number
+
+
+def get_right_build(machine: str, requested: str, gbp: GBP) -> int | None:
+    """Return the requested right build number
+
+    - If requested is not None, returns to the requested build (number)
+    - If requested is None, return the last built build for the machine
+    - If neither of this is possible, return None
+    """
+    if requested is not None:
+        return utils.resolve_build_id(machine, requested, gbp).number
+
+    builds = cached_builds(machine, gbp)
+
+    return builds[-1].number if builds else None
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Handler for subcommand"""
-    left = args.left
-    right = args.right
+    if (left := get_left_build(args.machine, args.left, gbp)) is None:
+        console.err.print("No builds given and no builds published")
+        return 1
 
-    if left is None:
-        builds = gbp.builds(args.machine)
-        published = [i for i in builds if (i.info and i.info.published)]
-
-        if not published:
-            console.err.print("No origin specified and no builds published")
-            return 1
-
-        assert len(published) == 1
-        left = published[0].number
-
-        assert right is None
-        right = str(builds[-1].number)
-    else:
-        left = utils.resolve_build_id(args.machine, left, gbp).number
-
-    if right is None:
-        latest = gbp.latest(args.machine)
-
-        if latest is None:
-            console.err.print("Need at least two builds to diff")
-            return 1
-
-        right = latest.number
-    else:
-        right = utils.resolve_build_id(args.machine, right, gbp).number
+    if (right := get_right_build(args.machine, args.right, gbp)) is None:
+        console.err.print("Need at least two builds to diff")
+        return 1
 
     left_build, right_build, diff = gbp.diff(args.machine, left, right)
 
@@ -53,17 +77,10 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     assert isinstance(left_build.info.built, dt.datetime)
     assert isinstance(right_build.info.built, dt.datetime)
 
-    console.out.print(
-        f"diff -r {args.machine}/{left} {args.machine}/{right}", style="header"
-    )
-    console.out.print(
-        f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}",
-        style="header",
-    )
-    console.out.print(
-        f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}",
-        style="header",
-    )
+    header = partial(console.out.print, style="header")
+    header(f"diff -r {args.machine}/{left} {args.machine}/{right}")
+    header(f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}")
+    header(f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}")
 
     print_diff(diff, console)
 
@@ -72,19 +89,15 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def print_diff(diff: Iterable[Change], console: Console) -> None:
     """Given the list of changes, pretty-print the diff to the console"""
-    last_modified: Change | None = None
-    # for change, item in iter(response["diff"]["items"]):
     for item in diff:
-        if item.status == Status.REMOVED:
-            console.out.print(f"[removed]-{item.item}")
-        elif item.status == Status.ADDED:
-            console.out.print(f"[added]+{item.item}")
-        else:
-            if item == last_modified:
+        match item.status:
+            case Status.REMOVED:
                 console.out.print(f"[removed]-{item.item}")
-            else:
+            case Status.ADDED:
                 console.out.print(f"[added]+{item.item}")
-            last_modified = item
+            case Status.CHANGED:
+                console.out.print(f"[removed]-{item.item}")
+                console.out.print(f"[added]+{item.item}")
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:

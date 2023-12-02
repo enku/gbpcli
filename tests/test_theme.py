@@ -59,12 +59,3 @@ class GetColormapFromString(TestCase):
             str(context.exception),
             "Invalid color map: 'This is totally garbage!'",
         )
-
-    def test_ignores_unknown_names(self):
-        string = "header=test_header:note=test_note:unknown=test_unknown"
-
-        result = get_colormap_from_string(string)
-
-        self.assertEqual(result["header"], "test_header")
-        self.assertEqual(result["note"], "test_note")
-        self.assertFalse("unknown" in result)

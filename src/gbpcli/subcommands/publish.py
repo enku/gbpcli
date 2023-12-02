@@ -1,11 +1,13 @@
-"""Publish a build
-
-If NUMBER is not specified, defaults to the latest build for the given machine.
-"""
+"""Publish a build"""
 import argparse
 
 from gbpcli import GBP, Console
 from gbpcli.utils import resolve_build_id
+
+HELP = """Publish a build
+
+If NUMBER is not specified, defaults to the latest build for the given machine.
+"""
 
 
 def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:

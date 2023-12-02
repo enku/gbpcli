@@ -13,9 +13,19 @@ class PullTestCase(TestCase):
     """pull() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number="3226")
+        args = Namespace(machine="lighthouse", number="3226", note=None)
         self.make_response("pull.json")
 
         pull(args, self.gbp, self.console)
 
-        self.assert_graphql(self.gbp.query.pull, id="lighthouse.3226")
+        self.assert_graphql(self.gbp.query.pull, id="lighthouse.3226", note=None)
+
+    def test_with_note(self) -> None:
+        args = Namespace(machine="lighthouse", number="3226", note="This is a test")
+        self.make_response("pull.json")
+
+        pull(args, self.gbp, self.console)
+
+        self.assert_graphql(
+            self.gbp.query.pull, id="lighthouse.3226", note="This is a test"
+        )

@@ -3,17 +3,14 @@ import argparse
 
 from gbpcli import GBP, Console, utils
 
+HELP = """Keep (or release) a build"""
+
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Keep (or release) a build"""
     build = utils.resolve_build_id(args.machine, args.number, gbp)
 
-    if args.release:
-        result = gbp.release(build)
-    else:
-        result = gbp.keep(build)
-
-    if result is None:
+    if (gbp.release(build) if args.release else gbp.keep(build)) is None:
         console.err.print("Not Found")
         return 1
 

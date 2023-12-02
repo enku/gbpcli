@@ -53,7 +53,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
     def test_when_right_is_none_should_use_latest(self):
         args = Namespace(machine="lighthouse", left="3111", right=None)
-        latest_json = parse(load_data("latest.json"))
+        latest_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = make_gbp()
         gbp.query._session.post.side_effect = (
@@ -68,7 +68,7 @@ diff -r lighthouse/3111 lighthouse/3112
             mock.call(
                 gbp.query._url,
                 json={
-                    "query": gbp.query.latest.query,
+                    "query": gbp.query.builds.query,
                     "variables": {"machine": "lighthouse"},
                 },
                 headers=graphql.Query.headers,
@@ -79,7 +79,7 @@ diff -r lighthouse/3111 lighthouse/3112
                     "query": gbp.query.diff.query,
                     "variables": {
                         "left": "lighthouse.3111",
-                        "right": "lighthouse.3113",
+                        "right": "lighthouse.10694",
                     },
                 },
                 headers=graphql.Query.headers,
@@ -138,5 +138,5 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(status, 1)
         self.assert_graphql(self.gbp.query.builds, machine="jenkins")
         self.assertEqual(
-            self.console.err.getvalue(), "No origin specified and no builds published\n"
+            self.console.err.getvalue(), "No builds given and no builds published\n"
         )

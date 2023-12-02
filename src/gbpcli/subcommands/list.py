@@ -1,4 +1,12 @@
-"""List builds for the given machines
+"""List builds for the given machines"""
+import argparse
+
+from rich import box
+from rich.table import Table
+
+from gbpcli import GBP, Console, render
+
+HELP = """List builds for the given machines
 
 Key for the "Flags" column:
 
@@ -8,12 +16,6 @@ Key for the "Flags" column:
     N: This build has a note attached
 
 """
-import argparse
-
-from rich import box
-from rich.table import Table
-
-from gbpcli import GBP, Console, render
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
@@ -48,6 +50,6 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
     parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
