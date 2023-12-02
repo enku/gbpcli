@@ -9,7 +9,7 @@ import warnings
 from dataclasses import dataclass
 from enum import Enum, IntEnum
 from importlib.metadata import entry_points, version
-from typing import IO, Any, Callable, TypeAlias, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 import requests
 import rich.console
