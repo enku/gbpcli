@@ -1,4 +1,4 @@
-"""Utilties for rendering output"""
+"""Utilities for rendering output"""
 from __future__ import annotations
 
 import argparse

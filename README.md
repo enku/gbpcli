@@ -103,6 +103,7 @@ updating/downgrading.
 $ gbp publish arm64-base 151
 ```
 
+
 If the build number is not given, it defaults to the latest build for that
 machine.
 
