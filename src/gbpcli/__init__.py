@@ -334,10 +334,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers()
 
-    try:
-        eps = entry_points().select(group="gbpcli.subcommands")
-    except AttributeError:
-        eps = entry_points()["gbpcli.subcommands"]
+    eps = entry_points().select(group="gbpcli.subcommands")
 
     for entry_point in eps:
         module = entry_point.load()
