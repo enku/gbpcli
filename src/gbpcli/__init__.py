@@ -243,9 +243,12 @@ class GBP:
 
         return Build.from_api_response(build)
 
-    def build(self, machine: str) -> str:
+    def build(self, machine: str, **params: Any) -> str:
         """Schedule a build"""
-        response = graphql.check(self.query.schedule_build(machine=machine))
+        build_params = [{"name": key, "value": value} for key, value in params.items()]
+        response = graphql.check(
+            self.query.schedule_build(machine=machine, params=build_params)
+        )
         return cast(str, response["scheduleBuild"])
 
     def packages(self, build: Build) -> list[str] | None:

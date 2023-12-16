@@ -10,12 +10,26 @@ from . import TestCase
 class MachinesTestCase(TestCase):
     """machines() tests"""
 
-    def test(self):
-        args = Namespace(machine="babette")
+    def test(self) -> None:
+        args = Namespace(machine="babette", param=None)
         self.make_response("schedule_build.json")
 
         status = build(args, self.gbp, self.console)
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), "")
-        self.assert_graphql(self.gbp.query.schedule_build, machine="babette")
+        self.assert_graphql(self.gbp.query.schedule_build, machine="babette", params=[])
+
+    def test_with_build_params(self) -> None:
+        args = Namespace(machine="babette", param=["BUILD_TARGET=emptytree"])
+        self.make_response("schedule_build.json")
+
+        status = build(args, self.gbp, self.console)
+
+        self.assertEqual(status, 0)
+        self.assertEqual(self.console.out.getvalue(), "")
+        self.assert_graphql(
+            self.gbp.query.schedule_build,
+            machine="babette",
+            params=[{"name": "BUILD_TARGET", "value": "emptytree"}],
+        )
