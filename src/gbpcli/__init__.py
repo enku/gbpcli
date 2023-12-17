@@ -167,9 +167,11 @@ class GBP:
         """Publish the given build"""
         graphql.check(self.query.publish(id=build.id))
 
-    def pull(self, build: Build, *, note: str | None = None) -> None:
+    def pull(
+        self, build: Build, *, note: str | None = None, tags: list[str] | None = None
+    ) -> None:
         """Pull the given build"""
-        graphql.check(self.query.pull(id=build.id, note=note))
+        graphql.check(self.query.pull(id=build.id, note=note, tags=tags))
 
     def latest(self, machine: str) -> Build | None:
         """Return the latest build for machine

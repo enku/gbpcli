@@ -1,5 +1,5 @@
-mutation ($id: ID!, $note: String) {
-  pull(id: $id, note: $note) {
+mutation ($id: ID!, $note: String, $tags: [String!]) {
+  pull(id: $id, note: $note, tags: $tags) {
     buildCount
   }
 }
