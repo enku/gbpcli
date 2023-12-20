@@ -1,4 +1,5 @@
 """Command Line interface for Gentoo Build Publisher"""
+# PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
 
 import argparse
@@ -11,6 +12,7 @@ from enum import Enum, IntEnum
 from importlib.metadata import entry_points, version
 from typing import Any, TypeVar, cast
 
+import argcomplete
 import requests
 import rich.console
 import yarl
@@ -366,6 +368,7 @@ def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     """
     argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser()
+    argcomplete.autocomplete(parser, default_completer=None)
     args = parser.parse_args(argv)
 
     # ensure we have a "func" target

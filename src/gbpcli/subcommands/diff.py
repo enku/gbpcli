@@ -3,8 +3,10 @@ import argparse
 import datetime as dt
 from collections.abc import Iterable
 from functools import cache, partial
+from typing import cast
 
 from gbpcli import GBP, Build, Change, Console, Status, render, utils
+from gbpcli.subcommands import completers
 
 HELP = """Show differences between two builds
 
@@ -100,8 +102,22 @@ def print_diff(diff: Iterable[Change], console: Console) -> None:
                 console.out.print(f"[added]+{item.item}")
 
 
+# pylint: disable=duplicate-code
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
-    parser.add_argument("left", metavar="LEFT", nargs="?", help="left build number")
-    parser.add_argument("right", metavar="RIGHT", nargs="?", help="right build number")
+    cast(
+        completers.Action,
+        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
+    ).completer = completers.machines
+    cast(
+        completers.Action,
+        parser.add_argument(
+            "left", metavar="LEFT", nargs="?", help="left build number"
+        ),
+    ).completer = completers.build_ids
+    cast(
+        completers.Action,
+        parser.add_argument(
+            "right", metavar="RIGHT", nargs="?", help="right build number"
+        ),
+    ).completer = completers.build_ids

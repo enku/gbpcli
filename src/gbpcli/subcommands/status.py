@@ -1,5 +1,6 @@
 """Show details for a given build"""
 import argparse
+from typing import cast
 
 from rich import box
 from rich.panel import Panel
@@ -7,6 +8,7 @@ from rich.table import Table
 
 from gbpcli import GBP, Console
 from gbpcli.render import styled_yes, timestr, yesno
+from gbpcli.subcommands import completers
 from gbpcli.utils import resolve_build_id
 
 HELP = """Show details for a given build"""
@@ -79,7 +81,14 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
+# pylint: disable=duplicate-code
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
-    parser.add_argument("number", metavar="NUMBER", help="build number", nargs="?")
+    cast(
+        completers.Action,
+        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
+    ).completer = completers.machines
+    cast(
+        completers.Action,
+        parser.add_argument("number", metavar="NUMBER", help="build number", nargs="?"),
+    ).completer = completers.build_ids

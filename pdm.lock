@@ -4,8 +4,18 @@
 [metadata]
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
-lock_version = "4.4"
-content_hash = "sha256:14ee46ff4289600dd985be66b2cc34c9c2531d33f8463ac7891aa9e404358b8e"
+lock_version = "4.4.1"
+content_hash = "sha256:da908386e07520141a1fe3951e9c08ee770a23a26f456785987962c64ff106bc"
+
+[[package]]
+name = "argcomplete"
+version = "3.2.1"
+requires_python = ">=3.8"
+summary = "Bash tab completion for argparse"
+files = [
+    {file = "argcomplete-3.2.1-py3-none-any.whl", hash = "sha256:30891d87f3c1abe091f2142613c9d33cac84a5e15404489f033b20399b691fec"},
+    {file = "argcomplete-3.2.1.tar.gz", hash = "sha256:437f67fb9b058da5a090df505ef9be0297c4883993f3f56cb186ff087778cfb4"},
+]
 
 [[package]]
 name = "astroid"

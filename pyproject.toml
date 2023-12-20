@@ -8,7 +8,8 @@ license = {text = "GPL3+"}
 dependencies = [
     "requests",
     "rich>=12.5.1",
-    "yarl"
+    "yarl",
+    "argcomplete>=3.2.1",
 ]
 requires-python = ">=3.10"
 classifiers = [
@@ -43,7 +44,6 @@ status = "gbpcli.subcommands.status"
 tag = "gbpcli.subcommands.tag"
 
 
-[project.optional-dependencies]
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"

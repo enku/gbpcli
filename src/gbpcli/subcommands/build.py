@@ -1,7 +1,9 @@
 """Schedule a build for the given machine in CI/CD"""
 import argparse
+from typing import cast
 
 from gbpcli import GBP, Console
+from gbpcli.subcommands import completers
 
 HELP = "Schedule a build for the given machine in CI/CD"
 
@@ -23,4 +25,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--param", "-p", action="append", help="Build parameter (name=value)"
     )
-    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
+    cast(
+        completers.Action,
+        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
+    ).completer = completers.machines

@@ -1,6 +1,7 @@
 """Show the GBP builds as a tree"""
 import argparse
 import datetime as dt
+from typing import cast
 
 from rich.console import RenderableType
 from rich.panel import Panel
@@ -8,6 +9,7 @@ from rich.table import Table
 from rich.tree import Tree
 
 from gbpcli import GBP, Build, Console, Package, render, utils
+from gbpcli.subcommands import completers
 
 HELP = """Show the GBP builds as a tree
 
@@ -131,4 +133,6 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
     parser.add_argument("-t", "--tail", type=int, default=0)
     parser.add_argument("--mine", action="store_true", default=False)
-    parser.add_argument("machine", nargs="*")
+    cast(
+        completers.Action, parser.add_argument("machine", nargs="*")
+    ).completer = completers.machines

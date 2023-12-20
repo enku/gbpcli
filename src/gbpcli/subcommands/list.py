@@ -1,10 +1,12 @@
 """List builds for the given machines"""
 import argparse
+from typing import cast
 
 from rich import box
 from rich.table import Table
 
 from gbpcli import GBP, Console, render
+from gbpcli.subcommands import completers
 
 HELP = """List builds for the given machines
 
@@ -50,6 +52,10 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
+# pylint: disable=duplicate-code
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    parser.add_argument("machine", metavar="MACHINE", help="name of the machine")
+    cast(
+        completers.Action,
+        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
+    ).completer = completers.machines
