@@ -250,10 +250,10 @@ class GBP:
     def build(self, machine: str, **params: Any) -> str:
         """Schedule a build"""
         build_params = [{"name": key, "value": value} for key, value in params.items()]
-        response = graphql.check(
+        api_response = graphql.check(
             self.query.schedule_build(machine=machine, params=build_params)
         )
-        return cast(str, response["scheduleBuild"])
+        return cast(str, api_response["scheduleBuild"])
 
     def packages(self, build: Build) -> list[str] | None:
         """Return the list of packages for a build"""
@@ -289,10 +289,10 @@ class GBP:
 
         Return a list of Builds who's given field match the (case-insensitive) string.
         """
-        response = graphql.check(
+        api_response = graphql.check(
             self.query.search(machine=machine, field=field.value, key=key)
         )
-        builds = response["search"]
+        builds = api_response["search"]
 
         return [Build.from_api_response(i) for i in builds]
 

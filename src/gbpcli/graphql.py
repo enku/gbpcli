@@ -42,12 +42,12 @@ class Query:
     def __call__(self, **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
         json = {"query": self.query, "variables": kwargs}
 
-        response = self.session.post(self.url, json=json, headers=self.headers)
+        http_response = self.session.post(self.url, json=json, headers=self.headers)
 
-        response.raise_for_status()
-        response_json = response.json()
+        http_response.raise_for_status()
+        query_result = http_response.json()
 
-        return response_json.get("data", {}), response_json.get("errors", {})
+        return query_result.get("data", {}), query_result.get("errors", {})
 
 
 class Queries:
