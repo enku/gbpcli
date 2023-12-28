@@ -201,15 +201,15 @@ class GBP:
 
         return Build.from_id(build_id)
 
-    def builds(self, machine: str, with_packages: bool = False) -> list[Build]:
-        """Return a list of Builds for the given machine
+    def builds(self, machine: str) -> list[Build]:
+        """Return a list of Builds for the given machine"""
+        builds = reversed(self.query.builds(machine=machine)[0]["builds"])
 
-        If `with_packages` is True, also include the list of packages for the builds
-        """
-        query = self.query.builds_with_packages if with_packages else self.query.builds
-        data = query(machine=machine)[0]
-        builds = data["builds"]
-        builds.reverse()
+        return [Build.from_api_response(i) for i in builds]
+
+    def builds_with_packages(self, machine: str) -> list[Build]:
+        """Return a list of Builds with packages info for the given machine"""
+        builds = reversed(self.query.builds_with_packages(machine=machine)[0]["builds"])
 
         return [Build.from_api_response(i) for i in builds]
 
