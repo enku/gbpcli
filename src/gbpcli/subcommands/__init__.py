@@ -23,17 +23,16 @@ A "subcommand" for gbpcli is a Python module that has the following interface:
     command-line arguments.  In actuality is it passed a sub-parser instance.
 """
 import argparse
-from typing import cast
 
 from gbpcli.subcommands import completers as comp
 
 
 def make_searchable(parser: argparse.ArgumentParser) -> None:
     """Set common search-like command-line arguments"""
-    cast(
-        comp.Action,
+    comp.set(
         parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
-    ).completer = comp.machines
+        comp.machines,
+    )
     parser.add_argument(
         "--search",
         "-s",
@@ -41,7 +40,7 @@ def make_searchable(parser: argparse.ArgumentParser) -> None:
         default=False,
         help="Search builds for the given text.",
     )
-    cast(
-        comp.Action,
+    comp.set(
         parser.add_argument("number", metavar="KEY|NUMBER", help="build number"),
-    ).completer = comp.build_ids
+        comp.build_ids,
+    )

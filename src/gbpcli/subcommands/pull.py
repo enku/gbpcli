@@ -1,9 +1,8 @@
 """Pull a build"""
 import argparse
-from typing import cast
 
 from gbpcli import GBP, Build, Console
-from gbpcli.subcommands import completers
+from gbpcli.subcommands import completers as comp
 
 HELP = """Pull a build"""
 
@@ -30,8 +29,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         metavar="TAG",
         help="Add TAG to build",
     )
-    cast(
-        completers.Action,
+    comp.set(
         parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
-    ).completer = completers.machines
+        comp.machines,
+    )
     parser.add_argument("number", type=int, metavar="NUMBER", help="build number")

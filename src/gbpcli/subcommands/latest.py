@@ -1,9 +1,8 @@
 """Show the latest build number for the given machine"""
 import argparse
-from typing import cast
 
 from gbpcli import GBP, Console
-from gbpcli.subcommands import completers
+from gbpcli.subcommands import completers as comp
 
 HELP = """Show the latest build number for the given machine"""
 
@@ -19,10 +18,9 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-# pylint: disable=duplicate-code
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    cast(
-        completers.Action,
+    comp.set(
         parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
-    ).completer = completers.machines
+        comp.machines,
+    )

@@ -20,12 +20,6 @@ class Completer(Protocol):  # pylint: disable=too-few-public-methods
         ...
 
 
-class Action(argparse.Action):  # pylint: disable=abstract-method,too-few-public-methods
-    """Only used for type checking"""
-
-    completer: Completer | None
-
-
 def machines(
     *,
     prefix: str,
@@ -53,3 +47,10 @@ def build_ids(
     numbers = (str(build.number) for build in gbp.builds(machine))
 
     return [number for number in numbers if number.startswith(prefix)]
+
+
+def set(  # pylint: disable=redefined-builtin
+    action: argparse.Action, completer: Completer
+) -> None:
+    """Set the completer for the given action"""
+    setattr(action, "completer", completer)

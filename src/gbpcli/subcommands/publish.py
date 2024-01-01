@@ -1,9 +1,8 @@
 """Publish a build"""
 import argparse
-from typing import cast
 
 from gbpcli import GBP, Console
-from gbpcli.subcommands import completers
+from gbpcli.subcommands import completers as comp
 from gbpcli.utils import resolve_build_id
 
 HELP = """Publish a build
@@ -21,14 +20,14 @@ def handler(args: argparse.Namespace, gbp: GBP, _console: Console) -> int:
     return 0
 
 
-# pytlint: disable=duplicate-code
+# pylint: disable=duplicate-code
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
-    cast(
-        completers.Action,
+    comp.set(
         parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
-    ).completer = completers.machines
-    cast(
-        completers.Action,
+        comp.machines,
+    )
+    comp.set(
         parser.add_argument("number", metavar="NUMBER", nargs="?", help="build number"),
-    ).completer = completers.build_ids
+        comp.build_ids,
+    )
