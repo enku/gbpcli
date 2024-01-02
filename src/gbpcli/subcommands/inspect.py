@@ -19,6 +19,70 @@ that will be displayed as well.
 """
 
 
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+    """Show the machines builds as a tree"""
+    tree = Tree("[header]Machines[/header]", guide_style="box")
+
+    for machine in get_machines(args, gbp):
+        if "." in machine:
+            machine, _, number = machine.partition(".")
+
+            if (
+                build := gbp.get_build_info(Build(machine=machine, number=int(number)))
+            ) is None:
+                console.err.print("Not found")
+                return 1
+
+            builds = [build]
+        else:
+            builds = gbp.builds_with_packages(machine)[-1 * args.tail :]
+
+        branch = tree.add(render.format_machine(machine, args))
+
+        for build in builds:
+            assert build.info
+
+            p_branch = branch.add(render_build(build))
+            build_date = (
+                (build.info.built or build.info.submitted)
+                .astimezone(render.LOCAL_TIMEZONE)
+                .date()
+            )
+            packages: list[Package] = build.packages_built or []
+            packages = sort_packages_by_build_time(packages)
+
+            for package in packages:
+                p_branch.add(render_package(package, build_date))
+
+    console.out.print(tree)
+
+    return 0
+
+
+def parse_args(parser: argparse.ArgumentParser) -> None:
+    """Set subcommand arguments"""
+    parser.add_argument("-t", "--tail", type=int, default=0)
+    parser.add_argument("--mine", action="store_true", default=False)
+    comp.set(parser.add_argument("machine", nargs="*"), comp.machines)
+
+
+def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
+    """Return the list of machines requested by the arguments
+
+    - If --mine is passed then use --my-machines is returned
+    - If machine[s] are passed on the command-line they are returned
+    - Otherwise returns the list of all machines on the server
+    """
+    if args.mine:
+        return utils.get_my_machines_from_args(args)
+
+    machine: list[str] = args.machine
+    if machine:
+        return machine
+
+    return gbp.machine_names()
+
+
 def sort_packages_by_build_time(packages: list[Package]) -> list[Package]:
     """Missing docstring"""
     sorted_packages = [*packages]
@@ -69,67 +133,3 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
     )
 
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
-
-
-def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
-    """Return the list of machines requested by the arguments
-
-    - If --mine is passed then use --my-machines is returned
-    - If machine[s] are passed on the command-line they are returned
-    - Otherwise returns the list of all machines on the server
-    """
-    if args.mine:
-        return utils.get_my_machines_from_args(args)
-
-    machine: list[str] = args.machine
-    if machine:
-        return machine
-
-    return gbp.machine_names()
-
-
-def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Show the machines builds as a tree"""
-    tree = Tree("[header]Machines[/header]", guide_style="box")
-
-    for machine in get_machines(args, gbp):
-        if "." in machine:
-            machine, _, number = machine.partition(".")
-
-            if (
-                build := gbp.get_build_info(Build(machine=machine, number=int(number)))
-            ) is None:
-                console.err.print("Not found")
-                return 1
-
-            builds = [build]
-        else:
-            builds = gbp.builds_with_packages(machine)[-1 * args.tail :]
-
-        branch = tree.add(render.format_machine(machine, args))
-
-        for build in builds:
-            assert build.info
-
-            p_branch = branch.add(render_build(build))
-            build_date = (
-                (build.info.built or build.info.submitted)
-                .astimezone(render.LOCAL_TIMEZONE)
-                .date()
-            )
-            packages: list[Package] = build.packages_built or []
-            packages = sort_packages_by_build_time(packages)
-
-            for package in packages:
-                p_branch.add(render_package(package, build_date))
-
-    console.out.print(tree)
-
-    return 0
-
-
-def parse_args(parser: argparse.ArgumentParser) -> None:
-    """Set subcommand arguments"""
-    parser.add_argument("-t", "--tail", type=int, default=0)
-    parser.add_argument("--mine", action="store_true", default=False)
-    comp.set(parser.add_argument("machine", nargs="*"), comp.machines)

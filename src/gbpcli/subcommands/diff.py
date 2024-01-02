@@ -15,13 +15,54 @@ If the "right" argument is omitted, it defaults to the most recent build.
 """
 
 
-@cache
-def cached_builds(machine: str, gbp: GBP) -> list[Build]:
-    """Return the list of builds for the given machine.
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+    """Handler for subcommand"""
+    if (left := get_left_build(args.machine, args.left, gbp)) is None:
+        console.err.print("No builds given and no builds published")
+        return 1
 
-    This is a cached version of GBP.builds()
-    """
-    return gbp.builds(machine)
+    if (right := get_right_build(args.machine, args.right, gbp)) is None:
+        console.err.print("Need at least two builds to diff")
+        return 1
+
+    left_build, right_build, diff = gbp.diff(args.machine, left, right)
+
+    if not diff:
+        return 0
+
+    assert left_build.info is not None
+    assert right_build.info is not None
+    assert isinstance(left_build.info.built, dt.datetime)
+    assert isinstance(right_build.info.built, dt.datetime)
+
+    header = partial(console.out.print, style="header")
+    header(f"diff -r {args.machine}/{left} {args.machine}/{right}")
+    header(f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}")
+    header(f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}")
+
+    print_diff(diff, console)
+
+    return 0
+
+
+def parse_args(parser: argparse.ArgumentParser) -> None:
+    """Set subcommand arguments"""
+    comp.set(
+        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
+        comp.machines,
+    )
+    comp.set(
+        parser.add_argument(
+            "left", metavar="LEFT", nargs="?", help="left build number"
+        ),
+        comp.build_ids,
+    )
+    comp.set(
+        parser.add_argument(
+            "right", metavar="RIGHT", nargs="?", help="right build number"
+        ),
+        comp.build_ids,
+    )
 
 
 def get_left_build(machine: str, requested: str, gbp: GBP) -> int | None:
@@ -58,36 +99,6 @@ def get_right_build(machine: str, requested: str, gbp: GBP) -> int | None:
     return builds[-1].number if builds else None
 
 
-def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for subcommand"""
-    if (left := get_left_build(args.machine, args.left, gbp)) is None:
-        console.err.print("No builds given and no builds published")
-        return 1
-
-    if (right := get_right_build(args.machine, args.right, gbp)) is None:
-        console.err.print("Need at least two builds to diff")
-        return 1
-
-    left_build, right_build, diff = gbp.diff(args.machine, left, right)
-
-    if not diff:
-        return 0
-
-    assert left_build.info is not None
-    assert right_build.info is not None
-    assert isinstance(left_build.info.built, dt.datetime)
-    assert isinstance(right_build.info.built, dt.datetime)
-
-    header = partial(console.out.print, style="header")
-    header(f"diff -r {args.machine}/{left} {args.machine}/{right}")
-    header(f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}")
-    header(f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}")
-
-    print_diff(diff, console)
-
-    return 0
-
-
 def print_diff(diff: Iterable[Change], console: Console) -> None:
     """Given the list of changes, pretty-print the diff to the console"""
     for item in diff:
@@ -101,21 +112,10 @@ def print_diff(diff: Iterable[Change], console: Console) -> None:
                 console.out.print(f"[added]+{item.item}")
 
 
-def parse_args(parser: argparse.ArgumentParser) -> None:
-    """Set subcommand arguments"""
-    comp.set(
-        parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
-        comp.machines,
-    )
-    comp.set(
-        parser.add_argument(
-            "left", metavar="LEFT", nargs="?", help="left build number"
-        ),
-        comp.build_ids,
-    )
-    comp.set(
-        parser.add_argument(
-            "right", metavar="RIGHT", nargs="?", help="right build number"
-        ),
-        comp.build_ids,
-    )
+@cache
+def cached_builds(machine: str, gbp: GBP) -> list[Build]:
+    """Return the list of builds for the given machine.
+
+    This is a cached version of GBP.builds()
+    """
+    return gbp.builds(machine)

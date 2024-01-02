@@ -10,16 +10,6 @@ from gbpcli import GBP, Console, render, utils
 HELP = """List machines with builds"""
 
 
-def latest_build_to_str(build: dict[str, Any]) -> str:
-    """Return the "Latest" column for the given build"""
-    build_id = build["id"].rpartition(".")[2]
-
-    if build["published"]:
-        build_id = f"[published]{build_id}[/published]"
-
-    return f"[build_id]{build_id}[/build_id]"
-
-
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
     my_machines = utils.get_my_machines_from_args(args)
@@ -57,3 +47,13 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         default=False,
         help="Only display machine info for --my-machines",
     )
+
+
+def latest_build_to_str(build: dict[str, Any]) -> str:
+    """Return the "Latest" column for the given build"""
+    build_id = build["id"].rpartition(".")[2]
+
+    if build["published"]:
+        build_id = f"[published]{build_id}[/published]"
+
+    return f"[build_id]{build_id}[/build_id]"

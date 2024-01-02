@@ -11,6 +11,61 @@ from gbpcli.subcommands import make_searchable
 HELP = """notes subcommand for gbpcli"""
 
 
+def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
+    """Show, search, and edit build notes"""
+    if args.search:
+        return search_notes(gbp, args.machine, args.number, console)
+
+    build = utils.resolve_build_id(args.machine, args.number, gbp)
+    existing = gbp.get_build_info(build)
+
+    if not existing or not existing.info:
+        console.err.print("Build not found")
+        return 1
+
+    if args.delete:
+        note = None
+    else:
+        try:
+            note = get_note(existing.info.note)
+        except EnvironmentError:
+            return 1
+
+    gbp.create_note(build, note)
+
+    return 0
+
+
+def parse_args(parser: argparse.ArgumentParser) -> None:
+    """Set subcommand arguments"""
+    parser.add_argument("--delete", "-d", action="store_true", default=False)
+    make_searchable(parser)
+
+
+def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
+    """--search handler for the notes subcommand"""
+    if not (builds := gbp.search(machine, SearchField.notes, key)):
+        console.err.print("No matches found")
+        return 1
+
+    sep = ""
+    for build in builds:
+        console.out.print(sep, end="")
+        console.out.print(render.build_to_str(build), end="")
+        sep = "\n"
+
+    return 0
+
+
+def get_note(existing_note: str | None) -> str:
+    """Get a note either from standard input or editor"""
+    return (
+        open_editor(editor, existing_note)
+        if sys.stdin.isatty() and (editor := get_editor())
+        else sys.stdin.read()
+    )
+
+
 def get_editor() -> str | None:
     """Return the user's editor preference.
 
@@ -47,58 +102,3 @@ def open_editor(editor: str, text: str | None) -> str:
             return note_file.read()
 
     raise EnvironmentError("Editor failed")
-
-
-def get_note(existing_note: str | None) -> str:
-    """Get a note either from standard input or editor"""
-    return (
-        open_editor(editor, existing_note)
-        if sys.stdin.isatty() and (editor := get_editor())
-        else sys.stdin.read()
-    )
-
-
-def search_notes(gbp: GBP, machine: str, key: str, console: Console) -> int:
-    """--search handler for the notes subcommand"""
-    if not (builds := gbp.search(machine, SearchField.notes, key)):
-        console.err.print("No matches found")
-        return 1
-
-    sep = ""
-    for build in builds:
-        console.out.print(sep, end="")
-        console.out.print(render.build_to_str(build), end="")
-        sep = "\n"
-
-    return 0
-
-
-def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Show, search, and edit build notes"""
-    if args.search:
-        return search_notes(gbp, args.machine, args.number, console)
-
-    build = utils.resolve_build_id(args.machine, args.number, gbp)
-    existing = gbp.get_build_info(build)
-
-    if not existing or not existing.info:
-        console.err.print("Build not found")
-        return 1
-
-    if args.delete:
-        note = None
-    else:
-        try:
-            note = get_note(existing.info.note)
-        except EnvironmentError:
-            return 1
-
-    gbp.create_note(build, note)
-
-    return 0
-
-
-def parse_args(parser: argparse.ArgumentParser) -> None:
-    """Set subcommand arguments"""
-    parser.add_argument("--delete", "-d", action="store_true", default=False)
-    make_searchable(parser)
