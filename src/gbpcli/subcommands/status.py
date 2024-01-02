@@ -1,11 +1,12 @@
 """Show details for a given build"""
 import argparse
+import datetime as dt
 
 from rich import box
 from rich.panel import Panel
 from rich.table import Table
 
-from gbpcli import GBP, Console
+from gbpcli import GBP, Console, Package
 from gbpcli.render import styled_yes, timestr, yesno
 from gbpcli.subcommands import completers as comp
 from gbpcli.utils import resolve_build_id
@@ -33,22 +34,9 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     )
 
     if build.info.built is not None:
-        grid.add_row(
-            "[header]BuildDate:[/header] ",
-            f"[timestamp]{timestr(build.info.built)}[/timestamp]",
-        )
-
-    grid.add_row(
-        "[header]Submitted:[/header] ",
-        f"[timestamp]{timestr(build.info.submitted)}[/timestamp]",
-    )
-
-    grid.add_row(
-        "[header]Completed:[/header] ",
-        f"[timestamp]{timestr(build.info.completed)}[/timestamp]"
-        if build.info.completed
-        else styled_yes(yesno(False)),
-    )
+        timestamp_row("BuildDate", build.info.built, grid)
+    timestamp_row("Submitted", build.info.submitted, grid)
+    timestamp_row("Completed", build.info.completed, grid)
 
     grid.add_row(
         "[header]Published:[/header] ", f"{styled_yes(yesno(build.info.published))}"
@@ -56,16 +44,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     grid.add_row("[header]Keep:[/header] ", f"{styled_yes(yesno(build.info.keep))}")
     tags = [f"[tag]@{tag}[/tag]" for tag in build.info.tags]
     grid.add_row("[header]Tags:[/header] ", " ".join(tags))
-
-    packages = build.packages_built
-    grid.add_row(
-        "[header]Packages-built:[/header] ",
-        f"[package]{packages[0].cpv}[/package]" if packages else "None",
-    )
-
-    if packages:
-        for package in packages[1:]:
-            grid.add_row("", f"[package]{package.cpv}[/package]")
+    add_packages(build.packages_built, grid)
 
     console.out.print(Panel(grid, expand=False, style="box"))
 
@@ -91,3 +70,24 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         parser.add_argument("number", metavar="NUMBER", help="build number", nargs="?"),
         comp.build_ids,
     )
+
+
+def timestamp_row(header: str, timestamp: dt.datetime | None, table: Table) -> None:
+    """Add a header with a timestamp"""
+    table.add_row(
+        f"[header]{header}:[/header] ",
+        f"[timestamp]{timestr(timestamp)}[/timestamp]"
+        if timestamp
+        else styled_yes(yesno(False)),
+    )
+
+
+def add_packages(packages: list[Package] | None, table: Table) -> None:
+    """Add the packages header and list"""
+    packages = packages or []
+    table.add_row(
+        "[header]Packages-built:[/header] ",
+        f"[package]{packages[0].cpv}[/package]" if packages else "None",
+    )
+    for package in packages[1:]:
+        table.add_row("", f"[package]{package.cpv}[/package]")
