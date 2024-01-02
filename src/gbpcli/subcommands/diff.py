@@ -47,6 +47,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
     """Set subcommand arguments"""
+    # pylint: disable=duplicate-code
     comp.set(
         parser.add_argument("machine", metavar="MACHINE", help="name of the machine"),
         comp.machines,
