@@ -10,6 +10,7 @@ import gbpcli
 import gbpcli.subcommands.list as list_subcommand
 from gbpcli import build_parser, main
 from gbpcli.graphql import APIError
+from gbpcli.theme import get_theme_from_string
 
 SUBCOMMANDS = [
     "build",
@@ -80,19 +81,21 @@ class GetArgumentsTestCase(unittest.TestCase):
 class GetConsoleTestCase(unittest.TestCase):
     """Tests for the get_console function"""
 
+    theme = get_theme_from_string("")
+
     def test_force_terminal_true(self):
-        console = gbpcli.get_console(True)
+        console = gbpcli.get_console(True, self.theme)
 
         self.assertEqual(console.out.is_terminal, True)
 
     def test_force_terminal_false(self):
-        console = gbpcli.get_console(False)
+        console = gbpcli.get_console(False, self.theme)
 
         self.assertEqual(console.out.is_terminal, False)
 
-    def test_with_colormap(self):
-        color_map = {"rose": "red", "violet": "blue"}
-        console = gbpcli.get_console(True, color_map)
+    def test_with_theme(self):
+        theme = get_theme_from_string("rose=red:violet=blue")
+        console = gbpcli.get_console(True, theme)
         output = [*console.out.render("[rose]rose[/rose][violet]violet[/violet]")]
 
         rose = output[0]

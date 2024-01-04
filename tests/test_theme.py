@@ -2,36 +2,37 @@
 # pylint: disable=missing-docstring
 from unittest import TestCase
 
-from gbpcli.theme import DEFAULT_THEME, get_colormap_from_string
+from gbpcli.theme import DEFAULT_THEME, get_theme_from_string
 
 
 class GetColormapFromString(TestCase):
-    """Tests for the get_colormap_from_string function"""
+    """Tests for the get_theme_from_string function"""
 
     def test_empty_string(self):
-        result = get_colormap_from_string("")
-
-        self.assertEqual(result, DEFAULT_THEME)
+        theme = get_theme_from_string("")
+        default = get_theme_from_string(
+            ":".join(f"{key}={value}" for key, value in DEFAULT_THEME.items())
+        )
+        self.assertEqual(theme.styles, default.styles)
 
     def test_double_colons(self):
-        string = "header=test_header:note=test_note::build_id=test_build_id"
-        #                                          ^^
-        result = get_colormap_from_string(string)
+        string = "header=blue:note=bold::build_id=#889721"
+        #                             ^^
+        theme = get_theme_from_string(string)
 
-        self.assertEqual(result["header"], "test_header")
-        self.assertEqual(result["note"], "test_note")
-        self.assertEqual(result["build_id"], "test_build_id")
+        self.assertEqual(theme.styles["header"].color.name, "blue")
+        self.assertTrue(theme.styles["note"].bold)
+        self.assertEqual(theme.styles["build_id"].color.name, "#889721")
 
     def test_double_equals(self):
         string = "header=blue:notes==white:build_id=bold"
         #                          ^^
 
         with self.assertRaises(ValueError) as context:
-            get_colormap_from_string(string)
+            get_theme_from_string(string)
 
         self.assertEqual(
-            str(context.exception),
-            "Invalid color map: 'header=blue:notes==white:build_id=bold'",
+            str(context.exception), "Invalid theme assignment: 'notes==white'"
         )
 
     def test_missing_equals(self):
@@ -39,23 +40,23 @@ class GetColormapFromString(TestCase):
         #                                ^
 
         with self.assertRaises(ValueError) as context:
-            get_colormap_from_string(string)
+            get_theme_from_string(string)
 
-        self.assertEqual(
-            str(context.exception),
-            "Invalid color map: 'header=test_header:note:build_id=test_build_id'",
-        )
+        self.assertEqual(str(context.exception), "Invalid theme assignment: 'note'")
 
     def test_only_colons(self):
-        result = get_colormap_from_string("::::::::::")
+        theme = get_theme_from_string("::::::::::")
+        default = get_theme_from_string(
+            ":".join(f"{key}={value}" for key, value in DEFAULT_THEME.items())
+        )
 
-        self.assertEqual(result, DEFAULT_THEME)
+        self.assertEqual(theme.styles, default.styles)
 
     def test_garbage_input(self):
         with self.assertRaises(ValueError) as context:
-            get_colormap_from_string("This is totally garbage!")
+            get_theme_from_string("This is totally garbage!")
 
         self.assertEqual(
             str(context.exception),
-            "Invalid color map: 'This is totally garbage!'",
+            "Invalid theme assignment: 'This is totally garbage!'",
         )

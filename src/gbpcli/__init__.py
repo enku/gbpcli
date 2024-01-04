@@ -18,7 +18,8 @@ import rich.console
 import yarl
 from rich.theme import Theme
 
-from gbpcli import graphql, theme
+from gbpcli import graphql
+from gbpcli.theme import get_theme_from_string
 
 COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
@@ -379,30 +380,23 @@ def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def get_console(
-    force_terminal: bool | None, color_map: theme.ColorMap | None = None
-) -> Console:
+def get_console(force_terminal: bool | None, theme: Theme) -> Console:
     """Return a rich.Console instance
 
     If force_terminal is true, force a tty on the console.
     If the ColorMap is given this is used as the Console theme
     """
-    return Console(
-        out=rich.console.Console(
-            force_terminal=force_terminal,
-            color_system="auto",
-            highlight=False,
-            theme=Theme(color_map or theme.DEFAULT_THEME),
-        ),
-        err=rich.console.Console(file=sys.stderr),
+    out = rich.console.Console(
+        force_terminal=force_terminal, color_system="auto", highlight=False, theme=theme
     )
+    return Console(out=out, err=rich.console.Console(file=sys.stderr))
 
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
     args = get_arguments(argv)
-    color_map = theme.get_colormap_from_string(os.getenv("GBPCLI_COLORS", ""))
-    console = get_console(COLOR_CHOICES[args.color], color_map)
+    theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
+    console = get_console(COLOR_CHOICES[args.color], theme)
 
     try:
         return cast(int, args.func(args, GBP(args.url), console))

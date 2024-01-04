@@ -1,6 +1,7 @@
 """Utilities for getting/setting the color theme"""
-ColorMap = dict[str, str]
-DEFAULT_THEME: ColorMap = {
+from rich.theme import Theme
+
+DEFAULT_THEME = {
     "box": "default",
     "build_id": "bold",
     "header": "bold",
@@ -20,8 +21,8 @@ DEFAULT_THEME: ColorMap = {
 }
 
 
-def get_colormap_from_string(string: str) -> ColorMap:
-    """Given the text string return a gbp ColorMap
+def get_theme_from_string(string: str) -> Theme:
+    """Given the text string return a rich Theme
 
     String is expected to be a colon-delimited (":") set of name=value pairs. So for
     example:
@@ -32,25 +33,26 @@ def get_colormap_from_string(string: str) -> ColorMap:
     raised.  Empty names/values are ignored.
     """
     colormap = DEFAULT_THEME.copy()
-    error = ValueError(f"Invalid color map: {string!r}")
-
-    if not string:
-        return colormap
 
     for assignment in string.split(":"):
         if not assignment:
             continue
-        try:
-            name, value = assignment.split("=")
-        except ValueError:
-            raise error from None
 
-        name = name.strip()
-        name = name.strip()
+        name, value = parse_assignment(assignment)
 
         if not name or not value:
             continue
 
-        colormap[name] = value.strip()
+        colormap[name] = value
 
-    return colormap
+    return Theme(colormap)
+
+
+def parse_assignment(assignment: str) -> tuple[str, str]:
+    """parse 'name=value' string into (name, value)"""
+    try:
+        name, value = assignment.split("=")
+    except ValueError:
+        raise ValueError(f"Invalid theme assignment: {assignment!r}") from None
+
+    return name.strip(), value.strip()
