@@ -20,6 +20,8 @@ DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
 NO_JSON = object()
 
+__unittest = True  # pylint: disable=invalid-name
+
 
 class TestCase(unittest.TestCase):
     """Custom test case for gbpcli"""
@@ -70,6 +72,20 @@ class TestCase(unittest.TestCase):
         expected = {"json": json, "headers": graphql.Query.headers}
 
         self.assertEqual(call[1], expected)
+
+
+class ThemeTests(unittest.TestCase):
+    """Custom assertions for theme tests"""
+
+    def assert_themes_are_equal(self, first: Theme, second: Theme, msg: Any = None):
+        """Compare two rich themes"""
+        self.assertEqual(first.styles, second.styles, msg)
+
+    def assert_theme_color(self, theme: Theme, style: str, color: str, msg: Any = None):
+        """Assert the theme's style is the given color"""
+        style_color = theme.styles[style].color
+        assert style_color is not None, msg
+        self.assertEqual(style_color.name, color, msg)
 
 
 def load_data(filename: str) -> bytes:
