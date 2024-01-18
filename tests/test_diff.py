@@ -38,7 +38,7 @@ diff -r lighthouse/3111 lighthouse/3112
 """
         self.assertEqual(self.console.out.getvalue(), expected)
         self.assert_graphql(
-            self.gbp.query.diff, left="lighthouse.3111", right="lighthouse.3112"
+            self.gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
     def test_should_print_nothing_when_no_diffs(self):
@@ -68,7 +68,7 @@ diff -r lighthouse/3111 lighthouse/3112
             mock.call(
                 gbp.query._url,
                 json={
-                    "query": gbp.query.builds.query,
+                    "query": gbp.query.gbpcli.builds.query,
                     "variables": {"machine": "lighthouse"},
                 },
                 headers=graphql.Query.headers,
@@ -76,7 +76,7 @@ diff -r lighthouse/3111 lighthouse/3112
             mock.call(
                 gbp.query._url,
                 json={
-                    "query": gbp.query.diff.query,
+                    "query": gbp.query.gbpcli.diff.query,
                     "variables": {
                         "left": "lighthouse.3111",
                         "right": "lighthouse.10694",
@@ -104,7 +104,7 @@ diff -r lighthouse/3111 lighthouse/3112
             mock.call(
                 gbp.query._url,
                 json={
-                    "query": gbp.query.builds.query,
+                    "query": gbp.query.gbpcli.builds.query,
                     "variables": {"machine": "lighthouse"},
                 },
                 headers=graphql.Query.headers,
@@ -112,7 +112,7 @@ diff -r lighthouse/3111 lighthouse/3112
             mock.call(
                 gbp.query._url,
                 json={
-                    "query": gbp.query.diff.query,
+                    "query": gbp.query.gbpcli.diff.query,
                     "variables": {
                         "left": "lighthouse.10678",
                         "right": "lighthouse.10694",
@@ -136,7 +136,7 @@ diff -r lighthouse/3111 lighthouse/3112
         status = diff(args, self.gbp, self.console)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(self.gbp.query.builds, machine="jenkins")
+        self.assert_graphql(self.gbp.query.gbpcli.builds, machine="jenkins")
         self.assertEqual(
             self.console.err.getvalue(), "No builds given and no builds published\n"
         )

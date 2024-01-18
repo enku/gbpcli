@@ -20,7 +20,7 @@ class MachinesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), EXPECTED_OUTPUT)
-        self.assert_graphql(self.gbp.query.machines)
+        self.assert_graphql(self.gbp.query.gbpcli.machines)
 
     def test_with_mine(self):
         args = Namespace(mine=True, my_machines="babette lighthouse")
@@ -39,7 +39,7 @@ class MachinesTestCase(TestCase):
 ╰────────────┴────────┴────────╯
 """
         self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.machines)
+        self.assert_graphql(self.gbp.query.gbpcli.machines)
 
 
 EXPECTED_OUTPUT = """\

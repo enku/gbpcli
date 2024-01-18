@@ -20,7 +20,7 @@ class LogsTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), "This is a test!\n")
-        self.assert_graphql(self.gbp.query.logs, id="lighthouse.3113")
+        self.assert_graphql(self.gbp.query.gbpcli.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self):
         args = Namespace(machine="lighthouse", number="9999", search=False)
@@ -40,7 +40,7 @@ class LogsTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assert_graphql(
-            self.gbp.query.search,
+            self.gbp.query.gbpcli.search,
             machine="lighthouse",
             field="LOGS",
             key="this is a test",

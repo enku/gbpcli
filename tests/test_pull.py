@@ -19,7 +19,7 @@ class PullTestCase(TestCase):
         pull(args, self.gbp, self.console)
 
         self.assert_graphql(
-            self.gbp.query.pull, id="lighthouse.3226", note=None, tags=None
+            self.gbp.query.gbpcli.pull, id="lighthouse.3226", note=None, tags=None
         )
 
     def test_with_note(self) -> None:
@@ -31,7 +31,10 @@ class PullTestCase(TestCase):
         pull(args, self.gbp, self.console)
 
         self.assert_graphql(
-            self.gbp.query.pull, id="lighthouse.3226", note="This is a test", tags=None
+            self.gbp.query.gbpcli.pull,
+            id="lighthouse.3226",
+            note="This is a test",
+            tags=None,
         )
 
     def test_with_tags(self) -> None:
@@ -42,5 +45,5 @@ class PullTestCase(TestCase):
         pull(args, self.gbp, self.console)
 
         self.assert_graphql(
-            self.gbp.query.pull, id="lighthouse.3226", note=None, tags=tags
+            self.gbp.query.gbpcli.pull, id="lighthouse.3226", note=None, tags=tags
         )

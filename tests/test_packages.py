@@ -21,7 +21,7 @@ class PackagesTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = load_data("packages.txt").decode("utf-8")
         self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.packages, id="babette.268")
+        self.assert_graphql(self.gbp.query.gbpcli.packages, id="babette.268")
 
     def test_when_build_does_not_exist_prints_error(self):
         args = Namespace(machine="bogus", number="268")

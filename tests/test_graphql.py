@@ -48,9 +48,9 @@ class QueriesTestCase(unittest.TestCase):
     """Tests for the Queries wrapper"""
 
     def test_returns_query_on_attribute_access(self):
-        queries = graphql.Queries(URL("https://gbp.invalid"), "gbpcli")
+        queries = graphql.Queries(URL("https://gbp.invalid"))
 
-        logs_query = queries.logs
+        logs_query = queries.gbpcli.logs
 
         self.assertEqual(
             logs_query.query,
@@ -58,15 +58,21 @@ class QueriesTestCase(unittest.TestCase):
         )
 
     def test_raises_attribute_error_when_file_not_found(self):
-        queries = graphql.Queries(URL("https://gbp.invalid"), "gbpcli")
+        queries = graphql.Queries(URL("https://gbp.invalid"))
+
+        with self.assertRaises(AttributeError):
+            print(queries.gbpcli.bogus)
+
+    def test_raises_attribute_error_when_distribution_not_found(self):
+        queries = graphql.Queries(URL("https://gbp.invalid"))
 
         with self.assertRaises(AttributeError):
             print(queries.bogus)
 
     def test_to_dict_returns_dict(self):
-        queries = graphql.Queries(URL("https://gbp.invalid"), "gbpcli")
+        queries = graphql.Queries(URL("https://gbp.invalid"))
 
-        as_dict = queries.to_dict()
+        as_dict = queries.gbpcli.to_dict()
 
         self.assertIsInstance(as_dict, dict)
         self.assertIn("logs", as_dict)

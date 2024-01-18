@@ -30,9 +30,14 @@ class NotesTestCase(TestCase):
 
     def assert_create_note(self, machine="lighthouse", number="3109", note=NOTE):
         """Assert that the note was created by a GraphQL request"""
-        self.assert_graphql(self.gbp.query.build, index=0, id=f"{machine}.{number}")
         self.assert_graphql(
-            self.gbp.query.create_note, id=f"{machine}.{number}", index=1, note=note
+            self.gbp.query.gbpcli.build, index=0, id=f"{machine}.{number}"
+        )
+        self.assert_graphql(
+            self.gbp.query.gbpcli.create_note,
+            id=f"{machine}.{number}",
+            index=1,
+            note=note,
         )
 
     def test_create_with_editor(self):
@@ -111,7 +116,10 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assert_graphql(
-            self.gbp.query.search, machine="lighthouse", field="NOTES", key="10,000"
+            self.gbp.query.gbpcli.search,
+            machine="lighthouse",
+            field="NOTES",
+            key="10,000",
         )
         self.assertEqual(self.console.out.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
@@ -125,7 +133,10 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(status, 1)
         self.assert_graphql(
-            self.gbp.query.search, machine="lighthouse", field="NOTES", key="python"
+            self.gbp.query.gbpcli.search,
+            machine="lighthouse",
+            field="NOTES",
+            key="python",
         )
         self.assertEqual(self.console.err.getvalue(), "No matches found\n")
 

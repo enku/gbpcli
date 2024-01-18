@@ -18,7 +18,9 @@ class MachinesTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), "")
-        self.assert_graphql(self.gbp.query.schedule_build, machine="babette", params=[])
+        self.assert_graphql(
+            self.gbp.query.gbpcli.schedule_build, machine="babette", params=[]
+        )
 
     def test_with_build_params(self) -> None:
         args = Namespace(machine="babette", param=["BUILD_TARGET=emptytree"])
@@ -29,7 +31,12 @@ class MachinesTestCase(TestCase):
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), "")
         self.assert_graphql(
-            self.gbp.query.schedule_build,
+            self.gbp.query.gbpcli.schedule_build,
+            machine="babette",
+            params=[{"name": "BUILD_TARGET", "value": "emptytree"}],
+        )
+        self.assert_graphql(
+            self.gbp.query.gbpcli.schedule_build,
             machine="babette",
             params=[{"name": "BUILD_TARGET", "value": "emptytree"}],
         )

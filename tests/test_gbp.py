@@ -31,7 +31,7 @@ class GBPQueryTestCase(TestCase):
         self.gbp.query._session.post.side_effect = error
 
         with self.assertRaises(requests.exceptions.ConnectionError) as cxt:
-            self.gbp.query.machines()
+            self.gbp.query.gbpcli.machines()
 
         self.assertIs(cxt.exception, error)
 

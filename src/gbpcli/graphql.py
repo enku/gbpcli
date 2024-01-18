@@ -1,4 +1,5 @@
 """graphql library for gbpcli"""
+from functools import cache
 from importlib import metadata, resources
 from typing import Any
 
@@ -23,8 +24,8 @@ class Query:
 
         >>> qs = "query ($machine: String!) { latest(machine: $machine) { id } }"
         >>> query = Query(qs, "https://gbp/graphql", requests.Session())
-        >>> query(machine="lighthouse")
-        ({'latest': {'id': 'lighthouse.14205'}}, None)
+        >>> query(machine="lighthouse")  # doctest: +ELLIPSIS
+        ({'latest': {'id': 'lighthouse...'}}, {})
     """
 
     headers = {"Accept-Encoding": "gzip, deflate"}
@@ -50,22 +51,29 @@ class Query:
         return query_result.get("data", {}), query_result.get("errors", {})
 
 
-class Queries:
-    """Python interface to raw queries/*.graphql files"""
+class DistributionQueries:
+    """Queries for a given distribution"""
 
-    def __init__(self, url: yarl.URL, distribution: str = "gbpcli") -> None:
-        """A namespace for queries.
+    def __init__(self, url: str, distribution: str, session: requests.Session) -> None:
+        # We want to make sure we explicitly raise an exception if this distribition
+        # does not exist
+        try:
+            self._files = resources.files(distribution)
+        except ModuleNotFoundError as error:
+            raise error from None
 
-        url: the url to the graphql endpoint
-        distribution: name of python package to search for queries/*.graphql files
-        """
-        self._url = str(url)
-        self._session = requests.Session()
-        self._session.headers["User-Agent"] = f"gbpcli/{metadata.version('gbpcli')}"
+        self._url = url
         self._distribution = distribution
+        self._session = session
 
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.url!r}, {self._distribution!r}, ...)"
+
+    # The CLI is a short-lived process so we're not concerned about cache size
+    @cache  # pylint: disable=method-cache-max-size-none
     def __getattr__(self, name: str) -> Query:
-        query_file = resources.files(self._distribution) / "queries" / f"{name}.graphql"
+        query_file = self._files / "queries" / f"{name}.graphql"
+
         try:
             query_str = query_file.read_text(encoding="UTF-8")
         except FileNotFoundError:
@@ -82,6 +90,38 @@ class Queries:
             for filename in files
             if filename.name.endswith(".graphql")
         }
+
+
+class Queries:  # pylint: disable=too-few-public-methods
+    r"""Python interface to raw queries/*.graphql files
+
+    This allows you to execute GraphQL queries as if they were Python methods. Queries
+    appear in a namespace determined by which (Python) distribution they are defined in.
+    For example the GraphQL queries defined in the "gbpcli" distribution are called
+    "gbpcli.<query>":
+
+        >>> q = Queries(yarl.URL("http://gbp/invalid"))
+        >>> q.gbpcli.latest # doctest: +ELLIPSIS
+        <graphql.Query object at 0x...>
+        >>> str(q.gbpcli.latest)
+        'query ($machine: String!) {\n  latest(machine: $machine) {\n    id\n  }\n}\n'
+    """
+
+    def __init__(self, url: yarl.URL) -> None:
+        """A namespace for queries.
+
+        url: the url to the graphql endpoint
+        """
+        self._url = str(url)
+        self._session = requests.Session()
+        self._session.headers["User-Agent"] = f"gbpcli/{metadata.version('gbpcli')}"
+
+    @cache  # pylint: disable=method-cache-max-size-none
+    def __getattr__(self, name: str) -> DistributionQueries:
+        try:
+            return DistributionQueries(self._url, name, self._session)
+        except ModuleNotFoundError:
+            raise AttributeError(name) from None
 
 
 def check(query_result: tuple[dict[str, Any], dict[str, Any]]) -> dict[str, Any]:

@@ -21,7 +21,7 @@ class LatestTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = "3113\n"
         self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.latest, machine="lighthouse")
+        self.assert_graphql(self.gbp.query.gbpcli.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self):
         args = Namespace(machine="bogus")

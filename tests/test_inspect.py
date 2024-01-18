@@ -32,12 +32,12 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), INSPECT_ALL)
-        self.assert_graphql(self.gbp.query.machine_names)
+        self.assert_graphql(self.gbp.query.gbpcli.machine_names)
         self.assert_graphql(
-            self.gbp.query.builds_with_packages, index=1, machine="base"
+            self.gbp.query.gbpcli.builds_with_packages, index=1, machine="base"
         )
         self.assert_graphql(
-            self.gbp.query.builds_with_packages, index=2, machine="gbpbox"
+            self.gbp.query.gbpcli.builds_with_packages, index=2, machine="gbpbox"
         )
 
     def test_single_machine(self):
@@ -52,7 +52,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE)
-        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.gbpcli.builds_with_packages, machine="base")
 
     def test_single_machine_with_tail(self):
         args = Namespace(machine=["base"], mine=False, tail=2)
@@ -66,7 +66,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE_WITH_TAIL)
-        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.gbpcli.builds_with_packages, machine="base")
 
     def test_single_machine_with_build_id(self):
         args = Namespace(machine=["lighthouse.12672"], mine=False)
@@ -77,7 +77,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
-        self.assert_graphql(self.gbp.query.build, id="lighthouse.12672")
+        self.assert_graphql(self.gbp.query.gbpcli.build, id="lighthouse.12672")
 
     def test_with_mine(self):
         args = Namespace(machine=None, mine=True, tail=0, my_machines="base")
@@ -91,7 +91,7 @@ class InspectTestCase(TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE)
-        self.assert_graphql(self.gbp.query.builds_with_packages, machine="base")
+        self.assert_graphql(self.gbp.query.gbpcli.builds_with_packages, machine="base")
 
 
 INSPECT_SINGLE_WITH_TAIL = """\

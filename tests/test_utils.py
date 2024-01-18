@@ -20,7 +20,7 @@ class CheckTestCase(TestCase):
         gbp.query._session.post.return_value = make_response(json=response_with_errors)
 
         with self.assertRaises(APIError) as context:
-            check(gbp.query.machines())
+            check(gbp.query.gbpcli.machines())
 
         exception = context.exception
         self.assertEqual(exception.args[0], [error1, error2])

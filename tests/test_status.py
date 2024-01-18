@@ -41,7 +41,7 @@ class StatusTestCase(TestCase):
 ╰─────────────────────╯
 """
         self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.build, id="lighthouse.3587")
+        self.assert_graphql(self.gbp.query.gbpcli.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self):
         args = Namespace(machine="lighthouse", number=None)
@@ -50,8 +50,8 @@ class StatusTestCase(TestCase):
 
         return_status = status(args, self.gbp, self.console)
 
-        self.assert_graphql(self.gbp.query.latest, index=0, machine="lighthouse")
-        self.assert_graphql(self.gbp.query.build, index=1, id="lighthouse.3587")
+        self.assert_graphql(self.gbp.query.gbpcli.latest, index=0, machine="lighthouse")
+        self.assert_graphql(self.gbp.query.gbpcli.build, index=1, id="lighthouse.3587")
         self.assertEqual(return_status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self):
