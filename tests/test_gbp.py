@@ -5,7 +5,7 @@ from unittest import mock
 
 import requests.exceptions
 
-from gbpcli import build_parser
+from gbpcli import GBP, build_parser
 
 from . import TestCase
 
@@ -20,6 +20,11 @@ class GGPTestCase(TestCase):
         self.assertEqual(
             context.warning.args[0], "This method is deprecated. Use search() instead"
         )
+
+    def test_url(self) -> None:
+        gbp = GBP("http://gbp.invalid/")
+
+        self.assertEqual(gbp.query._url, "http://gbp.invalid/graphql")
 
 
 class GBPQueryTestCase(TestCase):

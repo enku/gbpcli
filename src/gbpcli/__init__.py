@@ -146,7 +146,7 @@ class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
     def __init__(self, url: str) -> None:
-        self.query = graphql.Queries(yarl.URL(url))
+        self.query = graphql.Queries(yarl.URL(url) / "graphql")
 
     def machines(self) -> list[tuple[str, int, dict[str, Any]]]:
         """Handler for subcommand"""
