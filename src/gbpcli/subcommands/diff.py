@@ -4,7 +4,7 @@ import datetime as dt
 from collections.abc import Iterable
 from functools import cache, partial
 
-from gbpcli import GBP, Build, Change, Console, Status, render, utils
+from gbpcli import GBP, Build, Change, ChangeState, Console, render, utils
 from gbpcli.subcommands import completers as comp
 
 HELP = """Show differences between two builds
@@ -104,11 +104,11 @@ def print_diff(diff: Iterable[Change], console: Console) -> None:
     """Given the list of changes, pretty-print the diff to the console"""
     for item in diff:
         match item.status:
-            case Status.REMOVED:
+            case ChangeState.REMOVED:
                 console.out.print(f"[removed]-{item.item}")
-            case Status.ADDED:
+            case ChangeState.ADDED:
                 console.out.print(f"[added]+{item.item}")
-            case Status.CHANGED:
+            case ChangeState.CHANGED:
                 console.out.print(f"[removed]-{item.item}")
                 console.out.print(f"[added]+{item.item}")
 

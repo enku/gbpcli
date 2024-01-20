@@ -109,7 +109,7 @@ class Build:
         )
 
 
-class Status(IntEnum):
+class ChangeState(IntEnum):
     """Diff status"""
 
     REMOVED = -1
@@ -131,7 +131,7 @@ class Change:
     """Item in a diff"""
 
     item: str
-    status: Status
+    status: ChangeState
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -227,7 +227,7 @@ class GBP:
             Build.from_api_response(data["diff"]["left"]),
             Build.from_api_response(data["diff"]["right"]),
             [
-                Change(item=i["item"], status=getattr(Status, i["status"]))
+                Change(item=i["item"], status=getattr(ChangeState, i["status"]))
                 for i in data["diff"]["items"]
             ],
         )
