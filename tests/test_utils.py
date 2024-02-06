@@ -1,4 +1,5 @@
 """Tests for the "utils" module"""
+
 # pylint: disable=missing-function-docstring,protected-access
 import argparse
 

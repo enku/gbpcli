@@ -22,6 +22,7 @@ A "subcommand" for gbpcli is a Python module that has the following interface:
     The parse_args is called by the cli. It is responsible for creating the subcommand's
     command-line arguments.  In actuality is it passed a sub-parser instance.
 """
+
 import argparse
 
 from gbpcli.subcommands import completers as comp

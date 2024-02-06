@@ -1,4 +1,5 @@
 """Show the latest build number for the given machine"""
+
 import argparse
 
 from gbpcli import GBP, Console

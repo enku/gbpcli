@@ -1,4 +1,5 @@
 """Utilities for getting/setting the color theme"""
+
 from rich.theme import Theme
 
 DEFAULT_THEME = {

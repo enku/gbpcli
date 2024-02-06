@@ -1,4 +1,5 @@
 """Tests for the build subcommand"""
+
 # pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 

@@ -1,4 +1,5 @@
 """notes subcommand for gbpcli"""
+
 import argparse
 import os
 import subprocess

@@ -1,4 +1,5 @@
 """List machines with builds"""
+
 import argparse
 from typing import Any
 

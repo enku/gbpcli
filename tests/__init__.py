@@ -1,4 +1,5 @@
 """Tests for the Gentoo Build Publisher CLI"""
+
 # pylint: disable=protected-access
 import datetime
 import io

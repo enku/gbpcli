@@ -1,4 +1,5 @@
 """Tests for the logs subcommand"""
+
 # pylint: disable=missing-function-docstring
 from argparse import Namespace
 from unittest import mock

@@ -1,4 +1,5 @@
 """Tests for the GBP interface"""
+
 # pylint: disable=missing-docstring,protected-access
 import os
 from unittest import mock

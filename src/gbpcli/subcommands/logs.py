@@ -1,4 +1,5 @@
 """Display logs for the given build"""
+
 import argparse
 
 from gbpcli import GBP, Console, SearchField, render, utils

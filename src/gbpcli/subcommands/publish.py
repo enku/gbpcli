@@ -1,4 +1,5 @@
 """Publish a build"""
+
 import argparse
 
 from gbpcli import GBP, Console

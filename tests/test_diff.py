@@ -1,4 +1,5 @@
 """Tests for the diff subcommand"""
+
 # pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from json import loads as parse

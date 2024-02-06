@@ -1,4 +1,5 @@
 """Add tag to the given build"""
+
 import argparse
 
 from gbpcli import GBP, Build, Console, utils
@@ -9,7 +10,7 @@ HELP = """Add tag to the given build"""
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """Add tags builds"""
-    build: (Build | None)
+    build: Build | None
     machine: str = args.machine
     tag: str = args.tag
 

@@ -1,4 +1,5 @@
 """List builds for the given machines"""
+
 import argparse
 
 from rich import box

@@ -1,4 +1,5 @@
 """Schedule a build for the given machine in CI/CD"""
+
 import argparse
 
 from gbpcli import GBP, Console

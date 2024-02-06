@@ -1,4 +1,5 @@
 """Tests for the machines subcommand"""
+
 # pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 from unittest import mock

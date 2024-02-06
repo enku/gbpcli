@@ -1,4 +1,5 @@
 """Show details for a given build"""
+
 import argparse
 import datetime as dt
 
@@ -76,9 +77,11 @@ def timestamp_row(header: str, timestamp: dt.datetime | None, table: Table) -> N
     """Add a header with a timestamp"""
     table.add_row(
         f"[header]{header}:[/header] ",
-        f"[timestamp]{timestr(timestamp)}[/timestamp]"
-        if timestamp
-        else styled_yes(yesno(False)),
+        (
+            f"[timestamp]{timestr(timestamp)}[/timestamp]"
+            if timestamp
+            else styled_yes(yesno(False))
+        ),
     )
 
 

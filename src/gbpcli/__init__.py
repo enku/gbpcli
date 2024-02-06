@@ -1,4 +1,5 @@
 """Command Line interface for Gentoo Build Publisher"""
+
 # PYTHON_ARGCOMPLETE_OK
 # mypy: disable-error-code="attr-defined"
 from __future__ import annotations

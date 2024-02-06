@@ -1,4 +1,5 @@
 """graphql library for gbpcli"""
+
 from functools import cache
 from importlib import metadata, resources
 from typing import Any

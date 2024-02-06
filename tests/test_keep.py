@@ -1,4 +1,5 @@
 """Tests for the keep subcommand"""
+
 # pylint: disable=missing-function-docstring,protected-access
 from argparse import Namespace
 

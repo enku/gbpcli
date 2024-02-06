@@ -1,4 +1,5 @@
 """Tests for the tag subcommand"""
+
 # pylint: disable=missing-docstring,protected-access
 from argparse import Namespace
 

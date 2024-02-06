@@ -1,4 +1,5 @@
 """Display the list of packages for a given build"""
+
 import argparse
 
 from gbpcli import GBP, Console, utils

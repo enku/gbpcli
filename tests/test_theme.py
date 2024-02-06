@@ -1,4 +1,5 @@
 """Tests for the theme module"""
+
 # pylint: disable=missing-docstring
 
 

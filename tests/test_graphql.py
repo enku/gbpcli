@@ -1,4 +1,5 @@
 """Tests for the graphql module"""
+
 # pylint: disable=missing-docstring
 import unittest
 from unittest import mock

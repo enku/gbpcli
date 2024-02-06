@@ -1,4 +1,5 @@
 """Tests for the notes subcommand"""
+
 # pylint: disable=missing-function-docstring,protected-access
 import os
 import subprocess

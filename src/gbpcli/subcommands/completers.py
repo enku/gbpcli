@@ -1,4 +1,5 @@
 """argcomplete completers"""
+
 # pylint: disable=unused-argument
 import argparse
 from typing import Iterable, Protocol
@@ -16,8 +17,7 @@ class Completer(Protocol):  # pylint: disable=too-few-public-methods
         action: argparse.Action,
         parser: argparse.ArgumentParser,
         parsed_args: argparse.Namespace,
-    ) -> Iterable[str]:
-        ...
+    ) -> Iterable[str]: ...
 
 
 def machines(
