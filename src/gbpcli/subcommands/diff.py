@@ -147,7 +147,4 @@ def ensure_diffable_build(build: Build) -> Build:
         replacements["info"] = dummy_info
     build = replace(build, **replacements)
 
-    assert build.info is not None
-    assert build.info.built is not None
-
     return build
