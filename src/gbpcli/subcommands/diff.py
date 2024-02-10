@@ -3,11 +3,14 @@
 import argparse
 import datetime as dt
 from collections.abc import Iterable
+from dataclasses import replace
 from functools import cache, partial
+from typing import Any
 
-from gbpcli import GBP, Build, Change, ChangeState, Console, render, utils
+from gbpcli import GBP, Build, BuildInfo, Change, ChangeState, Console, render, utils
 from gbpcli.subcommands import completers as comp
 
+DEFAULT_TIMESTAMP = dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
 HELP = """Show differences between two builds
 
 If the "left" argument is omitted, it defaults to the build which is published.
@@ -31,10 +34,12 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     if not diff:
         return 0
 
-    assert left_build.info is not None
-    assert right_build.info is not None
-    assert isinstance(left_build.info.built, dt.datetime)
-    assert isinstance(right_build.info.built, dt.datetime)
+    left_build = ensure_diffable_build(left_build)
+    right_build = ensure_diffable_build(right_build)
+
+    # Make mypy happy :|
+    assert left_build.info and left_build.info.built
+    assert right_build.info and right_build.info.built
 
     header = partial(console.out.print, style="header")
     header(f"diff -r {args.machine}/{left} {args.machine}/{right}")
@@ -121,3 +126,28 @@ def cached_builds(machine: str, gbp: GBP) -> list[Build]:
     This is a cached version of GBP.builds()
     """
     return gbp.builds(machine)
+
+
+def ensure_diffable_build(build: Build) -> Build:
+    """Ensure that the build has the right fields to do a diff
+
+    If not replace with dummy values.
+    """
+    replacements: dict[str, Any] = {}
+
+    if build.info is None or build.info.built is None:
+        dummy_info = BuildInfo(
+            built=DEFAULT_TIMESTAMP,
+            keep=False,
+            note=None,
+            published=False,
+            submitted=DEFAULT_TIMESTAMP,
+            tags=[],
+        )
+        replacements["info"] = dummy_info
+    build = replace(build, **replacements)
+
+    assert build.info is not None
+    assert build.info.built is not None
+
+    return build
