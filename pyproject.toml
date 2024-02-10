@@ -56,7 +56,7 @@ dev = [
     "black",
     "coverage",
     "build",
-    "mypy",
+    "mypy==1.7.1",  # Pin until mypy/issues/16400 is resolved
     "pylint",
     "types-requests",
 ]
