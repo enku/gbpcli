@@ -1,7 +1,6 @@
 """Show differences between two builds"""
 
 import argparse
-import datetime as dt
 from collections.abc import Iterable
 from dataclasses import replace
 from functools import cache, partial
