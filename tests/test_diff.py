@@ -159,7 +159,7 @@ diff -r lighthouse/3111 lighthouse/3112
             self.console.out.getvalue(),
             """\
 diff -r lighthouse/3111 lighthouse/3112
---- a/lighthouse/3111 Wed Dec 31 17:00:00 1969 -0700
+--- a/lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
 +++ b/lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
 -app-accessibility/at-spi2-atk-2.38.0-1
 +app-accessibility/at-spi2-atk-2.46.0-1

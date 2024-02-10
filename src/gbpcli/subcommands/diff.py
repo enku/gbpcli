@@ -10,7 +10,6 @@ from typing import Any
 from gbpcli import GBP, Build, BuildInfo, Change, ChangeState, Console, render, utils
 from gbpcli.subcommands import completers as comp
 
-DEFAULT_TIMESTAMP = dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
 HELP = """Show differences between two builds
 
 If the "left" argument is omitted, it defaults to the build which is published.
@@ -137,11 +136,11 @@ def ensure_diffable_build(build: Build) -> Build:
 
     if build.info is None or build.info.built is None:
         dummy_info = BuildInfo(
-            built=DEFAULT_TIMESTAMP,
+            built=utils.EPOCH,
             keep=False,
             note=None,
             published=False,
-            submitted=DEFAULT_TIMESTAMP,
+            submitted=utils.EPOCH,
             tags=[],
         )
         replacements["info"] = dummy_info

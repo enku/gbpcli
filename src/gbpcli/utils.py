@@ -1,9 +1,13 @@
 """Utility functions"""
 
 import argparse
+import datetime as dt
 from typing import cast
 
 from gbpcli import GBP, Build
+
+# This is the datetime of the first git commit of gentoo-build-publisher
+EPOCH = dt.datetime.fromtimestamp(1616266641, tz=dt.UTC)
 
 TAG_SYM = "@"
 
