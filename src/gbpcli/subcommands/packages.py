@@ -2,8 +2,9 @@
 
 import argparse
 
-from gbpcli import GBP, Console, utils
+from gbpcli import GBP, utils
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Console
 
 HELP = """Display the list of packages for a given build"""
 

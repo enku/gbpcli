@@ -2,8 +2,9 @@
 
 import argparse
 
-from gbpcli import GBP, Console, SearchField, render, utils
+from gbpcli import GBP, render, utils
 from gbpcli.subcommands import make_searchable
+from gbpcli.types import Console, SearchField
 
 HELP = """Display logs for the given build"""
 

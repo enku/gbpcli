@@ -2,8 +2,9 @@
 
 import argparse
 
-from gbpcli import GBP, Build, Console, utils
+from gbpcli import GBP, utils
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Build, Console
 
 HELP = """Add tag to the given build"""
 

@@ -6,8 +6,9 @@ from dataclasses import replace
 from functools import cache, partial
 from typing import Any
 
-from gbpcli import GBP, Build, BuildInfo, Change, ChangeState, Console, render, utils
+from gbpcli import GBP, render, utils
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Build, BuildInfo, Change, ChangeState, Console
 
 HELP = """Show differences between two builds
 

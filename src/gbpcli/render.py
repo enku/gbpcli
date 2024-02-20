@@ -8,7 +8,8 @@ import io
 from functools import partial
 from typing import Literal
 
-from gbpcli import Build, utils
+from gbpcli import utils
+from gbpcli.types import Build
 
 LOCAL_TIMEZONE = dt.datetime.now().astimezone().tzinfo
 

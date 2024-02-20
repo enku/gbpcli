@@ -8,8 +8,9 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.tree import Tree
 
-from gbpcli import GBP, Build, Console, Package, render, utils
+from gbpcli import GBP, render, utils
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Build, Console, Package
 
 HELP = """Show the GBP builds as a tree
 

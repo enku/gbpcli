@@ -4,7 +4,8 @@ import argparse
 import datetime as dt
 from typing import cast
 
-from gbpcli import GBP, Build
+from gbpcli import GBP
+from gbpcli.types import Build
 
 # This is the datetime of the first git commit of gentoo-build-publisher
 EPOCH = dt.datetime.fromtimestamp(1616266641, tz=dt.UTC)

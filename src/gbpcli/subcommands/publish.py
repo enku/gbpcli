@@ -2,8 +2,9 @@
 
 import argparse
 
-from gbpcli import GBP, Console
+from gbpcli import GBP
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Console
 from gbpcli.utils import resolve_build_id
 
 HELP = """Publish a build

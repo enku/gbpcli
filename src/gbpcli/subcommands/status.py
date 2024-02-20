@@ -7,9 +7,10 @@ from rich import box
 from rich.panel import Panel
 from rich.table import Table
 
-from gbpcli import GBP, Console, Package
+from gbpcli import GBP
 from gbpcli.render import styled_yes, timestr, yesno
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Console, Package
 from gbpcli.utils import resolve_build_id
 
 HELP = """Show details for a given build"""

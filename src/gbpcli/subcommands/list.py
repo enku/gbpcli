@@ -5,8 +5,9 @@ import argparse
 from rich import box
 from rich.table import Table
 
-from gbpcli import GBP, Console, render
+from gbpcli import GBP, render
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Console
 
 HELP = """List builds for the given machines
 

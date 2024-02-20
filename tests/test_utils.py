@@ -3,8 +3,8 @@
 # pylint: disable=missing-function-docstring,protected-access
 import argparse
 
-from gbpcli import Build
 from gbpcli.graphql import APIError, check
+from gbpcli.types import Build
 from gbpcli.utils import get_my_machines_from_args, resolve_build_id
 
 from . import TestCase, make_gbp, make_response

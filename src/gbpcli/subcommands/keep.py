@@ -2,8 +2,9 @@
 
 import argparse
 
-from gbpcli import GBP, Console, utils
+from gbpcli import GBP, utils
 from gbpcli.subcommands import completers as comp
+from gbpcli.types import Console
 
 HELP = """Keep (or release) a build"""
 

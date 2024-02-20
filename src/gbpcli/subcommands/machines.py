@@ -6,7 +6,8 @@ from typing import Any
 from rich import box
 from rich.table import Table
 
-from gbpcli import GBP, Console, render, utils
+from gbpcli import GBP, render, utils
+from gbpcli.types import Console
 
 HELP = """List machines with builds"""
 

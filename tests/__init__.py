@@ -14,8 +14,9 @@ import requests
 import rich.console
 from rich.theme import Theme
 
-from gbpcli import GBP, Console, graphql
+from gbpcli import GBP, graphql
 from gbpcli.theme import DEFAULT_THEME
+from gbpcli.types import Console
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
