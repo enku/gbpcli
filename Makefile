@@ -51,3 +51,7 @@ lint:
 fmt:
 	pdm run isort src tests
 	pdm run black src tests
+
+.PHONY: update
+update:
+	pdm update --update-eager
