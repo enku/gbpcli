@@ -6,10 +6,11 @@ readme = "README.md"
 authors = [{name = "Albert Hopkins", email = "marduk@letterboxes.org"}]
 license = {text = "GPL3+"}
 dependencies = [
+    "argcomplete>=3.2.1",
     "requests",
     "rich>=12.5.1",
+    "toml; python_version < '3.11'",
     "yarl",
-    "argcomplete>=3.2.1",
 ]
 requires-python = ">=3.10"
 classifiers = [
@@ -59,6 +60,7 @@ dev = [
     "mypy==1.7.1",  # Pin until mypy/issues/16400 is resolved
     "pylint",
     "types-requests",
+    "types-toml>=0.10.8.7",
 ]
 
 [tool.coverage.run]
