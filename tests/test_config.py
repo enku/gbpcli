@@ -1,19 +1,16 @@
 # pylint: disable=missing-docstring
 import os.path
-import tempfile
 
 from gbpcli import config
 
-from . import TestCase
+from . import TestCase, tempdir_test
 
 
 class ConfigTests(TestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        tempdir = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
-        self.addCleanup(tempdir.cleanup)
-        self.tempdir = tempdir.name
+        self.tempdir = tempdir_test(self)
         self.filename = os.path.join(self.tempdir, "gbpcli.toml")
 
     def test_from_file(self) -> None:

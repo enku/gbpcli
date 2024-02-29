@@ -3,6 +3,7 @@
 # pylint: disable=protected-access
 import datetime
 import io
+import tempfile
 import unittest
 from json import dumps as stringify
 from json import loads as parse
@@ -88,6 +89,17 @@ class ThemeTests(unittest.TestCase):
         style_color = theme.styles[style].color
         assert style_color is not None, msg
         self.assertEqual(style_color.name, color, msg)
+
+
+def tempdir_test(test_case: TestCase) -> str:
+    """Create a tempdir for the given test
+
+    The tempdir will be cleaned in the tearDown step
+    """
+    tempdir = tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+    test_case.addCleanup(tempdir.cleanup)
+
+    return tempdir.name
 
 
 def load_data(filename: str) -> bytes:
