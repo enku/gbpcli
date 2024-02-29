@@ -91,7 +91,7 @@ class ThemeTests(unittest.TestCase):
         self.assertEqual(style_color.name, color, msg)
 
 
-def tempdir_test(test_case: TestCase) -> str:
+def tempdir_test(test_case: unittest.TestCase) -> str:
     """Create a tempdir for the given test
 
     The tempdir will be cleaned in the tearDown step

@@ -6,18 +6,20 @@ from __future__ import annotations
 
 import argparse
 import os
+import os.path
 import sys
 import warnings
 from importlib.metadata import entry_points, version
 from typing import Any, cast
 
 import argcomplete
+import platformdirs
 import requests
 import rich.console
 import yarl
 from rich.theme import Theme
 
-from gbpcli import graphql
+from gbpcli import config, graphql
 from gbpcli.theme import get_theme_from_string
 from gbpcli.types import Build, Change, ChangeState, Console, SearchField
 
@@ -204,12 +206,15 @@ class GBP:
 
 def build_parser() -> argparse.ArgumentParser:
     """Set command-line arguments"""
+    gbpcli_config = get_user_config()
     usage = "Command-line interface to Gentoo Build Publisher\n\nCommands:\n\n"
     parser = argparse.ArgumentParser(prog="gbp")
     parser.add_argument(
         "--version", action="version", version=f"gbpcli {version('gbpcli')}"
     )
-    parser.add_argument("--url", type=str, help="GBP url", default=DEFAULT_URL)
+    parser.add_argument(
+        "--url", type=str, help="GBP url", default=gbpcli_config.url or DEFAULT_URL
+    )
     parser.add_argument(
         "--color",
         metavar="WHEN",
@@ -219,11 +224,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--my-machines",
-        default=os.getenv("GBPCLI_MYMACHINES", ""),
+        default=" ".join(gbpcli_config.my_machines or [])
+        or os.getenv("GBPCLI_MYMACHINES", ""),
         help=(
             "whitespace-delimited list of machine names to filter on "
             "when using the --mine argument. Typically one would instead use "
-            "the GBPCLI_MYMACHINES environment variable."
+            "the GBPCLI_MYMACHINES environment variable or the `my_machines`"
+            f"setting in {platformdirs.user_config_dir()}/gbpcli.toml"
         ),
     )
     subparsers = parser.add_subparsers()
@@ -276,6 +283,18 @@ def get_console(force_terminal: bool | None, theme: Theme) -> Console:
         force_terminal=force_terminal, color_system="auto", highlight=False, theme=theme
     )
     return Console(out=out, err=rich.console.Console(file=sys.stderr))
+
+
+def get_user_config() -> config.Config:
+    """Return Config from the user's"""
+    config_dir = platformdirs.user_config_dir()
+    user_config_file = os.path.join(config_dir, "gbpcli.toml")
+
+    try:
+        with open(user_config_file, "rb") as fp:
+            return config.Config.from_file(fp)
+    except FileNotFoundError:
+        return config.Config()
 
 
 def main(argv: list[str] | None = None) -> int:

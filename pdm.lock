@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:90c2aabcb69677a4fc795ff098c94d960b22c96c7fc20000d3d2fba9bb760042"
+content_hash = "sha256:d3e43cbc32c47aa85f35a67da5c3e1bf5ca2766c0dd8742a55df822307cfcbab"
 
 [[package]]
 name = "argcomplete"

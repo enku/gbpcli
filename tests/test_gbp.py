@@ -8,7 +8,7 @@ import requests.exceptions
 
 from gbpcli import GBP, build_parser
 
-from . import TestCase
+from . import TestCase, tempdir_test
 
 
 class GGPTestCase(TestCase):
@@ -51,6 +51,12 @@ class BuildParserTestCase(TestCase):
         patch = mock.patch.dict(os.environ, clear=True)
         self.addCleanup(patch.stop)
         patch.start()
+
+        tmpdir = tempdir_test(self)
+        patch = mock.patch("gbpcli.platformdirs.user_config_dir")
+        self.addCleanup(patch.stop)
+        patched = patch.start()
+        patched.return_value = tmpdir
 
     def test_my_machines_string(self):
         argv = ["--my-machines", "this that the other"]

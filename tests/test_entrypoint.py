@@ -3,6 +3,7 @@
 # pylint: disable=missing-function-docstring,protected-access
 import argparse
 import importlib
+import os.path
 import sys
 import unittest
 from unittest import mock
@@ -12,6 +13,8 @@ import gbpcli.subcommands.list as list_subcommand
 from gbpcli import build_parser, main
 from gbpcli.graphql import APIError
 from gbpcli.theme import get_theme_from_string
+
+from . import tempdir_test
 
 SUBCOMMANDS = [
     "build",
@@ -68,6 +71,56 @@ class GetArgumentsTestCase(unittest.TestCase):
         ]
 
         result = gbpcli.get_arguments(argv)
+
+        expected = argparse.Namespace(
+            url="https://gbp.invalid/",
+            color="auto",
+            my_machines="lighthouse polaris",
+            machine="lighthouse",
+            func=list_subcommand.handler,
+        )
+        self.assertEqual(result, expected)
+
+    def test_with_config_file(self):
+        tmpdir = tempdir_test(self)
+        filename = os.path.join(tmpdir, "gbpcli.toml")
+        argv = ["list", "lighthouse"]
+        with open(filename, "wb") as fp:
+            fp.write(
+                b"""\
+[gbpcli]
+url = "https://gbp.invalid/"
+my_machines = ["lighthouse", "polaris"]
+"""
+            )
+
+        with mock.patch("gbpcli.platformdirs.user_config_dir") as user_config_dir:
+            user_config_dir.return_value = tmpdir
+            result = gbpcli.get_arguments(argv)
+
+        expected = argparse.Namespace(
+            url="https://gbp.invalid/",
+            color="auto",
+            my_machines="lighthouse polaris",
+            machine="lighthouse",
+            func=list_subcommand.handler,
+        )
+        self.assertEqual(result, expected)
+
+    def test_with_config_file_does_not_exist(self):
+        tmpdir = tempdir_test(self)
+
+        argv = [
+            "--url",
+            "https://gbp.invalid/",
+            "--my-machines",
+            "lighthouse polaris",
+            "list",
+            "lighthouse",
+        ]
+        with mock.patch("gbpcli.platformdirs.user_config_dir") as user_config_dir:
+            user_config_dir.return_value = tmpdir
+            result = gbpcli.get_arguments(argv)
 
         expected = argparse.Namespace(
             url="https://gbp.invalid/",
@@ -149,3 +202,39 @@ class MainTestCase(unittest.TestCase):
         status = main(["status", "lighthouse"])
         self.assertEqual(status, 1)
         console_mock.return_value.print.assert_called_once_with(message)
+
+
+class GetUserConfigTests(unittest.TestCase):
+    """Tests for the get_user_config function"""
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.tmpdir = tempdir_test(self)
+        patch = mock.patch("gbpcli.platformdirs.user_config_dir")
+        self.addCleanup(patch.stop)
+        patched = patch.start()
+        patched.return_value = self.tmpdir
+
+    def test_with_config(self) -> None:
+        filename = os.path.join(self.tmpdir, "gbpcli.toml")
+
+        with open(filename, "wb") as fp:
+            fp.write(
+                b"""\
+[gbpcli]
+url = "http://test.invalid/"
+my_machines = ["this", "that", "the_other"]
+"""
+            )
+
+        config = gbpcli.get_user_config()
+
+        self.assertEqual(config.url, "http://test.invalid/")
+        self.assertEqual(config.my_machines, ["this", "that", "the_other"])
+
+    def test_with_no_config(self) -> None:
+        config = gbpcli.get_user_config()
+
+        self.assertEqual(config.url, None)
+        self.assertEqual(config.my_machines, None)

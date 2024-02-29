@@ -11,6 +11,7 @@ dependencies = [
     "rich>=12.5.1",
     "toml; python_version < '3.11'",
     "yarl",
+    "platformdirs>=4.2.0",
 ]
 requires-python = ">=3.10"
 classifiers = [
