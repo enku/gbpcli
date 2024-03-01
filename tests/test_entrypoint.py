@@ -11,10 +11,10 @@ from unittest import mock
 import gbpcli
 import gbpcli.subcommands.list as list_subcommand
 from gbpcli import build_parser, main
-from gbpcli.graphql import APIError
+from gbpcli.graphql import APIError, auth_encode
 from gbpcli.theme import get_theme_from_string
 
-from . import tempdir_test
+from . import make_gbp, tempdir_test
 
 SUBCOMMANDS = [
     "build",
@@ -32,6 +32,21 @@ SUBCOMMANDS = [
     "status",
     "tag",
 ]
+
+
+class GBPTests(unittest.TestCase):
+    """Tests for the GBP class"""
+
+    def test_auth(self):
+        url = "http//test.invalid/"
+        auth = {"user": "test", "api_key": "57cd9181-3de4-4696-adbb-6a3cfceec43e"}
+
+        gbp = gbpcli.GBP(url, auth=auth)
+
+        expected = (
+            f'Basic {auth_encode("test", "57cd9181-3de4-4696-adbb-6a3cfceec43e")}'
+        )
+        self.assertEqual(gbp.query._session.headers["Authorization"], expected)
 
 
 class BuildParserTestCase(unittest.TestCase):
@@ -202,6 +217,31 @@ class MainTestCase(unittest.TestCase):
         status = main(["status", "lighthouse"])
         self.assertEqual(status, 1)
         console_mock.return_value.print.assert_called_once_with(message)
+
+    @mock.patch("gbpcli.GBP")
+    @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
+    @mock.patch("gbpcli.Console")
+    def test_should_instantiate_gbp_with_api_key_when_available(
+        self, _mock_console, mock_parse_args, mock_gbp
+    ):
+        mock_gbp.side_effect = make_gbp
+        mock_parse_args.return_value.url = "http://test.invalid/"
+        mock_parse_args.return_value.color = "auto"
+        func = mock_parse_args.return_value.func
+        func.return_value = 0
+
+        tmpdir = tempdir_test(self)
+        filename = os.path.join(tmpdir, "gbpcli.toml")
+        with open(filename, "wb") as fp:
+            fp.write(b"[gbpcli]\n")
+            fp.write(b'auth = { user = "test", api_key = "secret" }\n')
+
+        with mock.patch("gbpcli.platformdirs.user_config_dir", return_value=tmpdir):
+            main(["status", "lighthouse"])
+
+        mock_gbp.assert_called_once_with(
+            "http://test.invalid/", auth={"user": "test", "api_key": "secret"}
+        )
 
 
 class GetUserConfigTests(unittest.TestCase):

@@ -16,6 +16,7 @@ import rich.console
 from rich.theme import Theme
 
 from gbpcli import GBP, graphql
+from gbpcli.config import AuthDict
 from gbpcli.theme import DEFAULT_THEME
 from gbpcli.types import Console
 
@@ -134,10 +135,12 @@ def make_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
     return response
 
 
-def make_gbp(url: str = "http://test.invalid/") -> GBP:
+def make_gbp(url: str = "http://test.invalid/", auth: AuthDict | None = None) -> GBP:
     """Return a GBP instance with a mock session attribute"""
-    gbp = GBP(url)
+    gbp = GBP(url, auth=auth)
+    headers = gbp.query._session.headers
     gbp.query._session = mock.Mock()
+    gbp.query._session.headers = headers
 
     return gbp
 

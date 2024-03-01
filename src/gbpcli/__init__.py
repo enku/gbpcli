@@ -20,6 +20,7 @@ import yarl
 from rich.theme import Theme
 
 from gbpcli import config, graphql
+from gbpcli.config import AuthDict
 from gbpcli.theme import get_theme_from_string
 from gbpcli.types import Build, Change, ChangeState, Console, SearchField
 
@@ -30,8 +31,8 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 class GBP:
     """Python wrapper for the Gentoo Build Publisher API"""
 
-    def __init__(self, url: str) -> None:
-        self.query = graphql.Queries(yarl.URL(url) / "graphql")
+    def __init__(self, url: str, *, auth: AuthDict | None = None) -> None:
+        self.query = graphql.Queries(yarl.URL(url) / "graphql", auth=auth)
 
     def machines(self) -> list[tuple[str, int, dict[str, Any]]]:
         """Handler for subcommand"""
@@ -302,9 +303,10 @@ def main(argv: list[str] | None = None) -> int:
     args = get_arguments(argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
     console = get_console(COLOR_CHOICES[args.color], theme)
+    auth = get_user_config().auth
 
     try:
-        return cast(int, args.func(args, GBP(args.url), console))
+        return cast(int, args.func(args, GBP(args.url, auth=auth), console))
     except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
         console.err.print(str(error))
         return 1

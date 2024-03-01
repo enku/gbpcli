@@ -76,3 +76,22 @@ class QueriesTestCase(unittest.TestCase):
 
         self.assertIsInstance(as_dict, dict)
         self.assertIn("logs", as_dict)
+
+    def test_adds_auth_header_to_session(self):
+        # pylint: disable=protected-access
+        auth = {"user": "test", "api_key": "secret"}
+        queries = graphql.Queries(URL("https://gbp.invalid"), auth=auth)
+
+        expected = f'Basic {graphql.auth_encode("test", "secret")}'
+        self.assertEqual(queries._session.headers["Authorization"], expected)
+
+
+class AuthEncodeTests(unittest.TestCase):
+    def test(self):
+        # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization#basic_authentication
+        user = "aladdin"
+        key = "opensesame"
+
+        value = graphql.auth_encode(user, key)
+
+        self.assertEqual(value, "YWxhZGRpbjpvcGVuc2VzYW1l")

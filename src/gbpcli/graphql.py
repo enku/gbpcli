@@ -1,11 +1,14 @@
 """graphql library for gbpcli"""
 
+import base64
 from functools import cache
 from importlib import metadata, resources
 from typing import Any
 
 import requests
 import yarl
+
+from gbpcli.config import AuthDict
 
 
 class APIError(Exception):
@@ -106,7 +109,7 @@ class Queries:  # pylint: disable=too-few-public-methods
         'query ($machine: String!) {\n  latest(machine: $machine) {\n    id\n  }\n}\n'
     """
 
-    def __init__(self, url: yarl.URL) -> None:
+    def __init__(self, url: yarl.URL, auth: AuthDict | None = None) -> None:
         """A namespace for queries.
 
         url: the url to the graphql endpoint
@@ -120,6 +123,11 @@ class Queries:  # pylint: disable=too-few-public-methods
                 "User-Agent": f"gbpcli/{metadata.version('gbpcli')}",
             }
         )
+
+        if auth:
+            self._session.headers["Authorization"] = (
+                f'Basic {auth_encode(auth["user"], auth["api_key"])}'
+            )
 
     @cache  # pylint: disable=method-cache-max-size-none
     def __getattr__(self, name: str) -> DistributionQueries:
@@ -139,3 +147,10 @@ def check(query_result: tuple[dict[str, Any], dict[str, Any]]) -> dict[str, Any]
     if errors:
         raise APIError(errors, data)
     return data
+
+
+def auth_encode(user: str, key: str) -> str:
+    """Base64 encode user and key for passing in a basic auth header"""
+    value = f"{user}:{key}".encode("ascii")
+
+    return base64.b64encode(value).decode("ascii")
