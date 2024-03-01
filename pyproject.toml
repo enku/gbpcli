@@ -64,6 +64,9 @@ dev = [
     "types-toml>=0.10.8.7",
 ]
 
+[tool.black]
+skip-magic-trailing-comma = true
+
 [tool.coverage.run]
 source = ["gbpcli"]
 omit = ["src/gbpcli/__main__.py"]
