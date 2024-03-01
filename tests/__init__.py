@@ -72,7 +72,7 @@ class TestCase(unittest.TestCase):
         assert call[0] == (self.gbp.query._url,)
 
         json = {"query": str(query), "variables": variables}
-        expected = {"json": json, "headers": graphql.Query.headers}
+        expected = {"json": json}
 
         self.assertEqual(call[1], expected)
 

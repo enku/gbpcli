@@ -29,8 +29,6 @@ class Query:
         ({'latest': {'id': 'lighthouse...'}}, {})
     """
 
-    headers = {"Accept-Encoding": "gzip, deflate"}
-
     def __init__(
         self, query: str, url: yarl.URL | str, session: requests.Session
     ) -> None:
@@ -44,7 +42,7 @@ class Query:
     def __call__(self, **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
         json = {"query": self.query, "variables": kwargs}
 
-        http_response = self.session.post(self.url, json=json, headers=self.headers)
+        http_response = self.session.post(self.url, json=json)
 
         http_response.raise_for_status()
         query_result = http_response.json()
@@ -116,6 +114,7 @@ class Queries:  # pylint: disable=too-few-public-methods
         self._url = str(url)
         self._session = requests.Session()
         self._session.headers["User-Agent"] = f"gbpcli/{metadata.version('gbpcli')}"
+        self._session.headers["Accept-Encoding"] = "gzip, deflate"
 
     @cache  # pylint: disable=method-cache-max-size-none
     def __getattr__(self, name: str) -> DistributionQueries:

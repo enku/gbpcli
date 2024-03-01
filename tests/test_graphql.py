@@ -23,7 +23,6 @@ class QueryTestCase(unittest.TestCase):
         session.post.assert_called_once_with(
             "https://gbp.invalid",
             json={"query": "query foo { bar }", "variables": {"name": "value"}},
-            headers=graphql.Query.headers,
         )
 
     def test_raises_when_http_response_is_an_error(self):

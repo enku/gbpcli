@@ -5,7 +5,6 @@ from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
-from gbpcli import graphql
 from gbpcli.subcommands.diff import handler as diff
 
 from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response
@@ -72,7 +71,6 @@ diff -r lighthouse/3111 lighthouse/3112
                     "query": gbp.query.gbpcli.builds.query,
                     "variables": {"machine": "lighthouse"},
                 },
-                headers=graphql.Query.headers,
             ),
             mock.call(
                 gbp.query._url,
@@ -83,7 +81,6 @@ diff -r lighthouse/3111 lighthouse/3112
                         "right": "lighthouse.10694",
                     },
                 },
-                headers=graphql.Query.headers,
             ),
         ]
         gbp.query._session.post.assert_has_calls(expected_calls)
@@ -108,7 +105,6 @@ diff -r lighthouse/3111 lighthouse/3112
                     "query": gbp.query.gbpcli.builds.query,
                     "variables": {"machine": "lighthouse"},
                 },
-                headers=graphql.Query.headers,
             ),
             mock.call(
                 gbp.query._url,
@@ -119,7 +115,6 @@ diff -r lighthouse/3111 lighthouse/3112
                         "right": "lighthouse.10694",
                     },
                 },
-                headers=graphql.Query.headers,
             ),
         ]
         gbp.query._session.post.assert_has_calls(expected_calls)
