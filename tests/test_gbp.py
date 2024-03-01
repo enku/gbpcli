@@ -6,7 +6,7 @@ from unittest import mock
 
 import requests.exceptions
 
-from gbpcli import GBP, build_parser
+from gbpcli import GBP, build_parser, config
 
 from . import TestCase, tempdir_test
 
@@ -58,19 +58,19 @@ class BuildParserTestCase(TestCase):
         patched = patch.start()
         patched.return_value = tmpdir
 
+        self.parser = build_parser(config.Config())
+
     def test_my_machines_string(self):
         argv = ["--my-machines", "this that the other"]
 
-        parser = build_parser()
-        args = parser.parse_args(argv)
+        args = self.parser.parse_args(argv)
 
         self.assertEqual(args.my_machines, "this that the other")
 
     def test_my_machines_not_passed(self):
         argv = []
 
-        parser = build_parser()
-        args = parser.parse_args(argv)
+        args = self.parser.parse_args(argv)
 
         self.assertEqual(args.my_machines, "")
 
@@ -78,7 +78,7 @@ class BuildParserTestCase(TestCase):
         os.environ["GBPCLI_MYMACHINES"] = "this that the other"
         argv = []
 
-        parser = build_parser()
+        parser = build_parser(config.Config())
         args = parser.parse_args(argv)
 
         self.assertEqual(args.my_machines, "this that the other")

@@ -10,7 +10,7 @@ from unittest import mock
 
 import gbpcli
 import gbpcli.subcommands.list as list_subcommand
-from gbpcli import build_parser, main
+from gbpcli import build_parser, config, main
 from gbpcli.graphql import APIError, auth_encode
 from gbpcli.theme import get_theme_from_string
 
@@ -54,7 +54,7 @@ class BuildParserTestCase(unittest.TestCase):
 
     @mock.patch("gbpcli.argparse.ArgumentParser.add_subparsers")
     def test(self, add_subparsers_mock):
-        parser = build_parser()
+        parser = build_parser(config.Config())
 
         self.assertIsInstance(parser, argparse.ArgumentParser)
         subparsers = add_subparsers_mock.return_value
@@ -85,7 +85,7 @@ class GetArgumentsTestCase(unittest.TestCase):
             "lighthouse",
         ]
 
-        result = gbpcli.get_arguments(argv)
+        result = gbpcli.get_arguments(config.Config(), argv)
 
         expected = argparse.Namespace(
             url="https://gbp.invalid/",
@@ -96,46 +96,13 @@ class GetArgumentsTestCase(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
-    def test_with_config_file(self):
-        tmpdir = tempdir_test(self)
-        filename = os.path.join(tmpdir, "gbpcli.toml")
+    def test_with_config(self):
         argv = ["list", "lighthouse"]
-        with open(filename, "wb") as fp:
-            fp.write(
-                b"""\
-[gbpcli]
-url = "https://gbp.invalid/"
-my_machines = ["lighthouse", "polaris"]
-"""
-            )
-
-        with mock.patch("gbpcli.platformdirs.user_config_dir") as user_config_dir:
-            user_config_dir.return_value = tmpdir
-            result = gbpcli.get_arguments(argv)
-
-        expected = argparse.Namespace(
-            url="https://gbp.invalid/",
-            color="auto",
-            my_machines="lighthouse polaris",
-            machine="lighthouse",
-            func=list_subcommand.handler,
+        user_config = config.Config(
+            url="https://gbp.invalid/", my_machines=["lighthouse", "polaris"]
         )
-        self.assertEqual(result, expected)
 
-    def test_with_config_file_does_not_exist(self):
-        tmpdir = tempdir_test(self)
-
-        argv = [
-            "--url",
-            "https://gbp.invalid/",
-            "--my-machines",
-            "lighthouse polaris",
-            "list",
-            "lighthouse",
-        ]
-        with mock.patch("gbpcli.platformdirs.user_config_dir") as user_config_dir:
-            user_config_dir.return_value = tmpdir
-            result = gbpcli.get_arguments(argv)
+        result = gbpcli.get_arguments(user_config, argv)
 
         expected = argparse.Namespace(
             url="https://gbp.invalid/",
@@ -268,13 +235,13 @@ my_machines = ["this", "that", "the_other"]
 """
             )
 
-        config = gbpcli.get_user_config()
+        user_config = gbpcli.get_user_config()
 
-        self.assertEqual(config.url, "http://test.invalid/")
-        self.assertEqual(config.my_machines, ["this", "that", "the_other"])
+        self.assertEqual(user_config.url, "http://test.invalid/")
+        self.assertEqual(user_config.my_machines, ["this", "that", "the_other"])
 
     def test_with_no_config(self) -> None:
-        config = gbpcli.get_user_config()
+        user_config = gbpcli.get_user_config()
 
-        self.assertEqual(config.url, None)
-        self.assertEqual(config.my_machines, None)
+        self.assertEqual(user_config.url, None)
+        self.assertEqual(user_config.my_machines, None)

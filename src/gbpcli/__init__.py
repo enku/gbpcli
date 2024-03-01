@@ -205,16 +205,15 @@ class GBP:
         graphql.check(self.query.gbpcli.untag_build(machine=machine, tag=tag))
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(user_config: config.Config) -> argparse.ArgumentParser:
     """Set command-line arguments"""
-    gbpcli_config = get_user_config()
     usage = "Command-line interface to Gentoo Build Publisher\n\nCommands:\n\n"
     parser = argparse.ArgumentParser(prog="gbp")
     parser.add_argument(
         "--version", action="version", version=f"gbpcli {version('gbpcli')}"
     )
     parser.add_argument(
-        "--url", type=str, help="GBP url", default=gbpcli_config.url or DEFAULT_URL
+        "--url", type=str, help="GBP url", default=user_config.url or DEFAULT_URL
     )
     parser.add_argument(
         "--color",
@@ -225,7 +224,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--my-machines",
-        default=" ".join(gbpcli_config.my_machines or [])
+        default=" ".join(user_config.my_machines or [])
         or os.getenv("GBPCLI_MYMACHINES", ""),
         help=(
             "whitespace-delimited list of machine names to filter on "
@@ -254,7 +253,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
+def get_arguments(
+    user_config: config.Config, argv: list[str] | None = None
+) -> argparse.Namespace:
     """Return command line arguments given the argv
 
     This method ensures that args.func is defined as it's mandatory for calling
@@ -262,7 +263,7 @@ def get_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     is raised.
     """
     argv = argv if argv is not None else sys.argv[1:]
-    parser = build_parser()
+    parser = build_parser(user_config)
     argcomplete.autocomplete(parser, default_completer=None)
     args = parser.parse_args(argv)
 
@@ -300,13 +301,13 @@ def get_user_config() -> config.Config:
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
-    args = get_arguments(argv)
+    user_config = get_user_config()
+    args = get_arguments(user_config, argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
     console = get_console(COLOR_CHOICES[args.color], theme)
-    auth = get_user_config().auth
 
     try:
-        return cast(int, args.func(args, GBP(args.url, auth=auth), console))
+        return cast(int, args.func(args, GBP(args.url, auth=user_config.auth), console))
     except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
         console.err.print(str(error))
         return 1
