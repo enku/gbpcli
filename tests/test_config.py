@@ -1,4 +1,6 @@
 # pylint: disable=missing-docstring
+import contextlib
+import io
 import os.path
 
 from gbpcli import config
@@ -28,6 +30,25 @@ my_machines = ["babette", "lighthouse"]
         self.assertEqual(conf.url, "http://test.invalid/")
         self.assertEqual(conf.my_machines, ["babette", "lighthouse"])
         self.assertEqual(conf.auth, None)
+
+    def test_from_file_warnings_if_contains_auth_and_readable_by_others(self):
+        with open(self.filename, "wb+") as fp:
+            os.chmod(fp.fileno(), 0o666)
+            fp.write(
+                b"""\
+[gbpcli]
+auth = { user = "test", api_key = "secret" }
+"""
+            )
+            fp.seek(0)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                config.Config.from_file(fp)
+
+        self.assertEqual(
+            stderr.getvalue(),
+            "Warning: the config file contains secrets yet is readable by others.\n",
+        )
 
     def test_missing_section(self):
         with open(self.filename, "wb+") as fp:

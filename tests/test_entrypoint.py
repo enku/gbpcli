@@ -146,6 +146,16 @@ class GetConsoleTestCase(unittest.TestCase):
 class MainTestCase(unittest.TestCase):
     """tests for the main function"""
 
+    def setUp(self):
+        super().setUp()
+
+        self.tmpdir = tempdir_test(self)
+        patcher = mock.patch(
+            "gbpcli.platformdirs.user_config_dir", return_value=self.tmpdir
+        )
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
     @mock.patch("gbpcli.Console")
@@ -197,14 +207,13 @@ class MainTestCase(unittest.TestCase):
         func = mock_parse_args.return_value.func
         func.return_value = 0
 
-        tmpdir = tempdir_test(self)
-        filename = os.path.join(tmpdir, "gbpcli.toml")
+        filename = os.path.join(self.tmpdir, "gbpcli.toml")
         with open(filename, "wb") as fp:
+            os.chmod(fp.fileno(), 0o600)
             fp.write(b"[gbpcli]\n")
             fp.write(b'auth = { user = "test", api_key = "secret" }\n')
 
-        with mock.patch("gbpcli.platformdirs.user_config_dir", return_value=tmpdir):
-            main(["status", "lighthouse"])
+        main(["status", "lighthouse"])
 
         mock_gbp.assert_called_once_with(
             "http://test.invalid/", auth={"user": "test", "api_key": "secret"}
