@@ -27,7 +27,7 @@ my_machines = ["babette", "lighthouse"]
 
         self.assertEqual(conf.url, "http://test.invalid/")
         self.assertEqual(conf.my_machines, ["babette", "lighthouse"])
-        self.assertEqual(conf.api_key, None)
+        self.assertEqual(conf.auth, None)
 
     def test_missing_section(self):
         with open(self.filename, "wb+") as fp:
@@ -45,4 +45,4 @@ my_machines = ["babette", "lighthouse"]
 
         self.assertEqual(conf.url, None)
         self.assertEqual(conf.my_machines, None)
-        self.assertEqual(conf.api_key, None)
+        self.assertEqual(conf.auth, None)

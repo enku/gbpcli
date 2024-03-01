@@ -16,6 +16,13 @@ except ImportError:  # pragma: no cover
 SECTION = "gbpcli"
 
 
+class AuthDict(t.TypedDict):
+    """User authorization pair"""
+
+    user: str
+    api_key: str
+
+
 _T = t.TypeVar("_T", bound="Config")
 
 
@@ -25,7 +32,7 @@ class Config:
 
     url: str | None = None
     my_machines: list[str] | None = None
-    api_key: str | None = None
+    auth: AuthDict | None = None
 
     @classmethod
     def from_file(cls: type[_T], fp: t.IO[bytes]) -> _T:
