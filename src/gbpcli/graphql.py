@@ -113,8 +113,13 @@ class Queries:  # pylint: disable=too-few-public-methods
         """
         self._url = str(url)
         self._session = requests.Session()
-        self._session.headers["User-Agent"] = f"gbpcli/{metadata.version('gbpcli')}"
-        self._session.headers["Accept-Encoding"] = "gzip, deflate"
+        self._session.headers.update(
+            {
+                "Accept": "application/json",
+                "Accept-Encoding": "gzip, deflate",
+                "User-Agent": f"gbpcli/{metadata.version('gbpcli')}",
+            }
+        )
 
     @cache  # pylint: disable=method-cache-max-size-none
     def __getattr__(self, name: str) -> DistributionQueries:
