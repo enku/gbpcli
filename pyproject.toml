@@ -57,7 +57,6 @@ version = { source = "scm" }
 dev = [
     "black",
     "coverage",
-    "build",
     "mypy==1.7.1",  # Pin until mypy/issues/16400 is resolved
     "pylint",
     "types-requests",
