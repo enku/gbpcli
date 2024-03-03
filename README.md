@@ -119,7 +119,7 @@ $ gbp build babette
 In addition to the command-line flags, gbpcli can also be configured using a
 configuration file. If a the file `~/.config/gbpcli.toml` exists it will be
 read and used to configure gbpcli.  This file should be
-[toml(https://toml.io/en/) formatted. For example:
+[toml](https://toml.io/en/) formatted. For example:
 
 ```toml
 [gbpcli]
