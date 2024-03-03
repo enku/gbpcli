@@ -113,3 +113,23 @@ e.g.:
 ```bash
 $ gbp build babette
 ```
+
+## Configuration
+
+In addition to the command-line flags, gbpcli can also be configured using a
+configuration file. If a the file `~/.config/gbpcli.toml` exists it will be
+read and used to configure gbpcli.  This file should be
+[toml(https://toml.io/en/) formatted. For example:
+
+```toml
+[gbpcli]
+url = "http://gbpbox/"
+my_machines = ["babette", "lighthouse", "polaris"]
+auth = { user = "marduk", api_key = "myapikey" }
+```
+
+The `url` setting can be used in place of the `--url` command-line option or
+the `BUILD_PUBLISHER_URL` environment variable.  The `my_machines` settings
+can be used in place of the `--my-machines` command-line option or the
+`GBPCLI_MYMACHINES` environment variable.  The `auth` setting can only be
+supplied through the configuration file.
