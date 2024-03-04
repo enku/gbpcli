@@ -61,7 +61,7 @@ options:
 The URL for the Gentoo Build Publisher may be provided via the command line or
 by using the `BUILD_PUBLISHER_URL` environment variable.
 
-To list the machines which have builds:
+To list the machines which have builds use `gbp machines`:
 
 ![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png)
 
@@ -69,18 +69,21 @@ The "Latest" column shows the latest build ID for the given machine. If the ID
 is in bold it that denotes that the latest build is published (available for
 emerges).
 
-To list the available builds for a given machine:
+To list the available builds for a given machine us `gbp list <machine>`:
 
-![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.png)
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.svg](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_list.svg)
 
-In the above example, the `P` output for build `150` signifies that this build
+In the above example, the `P` output for build `103` signifies that this build
 is currently published.  The `*` flag means that the respective build has new
-binary packages. The `K` for build `64` means that the build is marked for
+binary packages. The `K` for build `46` means that the build is marked for
 keeping and will not be removed during the purge process. Build `2` has also
-been given a "first" tag.  The `N` flag for build `151` means that the build
+been given a "first" tag.  The `N` flag for build `126` means that the build
 has a note attached.
 
-![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.png)
+```bash
+$ gbp status jenkins-buildah 126
+```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.svg](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_status.svg)
 
 Edit/delete build notes using the `gbp notes` command.
 
@@ -88,9 +91,12 @@ Edit/delete build notes using the `gbp notes` command.
 The `status` subcommand displays metadata about a given build.  If the build
 number is not given, it defaults to the latest build for that machine.
 
-The `diff` subcommand display differences between two build.
+The `diff` subcommand display differences between two builds.
 
-![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.png)
+```bash
+$ gbp diff jenkins-buildah 103 126
+```
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.svg](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_diff.svg)
 
 If the second build number is not given, it defaults to the latest build for
 that machine.  If the first build number is not given, it defaults to the
