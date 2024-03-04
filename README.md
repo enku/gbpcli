@@ -63,7 +63,7 @@ by using the `BUILD_PUBLISHER_URL` environment variable.
 
 To list the machines which have builds use `gbp machines`:
 
-![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.png)
+![https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.svg](https://raw.githubusercontent.com/enku/gbpcli/master/assets/gbp_machines.svg)
 
 The "Latest" column shows the latest build ID for the given machine. If the ID
 is in bold it that denotes that the latest build is published (available for
