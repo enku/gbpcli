@@ -298,8 +298,19 @@ def get_user_config() -> config.Config:
         return config.Config()
 
 
+def set_environ():
+    """Set default environment variables
+
+    These are needed in order to load modules from Gentoo Build Publisher
+    """
+    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
+    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
+
+
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
+    set_environ()
     user_config = get_user_config()
     args = get_arguments(user_config, argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
