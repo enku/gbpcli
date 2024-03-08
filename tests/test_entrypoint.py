@@ -219,6 +219,20 @@ class MainTestCase(unittest.TestCase):
             "http://test.invalid/", auth={"user": "test", "api_key": "secret"}
         )
 
+    @mock.patch("gbpcli.GBP")
+    @mock.patch("gbpcli.Console")
+    def test_with_config_file_option(self, _mock_console, mock_gbp) -> None:
+        mock_gbp.side_effect = make_gbp
+
+        filename = os.path.join(self.tmpdir, "custom.toml")
+        with open(filename, "wb") as fp:
+            fp.write(b'[gbpcli]\nurl = "http://fromconfig.invalid/"\n')
+
+        with mock.patch.dict(os.environ, {"GBPCLI_CONFIG": filename}):
+            main(["status", "lighthouse"])
+
+        mock_gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
+
 
 class GetUserConfigTests(unittest.TestCase):
     """Tests for the get_user_config function"""
@@ -254,3 +268,26 @@ my_machines = ["this", "that", "the_other"]
 
         self.assertEqual(user_config.url, None)
         self.assertEqual(user_config.my_machines, None)
+
+    def test_with_given_config(self) -> None:
+        custom_filename = os.path.join(self.tmpdir, "custom.toml")
+
+        with open(custom_filename, "wb") as fp:
+            fp.write(
+                b"""\
+[gbpcli]
+url = "http://test.invalid/"
+my_machines = ["this", "that", "the_other"]
+"""
+            )
+
+        user_config = gbpcli.get_user_config(custom_filename)
+
+        self.assertEqual(user_config.url, "http://test.invalid/")
+        self.assertEqual(user_config.my_machines, ["this", "that", "the_other"])
+
+    def test_with_given_config_that_does_not_exist(self) -> None:
+        custom_filename = os.path.join(self.tmpdir, "bogus.toml")
+
+        with self.assertRaises(FileNotFoundError):
+            gbpcli.get_user_config(custom_filename)

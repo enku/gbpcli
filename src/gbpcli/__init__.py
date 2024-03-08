@@ -286,15 +286,17 @@ def get_console(force_terminal: bool | None, theme: Theme) -> Console:
     return Console(out=out, err=rich.console.Console(file=sys.stderr))
 
 
-def get_user_config() -> config.Config:
+def get_user_config(filename: str | None = None) -> config.Config:
     """Return Config from the user's"""
     config_dir = platformdirs.user_config_dir()
-    user_config_file = os.path.join(config_dir, "gbpcli.toml")
+    user_config_file = filename or os.path.join(config_dir, "gbpcli.toml")
 
     try:
         with open(user_config_file, "rb") as fp:
             return config.Config.from_file(fp)
     except FileNotFoundError:
+        if filename:
+            raise
         return config.Config()
 
 
@@ -311,7 +313,7 @@ def set_environ():
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
     set_environ()
-    user_config = get_user_config()
+    user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
     args = get_arguments(user_config, argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
     console = get_console(COLOR_CHOICES[args.color], theme)
