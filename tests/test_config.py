@@ -67,3 +67,21 @@ auth = { user = "test", api_key = "secret" }
         self.assertEqual(conf.url, None)
         self.assertEqual(conf.my_machines, None)
         self.assertEqual(conf.auth, None)
+
+
+class IsReadableByOthersTests(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.tempdir = tempdir_test(self)
+        self.filename = os.path.join(self.tempdir, "gbpcli.toml")
+
+    def test_true(self) -> None:
+        with open(self.filename, "wb+") as fp:
+            os.chmod(fp.fileno(), 0o666)
+            self.assertTrue(config.is_readable_by_others(fp.fileno()))
+
+    def test_false(self) -> None:
+        with open(self.filename, "wb+") as fp:
+            os.chmod(fp.fileno(), 0o600)
+            self.assertFalse(config.is_readable_by_others(fp.fileno()))
