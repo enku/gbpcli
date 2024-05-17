@@ -113,7 +113,15 @@ def format_timestamp(timestamp: dt.datetime) -> str:
 
 
 def format_tags(tags: list[str]) -> str:
-    """Return the list of build tags rich'ly formatted"""
+    """Return the list of build tags rich'ly formatted
+
+    The published (empty) tag is excluded
+    """
+    tags = [tag for tag in tags if tag]
+
+    if not tags:
+        return ""
+
     tag_list = [f"@{tag}" for tag in tags]
 
     return f"[tag]{' '.join(tag_list)}[/tag]"

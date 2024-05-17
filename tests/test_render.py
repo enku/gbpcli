@@ -3,7 +3,7 @@ import argparse
 import datetime as dt
 from unittest import TestCase
 
-from gbpcli.render import format_machine, timestr, yesno
+from gbpcli.render import format_machine, format_tags, timestr, yesno
 
 
 class YesNoTestCase(TestCase):
@@ -24,6 +24,30 @@ class TimestrTestCase(TestCase):
         timezone = dt.timezone(dt.timedelta(days=-1, seconds=61200), "PDT")
 
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
+
+
+class FormatTagsTest(TestCase):
+    """Tests for the format_tags method"""
+
+    def test_single_tag(self):
+        tag_str = format_tags(["first"])
+
+        self.assertEqual(tag_str, "[tag]@first[/tag]")
+
+    def test_no_tags(self):
+        tag_str = format_tags([])
+
+        self.assertEqual(tag_str, "")
+
+    def test_multiple_tags(self):
+        tag_str = format_tags(["this", "that", "the", "other"])
+
+        self.assertEqual(tag_str, "[tag]@this @that @the @other[/tag]")
+
+    def test_published_tag(self):
+        tag_str = format_tags(["", "first"])
+
+        self.assertEqual(tag_str, "[tag]@first[/tag]")
 
 
 class FormatMachineTest(TestCase):
