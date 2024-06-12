@@ -26,7 +26,7 @@ class PackagesTestCase(TestCase):
 
     def test_when_build_does_not_exist_prints_error(self):
         args = Namespace(machine="bogus", number="268")
-        no_build = {"data": {"build": {"packages": None}}}
+        no_build = {"data": {"build": None}}
         self.make_response(no_build)
 
         status = packages(args, self.gbp, self.console)

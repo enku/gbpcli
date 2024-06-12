@@ -144,8 +144,8 @@ class GBP:
 
     def packages(self, build: Build) -> list[str] | None:
         """Return the list of packages for a build"""
-        data = graphql.check(self.query.gbpcli.packages(id=build.id))
-        return cast(list[str] | None, data["build"]["packages"])
+        data = graphql.check(self.query.gbpcli.packages(id=build.id))["build"]
+        return data and cast(list[str] | None, data.get("packages"))
 
     def keep(self, build: Build) -> dict[str, bool]:
         """Mark a build as kept"""
