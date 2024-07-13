@@ -1,11 +1,5 @@
 # CLI for Gentoo Build Publisher
 
-<div align="center">
-
-[![asciicast](https://asciinema.org/a/8oqcjBoC6Miy2MJlqb8gm1UwY.svg)](https://asciinema.org/a/8oqcjBoC6Miy2MJlqb8gm1UwY)
-
-</div>
-
 ## Introduction
 
 This is a command-line interface for [Gentoo Build
