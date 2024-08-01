@@ -86,16 +86,12 @@ class GBP:
 
         return Build.from_id(build_id)
 
-    def builds(self, machine: str) -> list[Build]:
+    def builds(self, machine: str, *, with_packages: bool = False) -> list[Build]:
         """Return a list of Builds for the given machine"""
-        builds = reversed(self.query.gbpcli.builds(machine=machine)[0]["builds"])
-
-        return [Build.from_api_response(i) for i in builds]
-
-    def builds_with_packages(self, machine: str) -> list[Build]:
-        """Return a list of Builds with packages info for the given machine"""
         builds = reversed(
-            self.query.gbpcli.builds_with_packages(machine=machine)[0]["builds"]
+            self.query.gbpcli.builds(machine=machine, withPackages=with_packages)[0][
+                "builds"
+            ]
         )
 
         return [Build.from_api_response(i) for i in builds]

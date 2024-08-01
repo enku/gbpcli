@@ -24,7 +24,7 @@ class ListTestCase(TestCase):
         self.assertEqual(status, 0)
         self.assertEqual(self.console.out.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds_with_packages, machine="jenkins"
+            self.gbp.query.gbpcli.builds, machine="jenkins", withPackages=True
         )
 
 

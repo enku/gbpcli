@@ -1,11 +1,17 @@
-query ($machine: String!) {
+query GetBuilds($machine: String!, $withPackages: Boolean = false) {
   builds(machine: $machine) {
     id
     machine
+    built
     submitted
     completed
     published
+    tags @include(if: $withPackages)
     notes
     keep
+    packagesBuilt @include(if: $withPackages) {
+      cpv
+      buildTime
+    }
   }
 }

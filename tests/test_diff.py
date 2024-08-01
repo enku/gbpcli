@@ -69,7 +69,7 @@ diff -r lighthouse/3111 lighthouse/3112
                 gbp.query._url,
                 json={
                     "query": gbp.query.gbpcli.builds.query,
-                    "variables": {"machine": "lighthouse"},
+                    "variables": {"machine": "lighthouse", "withPackages": False},
                 },
             ),
             mock.call(
@@ -103,7 +103,7 @@ diff -r lighthouse/3111 lighthouse/3112
                 gbp.query._url,
                 json={
                     "query": gbp.query.gbpcli.builds.query,
-                    "variables": {"machine": "lighthouse"},
+                    "variables": {"machine": "lighthouse", "withPackages": False},
                 },
             ),
             mock.call(
@@ -132,7 +132,9 @@ diff -r lighthouse/3111 lighthouse/3112
         status = diff(args, self.gbp, self.console)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(self.gbp.query.gbpcli.builds, machine="jenkins")
+        self.assert_graphql(
+            self.gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
+        )
         self.assertEqual(
             self.console.err.getvalue(), "No builds given and no builds published\n"
         )

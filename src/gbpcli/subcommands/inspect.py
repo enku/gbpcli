@@ -37,7 +37,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
             builds = [build]
         else:
-            builds = gbp.builds_with_packages(machine)[-1 * args.tail :]
+            builds = gbp.builds(machine, with_packages=True)[-1 * args.tail :]
 
         branch = tree.add(render.format_machine(machine, args))
 

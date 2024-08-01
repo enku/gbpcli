@@ -23,7 +23,7 @@ Key for the "Flags" column:
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List a machine's builds"""
-    builds = gbp.builds_with_packages(args.machine)
+    builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
         title=f"\N{PERSONAL COMPUTER} {render.format_machine(args.machine, args)}",
         box=box.ROUNDED,
