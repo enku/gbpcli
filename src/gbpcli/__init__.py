@@ -259,7 +259,9 @@ def get_arguments(
     """
     argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser(user_config)
-    argcomplete.autocomplete(parser, default_completer=None)
+    argcomplete.autocomplete(
+        parser, default_completer=argcomplete.completers.SuppressCompleter
+    )
     args = parser.parse_args(argv)
 
     # ensure we have a "func" target
