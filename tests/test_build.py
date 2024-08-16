@@ -41,3 +41,13 @@ class MachinesTestCase(TestCase):
             machine="babette",
             params=[{"name": "BUILD_TARGET", "value": "emptytree"}],
         )
+
+    def test_when_build_param_missing_equals_sign(self) -> None:
+        args = Namespace(machine="babette", param=["BUILD_TARGETemptytree"])
+        self.make_response("schedule_build.json")
+
+        status = build(args, self.gbp, self.console)
+
+        self.assertEqual(status, 1)
+        error_msg = "Build parameters must be of the format name=value\n"
+        self.assertEqual(self.console.err.getvalue(), error_msg)
