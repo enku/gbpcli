@@ -1,5 +1,6 @@
 *.swp
 /.coverage
+/.fmt
 /.envrc
 /.pdm-python
 /.pdm.toml

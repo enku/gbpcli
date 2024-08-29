@@ -7,6 +7,7 @@ sdist := dist/$(name)-$(version).tar.gz
 wheel := dist/$(subst -,_,$(name))-$(version)-py3-none-any.whl
 src := $(shell find src -type f -print)
 tests := $(shell find tests -type f -print)
+python_src := $(filter %.py, $(src) $(tests))
 
 
 .coverage: $(src) $(tests)
@@ -36,7 +37,7 @@ $(sdist) $(wheel): $(src)
 
 .PHONY: clean
 clean: clean-build
-	rm -rf .coverage gbp htmlcov .mypy_cache
+	rm -rf .coverage .fmt gbp htmlcov .mypy_cache
 
 .PHONY: clean-build
 clean-build:
@@ -47,10 +48,13 @@ lint:
 	pdm run pylint src tests
 	pdm run mypy src
 
+.fmt: $(python_src)
+	pdm run isort $?
+	pdm run black $?
+	touch $@
+
 .PHONY: fmt
-fmt:
-	pdm run isort src tests
-	pdm run black src tests
+fmt: .fmt
 
 .PHONY: update
 update:
