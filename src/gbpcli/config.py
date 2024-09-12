@@ -4,18 +4,13 @@ This module adds helpers for reading an gbpcli configuration from a file. This c
 used instead of or in addition to the command-line arguments.
 """
 
-import sys
-import typing as t
-from dataclasses import dataclass
-
-try:
-    import tomllib
-except ImportError:  # pragma: no cover
-    import toml as tomlib  # pylint: disable=unused-import
-
 import os
 import platform
 import stat
+import sys
+import tomllib
+import typing as t
+from dataclasses import dataclass
 
 SECTION = "gbpcli"
 

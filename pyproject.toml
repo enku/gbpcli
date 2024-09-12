@@ -9,11 +9,10 @@ dependencies = [
     "argcomplete>=3.2.1",
     "requests",
     "rich>=12.5.1",
-    "toml; python_version < '3.11'",
     "yarl",
     "platformdirs>=4.2.0",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Environment :: Console",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
