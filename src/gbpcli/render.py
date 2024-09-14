@@ -118,13 +118,9 @@ def format_tags(tags: list[str]) -> str:
     The published (empty) tag is excluded
     """
     tags = [tag for tag in tags if tag]
-
-    if not tags:
-        return ""
-
     tag_list = [f"@{tag}" for tag in tags]
 
-    return f"[tag]{' '.join(tag_list)}[/tag]"
+    return f"[tag]{' '.join(tag_list)}[/tag]" if tag_list else ""
 
 
 def format_machine(machine: str, args: argparse.Namespace) -> str:
