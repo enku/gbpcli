@@ -21,7 +21,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     build = utils.resolve_build_id(args.machine, args.number, gbp)
     existing = gbp.get_build_info(build)
 
-    if not existing or not existing.info:
+    if not (existing and existing.info):
         console.err.print("Build not found")
         return 1
 
