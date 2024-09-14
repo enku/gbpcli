@@ -14,7 +14,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     params = {}
     for param in args.param or []:
         key, equals, value = param.partition("=")
-        if not all([key, equals]):
+        if not (key and equals):
             error_msg = "[bold]Build parameters must be of the format name=value[/bold]"
             console.err.print(error_msg)
             return 1
