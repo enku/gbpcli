@@ -35,16 +35,11 @@ def get_theme_from_string(string: str) -> Theme:
     """
     colormap = DEFAULT_THEME.copy()
 
-    for assignment in string.split(":"):
-        if not assignment:
-            continue
-
+    for assignment in filter(None, string.split(":")):
         name, value = parse_assignment(assignment)
 
-        if not name or not value:
-            continue
-
-        colormap[name] = value
+        if name and value:
+            colormap[name] = value
 
     return Theme(colormap)
 
