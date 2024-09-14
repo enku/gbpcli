@@ -84,10 +84,7 @@ def get_left_build(machine: str, requested: str, gbp: GBP) -> int | None:
     builds = cached_builds(machine, gbp)
     published = [i for i in builds if (i.info and i.info.published)]
 
-    if not published:
-        return None
-
-    return published[0].number
+    return published[0].number if published else None
 
 
 def get_right_build(machine: str, requested: str, gbp: GBP) -> int | None:
