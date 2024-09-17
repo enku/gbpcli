@@ -11,7 +11,7 @@ python_src := $(filter %.py, $(src) $(tests))
 
 
 .coverage: $(src) $(tests)
-	pdm run coverage run -m unittest discover --failfast
+	pdm run coverage run -m tests --failfast
 
 .PHONY: test
 test: .coverage
