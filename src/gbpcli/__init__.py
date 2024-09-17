@@ -130,11 +130,15 @@ class GBP:
 
         return Build.from_api_response(build)
 
-    def build(self, machine: str, **params: Any) -> str:
+    def build(self, machine: str, *, is_repo=False, **params: Any) -> str:
         """Schedule a build"""
         build_params = [{"name": key, "value": value} for key, value in params.items()]
         api_response = graphql.check(
-            self.query.gbpcli.schedule_build(machine=machine, params=build_params)
+            self.query.gbpcli.schedule_build(
+                machine=machine,
+                params=build_params,
+                **({"isRepo": True} if is_repo else {}),
+            )
         )
         return cast(str, api_response["scheduleBuild"])
 

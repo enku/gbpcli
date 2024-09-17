@@ -51,3 +51,18 @@ class MachinesTestCase(TestCase):
         self.assertEqual(status, 1)
         error_msg = "Build parameters must be of the format name=value\n"
         self.assertEqual(self.console.err.getvalue(), error_msg)
+
+    def test_with_repo(self) -> None:
+        args = Namespace(machine="gentoo", param=None, is_repo=True)
+        self.make_response("schedule_build.json")
+
+        status = build(args, self.gbp, self.console)
+
+        self.assertEqual(status, 0)
+        self.assertEqual(self.console.out.getvalue(), "")
+        self.assert_graphql(
+            self.gbp.query.gbpcli.schedule_build,
+            machine="gentoo",
+            isRepo=True,
+            params=[],
+        )
