@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:40a092189da2f1e37bf6f7958c114487fe7b9bc86b65ecd43d37b6bfab02bb1b"
+content_hash = "sha256:1142609bc20b0eb01e57173dc0170c1aae4f739ecedf03f9a92c12024a798fbb"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -507,6 +507,14 @@ files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
 ]
+
+[[package]]
+name = "unittest-fixtures"
+version = "0.1.dev21"
+requires_python = ">=3.11"
+git = "https://github.com/enku/unittest-fixtures.git"
+revision = "9703c5cd1dc7335dfd59464981064cd632ee7b77"
+summary = "A small library for loading unittest fixtures"
 
 [[package]]
 name = "urllib3"

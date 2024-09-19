@@ -4,11 +4,14 @@
 from argparse import Namespace
 from unittest import mock
 
+from unittest_fixtures import requires
+
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, TestCase
+from . import LOCAL_TIMEZONE, TestCase, make_response
 
 
+@requires("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class ListTestCase(TestCase):
     """list() tests"""
@@ -17,14 +20,16 @@ class ListTestCase(TestCase):
 
     def test(self):
         args = Namespace(machine="jenkins")
-        self.make_response("list_with_packages.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, "list_with_packages.json")
 
-        status = list_command(args, self.gbp, self.console)
+        status = list_command(args, gbp, self.fixtures.console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(console.out.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, machine="jenkins", withPackages=True
+            gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=True
         )
 
 

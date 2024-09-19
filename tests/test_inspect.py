@@ -4,11 +4,14 @@
 from argparse import Namespace
 from unittest import mock
 
+from unittest_fixtures import requires
+
 from gbpcli.subcommands.inspect import handler as inspect
 
-from . import LOCAL_TIMEZONE, TestCase, load_ndjson
+from . import LOCAL_TIMEZONE, TestCase, load_ndjson, make_response
 
 
+@requires("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class InspectTestCase(TestCase):
     """inspect() tests"""
@@ -17,87 +20,93 @@ class InspectTestCase(TestCase):
 
     def test_entire_tree(self):
         args = Namespace(machine=None, tail=0, mine=False)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson")
-        make_response = self.make_response
 
         machines_response = next(graphql_responses)
-        make_response(machines_response)
+        make_response(gbp, machines_response)
 
         machines_count = len(machines_response["data"]["machines"])
         assert machines_count == 2
 
         for _ in range(machines_count):
-            make_response(next(graphql_responses))
+            make_response(gbp, next(graphql_responses))
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), INSPECT_ALL)
-        self.assert_graphql(self.gbp.query.gbpcli.machine_names)
+        self.assertEqual(console.out.getvalue(), INSPECT_ALL)
+        self.assert_graphql(gbp, gbp.query.gbpcli.machine_names)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, index=1, machine="base", withPackages=True
+            gbp, gbp.query.gbpcli.builds, index=1, machine="base", withPackages=True
         )
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, index=2, machine="gbpbox", withPackages=True
+            gbp, gbp.query.gbpcli.builds, index=2, machine="gbpbox", withPackages=True
         )
 
     def test_single_machine(self):
         args = Namespace(machine=["base"], mine=False, tail=0)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
-        make_response = self.make_response
 
         response = next(graphql_responses)
-        make_response(response)
+        make_response(gbp, response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, machine="base", withPackages=True
+            gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
     def test_single_machine_with_tail(self):
         args = Namespace(machine=["base"], mine=False, tail=2)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=5)
-        make_response = self.make_response
 
         response = next(graphql_responses)
-        make_response(response)
+        make_response(gbp, response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE_WITH_TAIL)
+        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE_WITH_TAIL)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, machine="base", withPackages=True
+            gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
     def test_single_machine_with_build_id(self):
         args = Namespace(machine=["lighthouse.12672"], mine=False)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
 
-        self.make_response("lighthouse.12672.json")
+        make_response(gbp, "lighthouse.12672.json")
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
-        self.assert_graphql(self.gbp.query.gbpcli.build, id="lighthouse.12672")
+        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
+        self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.12672")
 
     def test_with_mine(self):
         args = Namespace(machine=None, mine=True, tail=0, my_machines="base")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
-        make_response = self.make_response
 
         response = next(graphql_responses)
-        make_response(response)
+        make_response(gbp, response)
 
-        status = inspect(args, self.gbp, self.console)
+        status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, machine="base", withPackages=True
+            gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
 

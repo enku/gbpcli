@@ -4,11 +4,14 @@
 from argparse import Namespace
 from unittest import mock
 
+from unittest_fixtures import requires
+
 from gbpcli.subcommands.status import handler as status
 
-from . import LOCAL_TIMEZONE, TestCase
+from . import LOCAL_TIMEZONE, TestCase, make_response
 
 
+@requires("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class StatusTestCase(TestCase):
     """status() tests"""
@@ -17,9 +20,11 @@ class StatusTestCase(TestCase):
 
     def test(self):
         args = Namespace(machine="lighthouse", number="3587")
-        self.make_response("status.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, "status.json")
 
-        status(args, self.gbp, self.console)
+        status(args, gbp, console)
 
         expected = """\
 ╭────────────────────────────────────────────────╮
@@ -41,25 +46,29 @@ class StatusTestCase(TestCase):
 │Hello world!         │
 ╰─────────────────────╯
 """
-        self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.gbpcli.build, id="lighthouse.3587")
+        self.assertEqual(console.out.getvalue(), expected)
+        self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self):
         args = Namespace(machine="lighthouse", number=None)
-        self.make_response({"data": {"latest": {"id": "lighthouse.3587"}}})
-        self.make_response("status.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
+        make_response(gbp, "status.json")
 
-        return_status = status(args, self.gbp, self.console)
+        return_status = status(args, gbp, console)
 
-        self.assert_graphql(self.gbp.query.gbpcli.latest, index=0, machine="lighthouse")
-        self.assert_graphql(self.gbp.query.gbpcli.build, index=1, id="lighthouse.3587")
+        self.assert_graphql(gbp, gbp.query.gbpcli.latest, index=0, machine="lighthouse")
+        self.assert_graphql(gbp, gbp.query.gbpcli.build, index=1, id="lighthouse.3587")
         self.assertEqual(return_status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self):
         args = Namespace(machine="bogus", number="934")
-        self.make_response({"data": {"build": None}})
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, {"data": {"build": None}})
 
-        return_status = status(args, self.gbp, self.console)
+        return_status = status(args, gbp, console)
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(self.console.err.getvalue(), "Not found\n")
+        self.assertEqual(console.err.getvalue(), "Not found\n")

@@ -60,6 +60,7 @@ dev = [
     "pylint",
     "types-requests",
     "types-toml>=0.10.8.7",
+    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
 ]
 
 [tool.black]

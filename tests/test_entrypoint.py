@@ -8,13 +8,15 @@ import sys
 import unittest
 from unittest import mock
 
+from unittest_fixtures import requires
+
 import gbpcli
 import gbpcli.subcommands.list as list_subcommand
 from gbpcli import build_parser, config, main
 from gbpcli.graphql import APIError, auth_encode
 from gbpcli.theme import get_theme_from_string
 
-from . import make_gbp, tempdir_test
+from . import TestCase
 
 SUBCOMMANDS = [
     "build",
@@ -143,18 +145,9 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
-class MainTestCase(unittest.TestCase):
+@requires("gbp", "tempdir", "user_config_dir")
+class MainTestCase(TestCase):
     """tests for the main function"""
-
-    def setUp(self):
-        super().setUp()
-
-        self.tmpdir = tempdir_test(self)
-        patcher = mock.patch(
-            "gbpcli.platformdirs.user_config_dir", return_value=self.tmpdir
-        )
-        self.addCleanup(patcher.stop)
-        patcher.start()
 
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
@@ -201,13 +194,13 @@ class MainTestCase(unittest.TestCase):
     def test_should_instantiate_gbp_with_api_key_when_available(
         self, _mock_console, mock_parse_args, mock_gbp
     ):
-        mock_gbp.side_effect = make_gbp
+        mock_gbp.return_value = self.fixtures.gbp
         mock_parse_args.return_value.url = "http://test.invalid/"
         mock_parse_args.return_value.color = "auto"
         func = mock_parse_args.return_value.func
         func.return_value = 0
 
-        filename = os.path.join(self.tmpdir, "gbpcli.toml")
+        filename = os.path.join(self.fixtures.tempdir, "gbpcli.toml")
         with open(filename, "wb") as fp:
             os.chmod(fp.fileno(), 0o600)
             fp.write(b"[gbpcli]\n")
@@ -222,9 +215,10 @@ class MainTestCase(unittest.TestCase):
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.Console")
     def test_with_config_file_option(self, _mock_console, mock_gbp) -> None:
-        mock_gbp.side_effect = make_gbp
+        mock_gbp.return_value = self.fixtures.gbp
+        tmpdir = self.fixtures.tempdir
 
-        filename = os.path.join(self.tmpdir, "custom.toml")
+        filename = os.path.join(tmpdir, "custom.toml")
         with open(filename, "wb") as fp:
             fp.write(b'[gbpcli]\nurl = "http://fromconfig.invalid/"\n')
 
@@ -234,20 +228,12 @@ class MainTestCase(unittest.TestCase):
         mock_gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
 
 
-class GetUserConfigTests(unittest.TestCase):
+@requires("gbp", "tempdir", "user_config_dir")
+class GetUserConfigTests(TestCase):
     """Tests for the get_user_config function"""
 
-    def setUp(self) -> None:
-        super().setUp()
-
-        self.tmpdir = tempdir_test(self)
-        patch = mock.patch("gbpcli.platformdirs.user_config_dir")
-        self.addCleanup(patch.stop)
-        patched = patch.start()
-        patched.return_value = self.tmpdir
-
     def test_with_config(self) -> None:
-        filename = os.path.join(self.tmpdir, "gbpcli.toml")
+        filename = os.path.join(self.fixtures.tempdir, "gbpcli.toml")
 
         with open(filename, "wb") as fp:
             fp.write(
@@ -270,7 +256,7 @@ my_machines = ["this", "that", "the_other"]
         self.assertEqual(user_config.my_machines, None)
 
     def test_with_given_config(self) -> None:
-        custom_filename = os.path.join(self.tmpdir, "custom.toml")
+        custom_filename = os.path.join(self.fixtures.tempdir, "custom.toml")
 
         with open(custom_filename, "wb") as fp:
             fp.write(
@@ -287,7 +273,7 @@ my_machines = ["this", "that", "the_other"]
         self.assertEqual(user_config.my_machines, ["this", "that", "the_other"])
 
     def test_with_given_config_that_does_not_exist(self) -> None:
-        custom_filename = os.path.join(self.tmpdir, "bogus.toml")
+        custom_filename = os.path.join(self.fixtures.tempdir, "bogus.toml")
 
         with self.assertRaises(FileNotFoundError):
             gbpcli.get_user_config(custom_filename)

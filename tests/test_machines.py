@@ -4,30 +4,37 @@
 from argparse import Namespace
 from unittest import mock
 
+from unittest_fixtures import requires
+
 from gbpcli.subcommands.machines import handler as machines
 
-from . import LOCAL_TIMEZONE, TestCase
+from . import LOCAL_TIMEZONE, TestCase, make_response
 
 
+@requires("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class MachinesTestCase(TestCase):
     """machines() tests"""
 
     def test(self):
         args = Namespace(mine=False)
-        self.make_response("machines.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, "machines.json")
 
-        status = machines(args, self.gbp, self.console)
+        status = machines(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.console.out.getvalue(), EXPECTED_OUTPUT)
-        self.assert_graphql(self.gbp.query.gbpcli.machines)
+        self.assertEqual(console.out.getvalue(), EXPECTED_OUTPUT)
+        self.assert_graphql(gbp, gbp.query.gbpcli.machines)
 
     def test_with_mine(self):
         args = Namespace(mine=True, my_machines="babette lighthouse")
-        self.make_response("machines.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, "machines.json")
 
-        status = machines(args, self.gbp, self.console)
+        status = machines(args, gbp, console)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -39,8 +46,8 @@ class MachinesTestCase(TestCase):
 │ lighthouse │     29 │  10694 │
 ╰────────────┴────────┴────────╯
 """
-        self.assertEqual(self.console.out.getvalue(), expected)
-        self.assert_graphql(self.gbp.query.gbpcli.machines)
+        self.assertEqual(console.out.getvalue(), expected)
+        self.assert_graphql(gbp, gbp.query.gbpcli.machines)
 
 
 EXPECTED_OUTPUT = """\

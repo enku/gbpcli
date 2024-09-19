@@ -5,20 +5,25 @@ from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
+from unittest_fixtures import requires
+
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, TestCase, load_data, make_gbp, make_response
+from . import LOCAL_TIMEZONE, TestCase, http_response, load_data, make_response
 
 
+@requires("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class DiffTestCase(TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self):
         args = Namespace(machine="lighthouse", left="3111", right="3112")
-        self.make_response("diff.json")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        make_response(gbp, "diff.json")
 
-        status = diff(args, self.gbp, self.console)
+        status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
         expected = """\
@@ -36,32 +41,34 @@ diff -r lighthouse/3111 lighthouse/3112
 -sys-kernel/vanilla-sources-5.19.12-1
 +sys-kernel/vanilla-sources-6.0.0-1
 """
-        self.assertEqual(self.console.out.getvalue(), expected)
+        self.assertEqual(console.out.getvalue(), expected)
         self.assert_graphql(
-            self.gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
+            gbp, gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
     def test_should_print_nothing_when_no_diffs(self):
         args = Namespace(machine="lighthouse", left="3111", right="3111")
         no_diffs_json = parse(load_data("diff_no_content.json"))
-        gbp = make_gbp()
-        gbp.query._session.post.return_value = make_response(json=no_diffs_json)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
+        gbp.query._session.post.return_value = http_response(json=no_diffs_json)
 
-        diff(args, gbp, self.console)
+        diff(args, gbp, console)
 
-        self.assertEqual(self.console.out.getvalue(), "")
+        self.assertEqual(console.out.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self):
         args = Namespace(machine="lighthouse", left="3111", right=None)
         latest_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
-        gbp = make_gbp()
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         gbp.query._session.post.side_effect = (
-            make_response(json=latest_json),
-            make_response(json=mock_diff_json),
+            http_response(json=latest_json),
+            http_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp, self.console)
+        status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -89,13 +96,14 @@ diff -r lighthouse/3111 lighthouse/3112
         args = Namespace(machine="lighthouse", left=None, right=None)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
-        gbp = make_gbp()
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         gbp.query._session.post.side_effect = (
-            make_response(json=list_json),
-            make_response(json=mock_diff_json),
+            http_response(json=list_json),
+            http_response(json=mock_diff_json),
         )
 
-        status = diff(args, gbp, self.console)
+        status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
         expected_calls = [
@@ -121,39 +129,43 @@ diff -r lighthouse/3111 lighthouse/3112
 
     def test_when_left_is_none_and_not_published(self):
         args = Namespace(machine="jenkins", left=None, right=None)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         list_json = parse(load_data("list.json"))
 
         # Make sure there are not published builds
         for item in list_json["data"]["builds"]:
             item["published"] = False
 
-        self.make_response(list_json)
+        make_response(gbp, list_json)
 
-        status = diff(args, self.gbp, self.console)
+        status = diff(args, gbp, console)
 
         self.assertEqual(status, 1)
         self.assert_graphql(
-            self.gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
+            gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
         )
         self.assertEqual(
-            self.console.err.getvalue(), "No builds given and no builds published\n"
+            console.err.getvalue(), "No builds given and no builds published\n"
         )
 
     def test_against_missing_timestamps(self):
         # Legacy builds have no (None) built field
         args = Namespace(machine="lighthouse", left="3111", right="3112")
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         mock_json = parse(load_data("diff.json"))
 
         # Emulate an old build where we didn't have a built field
         mock_json["data"]["diff"]["left"]["built"] = None
 
-        self.make_response(mock_json)
+        make_response(gbp, mock_json)
 
-        status = diff(args, self.gbp, self.console)
+        status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
         self.assertEqual(
-            self.console.out.getvalue(),
+            console.out.getvalue(),
             """\
 diff -r lighthouse/3111 lighthouse/3112
 --- a/lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
