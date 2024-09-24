@@ -33,9 +33,11 @@ class GBP:
     def __init__(self, url: str, *, auth: config.AuthDict | None = None) -> None:
         self.query = graphql.Queries(yarl.URL(url) / "graphql", auth=auth)
 
-    def machines(self) -> list[tuple[str, int, dict[str, Any]]]:
+    def machines(
+        self, *, names: list[str] | None = None
+    ) -> list[tuple[str, int, dict[str, Any]]]:
         """Handler for subcommand"""
-        data = graphql.check(self.query.gbpcli.machines())
+        data = graphql.check(self.query.gbpcli.machines(names=names))
 
         return [
             (i["machine"], i["buildCount"], i["latestBuild"]) for i in data["machines"]

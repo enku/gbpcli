@@ -14,12 +14,8 @@ HELP = """List machines with builds"""
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List machines with builds"""
-    my_machines = utils.get_my_machines_from_args(args)
-    machines = [
-        machine
-        for machine in gbp.machines()
-        if not args.mine or machine[0] in my_machines
-    ]
+    names = utils.get_my_machines_from_args(args) if args.mine else None
+    machines = gbp.machines(names=names)
     table = Table(
         title=f"{len(machines)} Machines",
         box=box.ROUNDED,

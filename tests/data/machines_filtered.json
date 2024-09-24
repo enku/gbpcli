@@ -1,0 +1,22 @@
+{
+   "data" : {
+      "machines" : [
+         {
+            "buildCount" : 14,
+            "latestBuild" : {
+               "id" : "babette.631",
+               "published" : false
+            },
+            "machine" : "babette"
+         },
+         {
+            "buildCount" : 29,
+            "latestBuild" : {
+               "id" : "lighthouse.10694",
+               "published" : true
+            },
+            "machine" : "lighthouse"
+         }
+      ]
+   }
+}
