@@ -27,15 +27,12 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     for machine in get_machines(args, gbp):
         if "." in machine:
-            machine, _, number = machine.partition(".")
-
-            if (
-                build := gbp.get_build_info(Build(machine=machine, number=int(number)))
-            ) is None:
+            try:
+                machine, build = get_dotted_machine_and_build(machine, gbp)
+                builds = [build]
+            except utils.ResolveBuildError:
                 console.err.print("Not found")
                 return 1
-
-            builds = [build]
         else:
             builds = gbp.builds(machine, with_packages=True)[-1 * args.tail :]
 
@@ -135,3 +132,14 @@ def render_package(package: Package, build_build_date: dt.date) -> str:
     )
 
     return f"[package]{package.cpv}[/package] [timestamp]({build_time})[/timestamp]"
+
+
+def get_dotted_machine_and_build(machine_dot_build: str, gbp: GBP) -> tuple[str, Build]:
+    """Split machine_dot_build and return the machine name and Build"""
+    machine, _, number = machine_dot_build.partition(".")
+    build = gbp.get_build_info(Build(machine=machine, number=int(number)))
+
+    if build is None:
+        raise utils.ResolveBuildError(machine_dot_build)
+
+    return machine, build
