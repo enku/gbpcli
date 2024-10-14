@@ -7,7 +7,7 @@ from rich.table import Table
 
 from gbpcli import GBP, render
 from gbpcli.subcommands import completers as comp
-from gbpcli.types import Console
+from gbpcli.types import Build, Console
 from gbpcli.utils import ColumnData, add_columns
 
 HELP = """List builds for the given machines
@@ -36,21 +36,26 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     add_columns(table, columns)
 
     for build in builds:
-        assert build.info is not None
-
-        # In the old days, we didn't have a "built" field. Fall back to submitted
-        timestamp = build.info.built or build.info.submitted
-
-        table.add_row(
-            render.format_flags(build),
-            render.format_build_number(build.number),
-            render.format_timestamp(timestamp.astimezone(render.LOCAL_TIMEZONE)),
-            render.format_tags(build.info.tags),
-        )
+        add_build_to_row(build, table)
 
     console.out.print(table)
 
     return 0
+
+
+def add_build_to_row(build: Build, table: Table):
+    """Add the given Build to the Table"""
+    # In the old days, we didn't have a "built" field. Fall back to submitted
+    assert build.info is not None
+
+    timestamp = build.info.built or build.info.submitted
+
+    table.add_row(
+        render.format_flags(build),
+        render.format_build_number(build.number),
+        render.format_timestamp(timestamp.astimezone(render.LOCAL_TIMEZONE)),
+        render.format_tags(build.info.tags),
+    )
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
