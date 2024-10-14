@@ -8,6 +8,7 @@ from rich.table import Table
 
 from gbpcli import GBP, render, utils
 from gbpcli.types import Console
+from gbpcli.utils import ColumnData, add_columns
 
 HELP = """List machines with builds"""
 
@@ -22,9 +23,9 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         title_style="header",
         style="box",
     )
-    table.add_column("Machine", header_style="header")
-    table.add_column("Builds", justify="right", header_style="header")
-    table.add_column("Latest", justify="right", header_style="header")
+    rjust = {"justify": "right"}
+    columns: ColumnData = [("Machine", {}), ("Builds", rjust), ("Latest", rjust)]
+    add_columns(table, columns)
 
     for machine, builds, latest in machines:
         table.add_row(

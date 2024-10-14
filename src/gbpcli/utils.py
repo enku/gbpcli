@@ -2,7 +2,9 @@
 
 import argparse
 import datetime as dt
-from typing import cast
+from typing import Any, Iterable, cast
+
+from rich.table import Table
 
 from gbpcli import GBP
 from gbpcli.types import Build
@@ -11,6 +13,8 @@ from gbpcli.types import Build
 EPOCH = dt.datetime.fromtimestamp(1616266641, tz=dt.UTC)
 
 TAG_SYM = "@"
+
+ColumnData = Iterable[tuple[str, dict[str, Any]]]
 
 
 class ResolveBuildError(SystemExit):
@@ -55,3 +59,11 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
         return cast(list[str], args.my_machines.split())
     except AttributeError:
         return []
+
+
+def add_columns(table: Table, data: ColumnData) -> None:
+    """Add the given ColumnData to the given table"""
+    for header, kwargs in data:
+        kwargs = kwargs.copy()
+        kwargs.setdefault("header_style", "header")
+        table.add_column(header, **kwargs)

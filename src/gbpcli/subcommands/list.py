@@ -8,6 +8,7 @@ from rich.table import Table
 from gbpcli import GBP, render
 from gbpcli.subcommands import completers as comp
 from gbpcli.types import Console
+from gbpcli.utils import ColumnData, add_columns
 
 HELP = """List builds for the given machines
 
@@ -23,6 +24,7 @@ Key for the "Flags" column:
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     """List a machine's builds"""
+    columns: ColumnData
     builds = gbp.builds(args.machine, with_packages=True)
     table = Table(
         title=f"\N{PERSONAL COMPUTER} {render.format_machine(args.machine, args)}",
@@ -30,10 +32,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         title_style="header",
         style="box",
     )
-    table.add_column("Flags", header_style="header")
-    table.add_column("ID", justify="right", header_style="header")
-    table.add_column("Built", header_style="header")
-    table.add_column("Tags", header_style="header")
+    columns = [("Flags", {}), ("ID", {"justify": "right"}), ("Built", {}), ("Tags", {})]
+    add_columns(table, columns)
 
     for build in builds:
         assert build.info is not None
