@@ -43,9 +43,9 @@ class Query:
         return self.query
 
     def __call__(self, **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
-        json = {"query": self.query, "variables": kwargs}
+        payload = {"query": self.query, "variables": kwargs}
 
-        http_response = self.session.post(self.url, json=json)
+        http_response = self.session.post(self.url, json=payload)
 
         http_response.raise_for_status()
         query_result = http_response.json()
