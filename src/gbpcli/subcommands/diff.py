@@ -42,8 +42,8 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
     header = partial(console.out.print, style="header")
     header(f"diff -r {args.machine}/{left} {args.machine}/{right}")
-    header(f"--- a/{args.machine}/{left} {render.timestr(left_build.info.built)}")
-    header(f"+++ b/{args.machine}/{right} {render.timestr(right_build.info.built)}")
+    header(f"--- {args.machine}/{left} {render.timestr(left_build.info.built)}")
+    header(f"+++ {args.machine}/{right} {render.timestr(right_build.info.built)}")
 
     print_diff(diff, console)
 

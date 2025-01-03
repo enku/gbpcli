@@ -28,8 +28,8 @@ class DiffTestCase(TestCase):
         self.assertEqual(status, 0)
         expected = """\
 diff -r lighthouse/3111 lighthouse/3112
---- a/lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
-+++ b/lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
+--- lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
++++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
 -app-accessibility/at-spi2-atk-2.38.0-1
 +app-accessibility/at-spi2-atk-2.46.0-1
 -app-accessibility/at-spi2-core-2.44.1-1
@@ -168,8 +168,8 @@ diff -r lighthouse/3111 lighthouse/3112
             console.out.getvalue(),
             """\
 diff -r lighthouse/3111 lighthouse/3112
---- a/lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
-+++ b/lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
+--- lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
++++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
 -app-accessibility/at-spi2-atk-2.38.0-1
 +app-accessibility/at-spi2-atk-2.46.0-1
 -app-accessibility/at-spi2-core-2.44.1-1
