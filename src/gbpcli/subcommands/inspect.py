@@ -58,13 +58,6 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-def parse_args(parser: argparse.ArgumentParser) -> None:
-    """Set subcommand arguments"""
-    parser.add_argument("-t", "--tail", type=int, default=0)
-    parser.add_argument("--mine", action="store_true", default=False)
-    comp.set(parser.add_argument("machine", nargs="*"), comp.machines)
-
-
 def get_machines(args: argparse.Namespace, gbp: GBP) -> list[str]:
     """Return the list of machines requested by the arguments
 
@@ -143,3 +136,10 @@ def get_dotted_machine_and_build(machine_dot_build: str, gbp: GBP) -> tuple[str,
         raise utils.ResolveBuildError(machine_dot_build)
 
     return machine, build
+
+
+def parse_args(parser: argparse.ArgumentParser) -> None:
+    """Set subcommand arguments"""
+    parser.add_argument("-t", "--tail", type=int, default=0)
+    parser.add_argument("--mine", action="store_true", default=False)
+    comp.set(parser.add_argument("machine", nargs="*"), comp.machines)
