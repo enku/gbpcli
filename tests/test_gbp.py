@@ -6,7 +6,8 @@ import os
 import requests.exceptions
 from unittest_fixtures import depends, requires
 
-from gbpcli import GBP, build_parser, config
+from gbpcli import build_parser, config
+from gbpcli.gbp import GBP
 
 from . import TestCase, make_response
 
