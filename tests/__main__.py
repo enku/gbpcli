@@ -12,7 +12,9 @@ def main() -> None:
     tests = loader.discover("")
     verbosity = 2 if args.verbose else 1
     runner = unittest.TextTestRunner(verbosity=verbosity, failfast=args.failfast)
-    runner.run(tests)
+    test_result = runner.run(tests)
+
+    raise SystemExit(int(not test_result.wasSuccessful()))
 
 
 def parse_args() -> argparse.Namespace:
