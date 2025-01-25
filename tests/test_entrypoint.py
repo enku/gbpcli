@@ -277,3 +277,24 @@ my_machines = ["this", "that", "the_other"]
 
         with self.assertRaises(FileNotFoundError):
             gbpcli.get_user_config(custom_filename)
+
+
+class EnsureArgsHasFuncTests(TestCase):
+    """Tests for the ensure_args_has_func helper function"""
+
+    def test_has_func(self) -> None:
+        args = argparse.Namespace(func=lambda: None)
+        parser = mock.Mock()
+
+        gbpcli.ensure_args_has_func(args, parser)
+
+    def test_has_no_func(self) -> None:
+        args = argparse.Namespace()
+        parser = mock.Mock()
+
+        with self.assertRaises(SystemExit) as exc_info:
+            gbpcli.ensure_args_has_func(args, parser)
+
+        exception = exc_info.exception
+        self.assertEqual(exception.args, (1,))
+        parser.print_help.assert_called_once_with(file=sys.stderr)

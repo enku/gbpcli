@@ -86,15 +86,10 @@ def get_arguments(
     """
     argv = argv if argv is not None else sys.argv[1:]
     parser = build_parser(user_config)
-    argcomplete.autocomplete(
-        parser, default_completer=argcomplete.completers.SuppressCompleter()
-    )
+    supress_completer = argcomplete.completers.SuppressCompleter()
+    argcomplete.autocomplete(parser, default_completer=supress_completer)
     args = parser.parse_args(argv)
-
-    # ensure we have a "func" target
-    if not hasattr(args, "func"):
-        parser.print_help(file=sys.stderr)
-        raise SystemExit(1)
+    ensure_args_has_func(args, parser)
 
     return args
 
@@ -133,6 +128,18 @@ def set_environ():
     os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
     os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
+
+
+def ensure_args_has_func(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> None:
+    """Raise SystemExit if args has no "func" attribute
+
+    Print parser help to stderr before exiting
+    """
+    if not hasattr(args, "func"):
+        parser.print_help(file=sys.stderr)
+        raise SystemExit(1)
 
 
 def main(argv: list[str] | None = None) -> int:
