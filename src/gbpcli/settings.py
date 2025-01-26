@@ -42,15 +42,15 @@ class BaseSettings:
         return cls.from_dict(prefix, dict(os.environ))
 
 
-def string_value_to_field_value(value: str, type_: type[Any]) -> Any:
+def string_value_to_field_value(value: str, type_: str | type[Any]) -> Any:
     """Coerse the given string value to the given type"""
-    if type_ is bool:
+    if type_ == "bool" or type_ is bool:
         return get_bool(value)
 
-    if type_ is int:
+    if type_ == "int" or type_ is int:
         return int(value)
 
-    if type_ is Path:
+    if type_ == "Path" or type_ is Path:
         return Path(value)
 
     return value
