@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:1142609bc20b0eb01e57173dc0170c1aae4f739ecedf03f9a92c12024a798fbb"
+content_hash = "sha256:eb9a095f22f1727472f124ecf2ed1f79ba5455d4d24c26a8843a8569bd4518b3"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -204,6 +204,14 @@ summary = "serialize all of Python"
 files = [
     {file = "dill-0.3.9-py3-none-any.whl", hash = "sha256:468dff3b89520b474c0397703366b7b95eebe6303f108adf9b19da1f702be87a"},
     {file = "dill-0.3.9.tar.gz", hash = "sha256:81aa267dddf68cbfe8029c42ca9ec6a4ab3b22371d1c450abc54422577b4512c"},
+]
+
+[[package]]
+name = "distutils-strtobool"
+version = "0.1.0"
+summary = "distutils.utils.strtobool"
+files = [
+    {file = "distutils-strtobool-0.1.0.tar.gz", hash = "sha256:92f189acca35ec50ca462acd70904ee8c1a81422ef3658fa2fec2b5c7068d662"},
 ]
 
 [[package]]

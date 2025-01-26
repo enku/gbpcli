@@ -11,6 +11,7 @@ dependencies = [
     "rich>=12.5.1",
     "yarl",
     "platformdirs>=4.2.0",
+    "distutils-strtobool>=0.1.0",
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -52,17 +53,6 @@ build-backend = "pdm.backend"
 [tool.pdm]
 version = { source = "scm" }
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "black",
-    "coverage",
-    "mypy==1.7.1",  # Pin until mypy/issues/16400 is resolved
-    "pylint",
-    "types-requests",
-    "types-toml>=0.10.8.7",
-    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
-]
-
 [tool.black]
 skip-magic-trailing-comma = true
 
@@ -79,3 +69,14 @@ ignore-imports = "yes"
 
 [tool.isort]
 profile = "black"
+
+[dependency-groups]
+dev = [
+    "black",
+    "coverage",
+    "mypy==1.7.1",
+    "pylint",
+    "types-requests",
+    "types-toml>=0.10.8.7",
+    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
+]
