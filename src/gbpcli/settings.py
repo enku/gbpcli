@@ -28,7 +28,6 @@ class BaseSettings:
             if (key := f"{prefix}{field.name}") not in data_dict:
                 continue
 
-            assert isinstance(field.type, type)
             params[field.name] = string_value_to_field_value(data_dict[key], field.type)
 
         return cls(**params)
