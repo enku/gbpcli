@@ -145,7 +145,7 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
-@requires("gbp", "tempdir", "user_config_dir")
+@requires("gbp", "tempdir", "user_config_dir", "console")
 class MainTestCase(TestCase):
     """tests for the main function"""
 
@@ -226,6 +226,22 @@ class MainTestCase(TestCase):
             main(["status", "lighthouse"])
 
         mock_gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
+
+    def test_main_no_args(self) -> None:
+        # admittedly this is mostly to get a good screenshot
+        console = self.fixtures.console
+
+        console.out.print("[green]$ [/green]gbp")
+
+        def mock_write(data: str):
+            console.out.print(data, end="")
+
+        with mock.patch("gbpcli.sys.stderr.write", mock_write):
+            with self.assertRaises(SystemExit) as exc_info:
+                main([])
+
+        exception = exc_info.exception
+        self.assertEqual(exception.args, (1,))
 
 
 @requires("gbp", "tempdir", "user_config_dir")

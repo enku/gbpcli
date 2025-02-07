@@ -17,43 +17,12 @@ $ pip install gbpcli
 
 The full command set supported:
 
-```bash
-usage: Command-line interface to Gentoo Build Publisher
-
-Commands:
-
-  * build - Schedule a build for the given machine in CI/CD
-  * diff - Handler for subcommand
-  * inspect - Show the machines builds as a tree
-  * keep - Keep (or release) a build
-  * latest - Show the latest build number for a machine
-  * list - List a machine's builds
-  * logs - Show build logs
-  * machines - List machines with builds
-  * notes - Show, search, and edit build notes
-  * packages - List a build's packages
-  * publish - Publish a build
-  * pull - Pull a build
-  * status - Show build details
-  * tag - Add tags builds
-
-positional arguments:
-  {build,diff,inspect,keep,latest,list,logs,machines,notes,packages,publish,pull,status,tag}
-
-options:
-  -h, --help            show this help message and exit
-  --version             show program's version number and exit
-  --url URL             GBP url
-  --color WHEN          colorize output ('always', 'never', 'auto')
-  --my-machines MY_MACHINES
-                        whitespace-delimited list of machine names to filter
-                        on when using the --mine argument. Typically one would
-                        instead use the GBPCLI_MYMACHINES environment
-                        variable.
-```
+![https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbpcli/usage.svg](https://raw.githubusercontent.com/enku/screenshots/refs/heads/master/gbpcli/usage.svg)
 
 The URL for the Gentoo Build Publisher may be provided via the command line or
 by using the `BUILD_PUBLISHER_URL` environment variable.
+
+Additional commands may be provided by plugins.
 
 To list the machines which have builds use `gbp machines`:
 
