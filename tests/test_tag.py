@@ -58,6 +58,6 @@ class TagTestCase(TestCase):
 
         self.assertEqual(status, 1)
         self.assertEqual(
-            self.fixtures.console.err.getvalue(),
+            self.fixtures.console.err.file.getvalue(),
             "When removing a tag, omit the build number\n",
         )

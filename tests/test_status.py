@@ -24,9 +24,10 @@ class StatusTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "status.json")
 
+        console.out.print("[green]$ [/green]gbp status lighthouse 3587")
         status(args, gbp, console)
 
-        expected = """\
+        expected = """$ gbp status lighthouse 3587
 ╭────────────────────────────────────────────────╮
 │ Build:          lighthouse 3587                │
 │ BuildDate:      Fri Nov 12 21:23:34 2021 -0700 │
@@ -46,7 +47,7 @@ class StatusTestCase(TestCase):
 │Hello world!         │
 ╰─────────────────────╯
 """
-        self.assertEqual(console.out.getvalue(), expected)
+        self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self):
@@ -56,6 +57,7 @@ class StatusTestCase(TestCase):
         make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
         make_response(gbp, "status.json")
 
+        console.out.print("[green]$ [/green]gbp status lighthouse")
         return_status = status(args, gbp, console)
 
         self.assert_graphql(gbp, gbp.query.gbpcli.latest, index=0, machine="lighthouse")
@@ -71,4 +73,4 @@ class StatusTestCase(TestCase):
         return_status = status(args, gbp, console)
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(console.err.getvalue(), "Not found\n")
+        self.assertEqual(console.err.file.getvalue(), "Not found\n")

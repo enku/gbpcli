@@ -23,10 +23,11 @@ class DiffTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "diff.json")
 
+        console.out.print("[green]$ [/green]gbp diff lighthouse 3111 3112")
         status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
-        expected = """\
+        expected = """$ gbp diff lighthouse 3111 3112
 diff -r lighthouse/3111 lighthouse/3112
 --- lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
 +++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
@@ -41,7 +42,7 @@ diff -r lighthouse/3111 lighthouse/3112
 -sys-kernel/vanilla-sources-5.19.12-1
 +sys-kernel/vanilla-sources-6.0.0-1
 """
-        self.assertEqual(console.out.getvalue(), expected)
+        self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
@@ -55,7 +56,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
         diff(args, gbp, console)
 
-        self.assertEqual(console.out.getvalue(), "")
+        self.assertEqual(console.out.file.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self):
         args = Namespace(machine="lighthouse", left="3111", right=None)
@@ -146,7 +147,7 @@ diff -r lighthouse/3111 lighthouse/3112
             gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
         )
         self.assertEqual(
-            console.err.getvalue(), "No builds given and no builds published\n"
+            console.err.file.getvalue(), "No builds given and no builds published\n"
         )
 
     def test_against_missing_timestamps(self):
@@ -161,12 +162,13 @@ diff -r lighthouse/3111 lighthouse/3112
 
         make_response(gbp, mock_json)
 
+        console.out.print("[green]$ [/green]gbp diff lighthouse 3111 3112")
         status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
         self.assertEqual(
-            console.out.getvalue(),
-            """\
+            console.out.file.getvalue(),
+            """$ gbp diff lighthouse 3111 3112
 diff -r lighthouse/3111 lighthouse/3112
 --- lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
 +++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700

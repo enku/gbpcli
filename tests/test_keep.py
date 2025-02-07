@@ -35,7 +35,7 @@ class KeepTestCase(TestCase):
 
         status = keep(args, gbp, console)
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.getvalue(), "Not Found\n")
+        self.assertEqual(console.err.file.getvalue(), "Not Found\n")
 
     def test_release(self):
         args = Namespace(machine="lighthouse", number="3210", release=True)
@@ -55,5 +55,6 @@ class KeepTestCase(TestCase):
         make_response(gbp, {"data": {"releaseBuild": None}})
 
         status = keep(args, gbp, console)
+
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.getvalue(), "Not Found\n")
+        self.assertEqual(console.err.file.getvalue(), "Not Found\n")

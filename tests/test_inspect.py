@@ -33,10 +33,11 @@ class InspectTestCase(TestCase):
         for _ in range(machines_count):
             make_response(gbp, next(graphql_responses))
 
+        console.out.print("[green]$ [/green]gbp inspect")
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), INSPECT_ALL)
+        self.assertEqual(console.out.file.getvalue(), INSPECT_ALL)
         self.assert_graphql(gbp, gbp.query.gbpcli.machine_names)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, index=1, machine="base", withPackages=True
@@ -54,10 +55,11 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
+        console.out.print("[green]$ [/green]gbp inspect base")
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
@@ -71,10 +73,11 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
+        console.out.print("[green]$ [/green]gbp inspect --tail=2 base")
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE_WITH_TAIL)
+        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_WITH_TAIL)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
@@ -86,10 +89,11 @@ class InspectTestCase(TestCase):
 
         make_response(gbp, "lighthouse.12672.json")
 
+        console.out.print("[green]$ [/green]gbp inspect lighthouse.12672")
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
+        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.12672")
 
     def test_with_mine(self):
@@ -101,16 +105,17 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
+        console.out.print("[green]$ [/green]gbp inspect --mine")
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_MINE)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
 
-INSPECT_SINGLE_WITH_TAIL = """\
+INSPECT_SINGLE_WITH_TAIL = """$ gbp inspect --tail=2 base
 Machines
 └── base
     ├── 1 (10/10/22 04:55:19) @first
@@ -127,7 +132,7 @@ Machines
         ╰─────────────╯        
         └── dev-python/pydantic-1.10.2 (06:09:29)
 """
-INSPECT_SINGLE = """\
+INSPECT_SINGLE = """$ gbp inspect base
 Machines
 └── base
     ├── 1 (10/10/22 04:55:19) @first
@@ -141,7 +146,21 @@ Machines
     └── 26 (10/11/22 06:03:48) 
         └── dev-python/pydantic-1.10.2 (06:09:29)
 """
-INSPECT_ALL = """\
+INSPECT_SINGLE_MINE = """$ gbp inspect --mine
+Machines
+└── base
+    ├── 1 (10/10/22 04:55:19) @first
+    │   ├── dev-libs/libpcre-8.45-r1 (05:00:50)
+    │   ├── app-crypt/gpgme-1.17.1-r2 (05:01:45)
+    │   ├── sys-libs/pam-1.5.2-r2 (05:03:49)
+    │   ├── app-crypt/libb2-0.98.1-r2 (05:04:28)
+    │   ├── app-portage/portage-utils-0.94.1 (05:05:29)
+    │   ├── app-portage/gentoolkit-0.5.1-r1 (05:06:00)
+    │   └── net-misc/iputils-20211215 (05:06:03)
+    └── 26 (10/11/22 06:03:48) 
+        └── dev-python/pydantic-1.10.2 (06:09:29)
+"""
+INSPECT_ALL = """$ gbp inspect
 Machines
 ├── base
 │   ├── 1 (10/10/22 04:55:19) @first
@@ -258,7 +277,7 @@ Machines
     └── 25 (10/11/22 06:03:48) 
         └── dev-python/pydantic-1.10.2 (06:09:34)
 """
-INSPECT_SINGLE_WITH_BUILD_ID = """\
+INSPECT_SINGLE_WITH_BUILD_ID = """$ gbp inspect lighthouse.12672
 Machines
 └── lighthouse
     └── 12672 (12/30/22 15:03:16) 

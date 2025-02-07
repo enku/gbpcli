@@ -22,10 +22,11 @@ class MachinesTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "machines.json")
 
+        console.out.print("[green]$ [/green]gbp machines")
         status = machines(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(console.out.file.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(gbp, gbp.query.gbpcli.machines, names=None)
 
     def test_with_mine(self):
@@ -34,10 +35,11 @@ class MachinesTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "machines_filtered.json")
 
+        console.out.print("[green]$ [/green]gbp machines --mine")
         status = machines(args, gbp, console)
 
         self.assertEqual(status, 0)
-        expected = """\
+        expected = """$ gbp machines --mine
            2 Machines           
 ╭────────────┬────────┬────────╮
 │ Machine    │ Builds │ Latest │
@@ -46,13 +48,13 @@ class MachinesTestCase(TestCase):
 │ lighthouse │     29 │  10694 │
 ╰────────────┴────────┴────────╯
 """
-        self.assertEqual(console.out.getvalue(), expected)
+        self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.machines, names=["babette", "lighthouse"]
         )
 
 
-EXPECTED_OUTPUT = """\
+EXPECTED_OUTPUT = """$ gbp machines
            7 Machines           
 ╭────────────┬────────┬────────╮
 │ Machine    │ Builds │ Latest │

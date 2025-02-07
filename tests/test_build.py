@@ -15,14 +15,15 @@ class MachinesTestCase(TestCase):
     """machines() tests"""
 
     def test(self) -> None:
-        gbp = self.fixtures.gbp
         args = Namespace(machine="babette", param=None)
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         make_response(gbp, "schedule_build.json")
 
-        status = build(args, gbp, self.fixtures.console)
+        status = build(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(self.fixtures.console.out.getvalue(), "")
+        self.assertEqual(console.out.file.getvalue(), "")
         self.assert_graphql(
             gbp, gbp.query.gbpcli.schedule_build, machine="babette", params=[]
         )
@@ -36,7 +37,7 @@ class MachinesTestCase(TestCase):
         status = build(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), "")
+        self.assertEqual(console.out.file.getvalue(), "")
         self.assert_graphql(
             gbp,
             gbp.query.gbpcli.schedule_build,
@@ -52,13 +53,15 @@ class MachinesTestCase(TestCase):
 
     def test_when_build_param_missing_equals_sign(self) -> None:
         args = Namespace(machine="babette", param=["BUILD_TARGETemptytree"])
+        gbp = self.fixtures.gbp
+        console = self.fixtures.console
         make_response(self.fixtures.gbp, "schedule_build.json")
 
-        status = build(args, self.fixtures.gbp, self.fixtures.console)
+        status = build(args, gbp, console)
 
         self.assertEqual(status, 1)
         error_msg = "Build parameters must be of the format name=value\n"
-        self.assertEqual(self.fixtures.console.err.getvalue(), error_msg)
+        self.assertEqual(console.err.file.getvalue(), error_msg)
 
     def test_with_repo(self) -> None:
         gbp = self.fixtures.gbp
@@ -69,7 +72,7 @@ class MachinesTestCase(TestCase):
         status = build(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), "")
+        self.assertEqual(console.out.file.getvalue(), "")
         self.assert_graphql(
             gbp,
             gbp.query.gbpcli.schedule_build,

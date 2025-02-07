@@ -8,13 +8,14 @@ import tempfile
 from unittest import mock
 
 import rich.console
-from rich.theme import Theme
 from unittest_fixtures import FixtureContext, FixtureOptions, Fixtures, depends
 
 from gbpcli import GBP
 from gbpcli.config import AuthDict
-from gbpcli.theme import DEFAULT_THEME
+from gbpcli.theme import get_theme_from_string
 from gbpcli.types import Console
+
+COUNTER = 0
 
 
 def gbp(options: FixtureOptions, _fixtures: Fixtures) -> GBP:
@@ -31,8 +32,26 @@ def gbp(options: FixtureOptions, _fixtures: Fixtures) -> GBP:
     return _gbp
 
 
-def console(_options: FixtureOptions, _fixtures: Fixtures) -> GBP:
-    return mock.Mock(spec=Console, out=MockConsole(), err=MockConsole())
+@depends()
+def console(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[Console]:
+    outfile = io.StringIO()
+    errfile = io.StringIO()
+    theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
+    out = rich.console.Console(
+        file=outfile, width=88, theme=theme, highlight=False, record=True
+    )
+    err = rich.console.Console(file=errfile, width=88, record=True)
+    c = Console(out=out, err=err)
+
+    yield c
+
+    # pylint: disable=no-member,global-statement
+    if "SAVE_VIRTUAL_CONSOLE" in os.environ and c.out.file.getvalue():
+        global COUNTER
+
+        COUNTER += 1
+        filename = f"{COUNTER}.svg"
+        c.out.save_svg(filename, title="Gentoo Build Publisher")
 
 
 def tempdir(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[str]:
@@ -57,24 +76,3 @@ def user_config_dir(_options: FixtureOptions, fixtures: Fixtures):
         "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tempdir
     ) as patch:
         yield patch
-
-
-class MockConsole:
-    """Mock rich.console.Console
-
-    Output is instead send to it's .stdout attribute, which is a StringIO.
-    """
-
-    def __init__(self):
-        self.string_io = io.StringIO()
-        self.console = rich.console.Console(
-            file=self.string_io, theme=Theme(DEFAULT_THEME)
-        )
-
-    def print(self, *args, **kwargs):
-        """Print to self.stdout"""
-        return self.console.print(*args, **kwargs)
-
-    def getvalue(self) -> str:
-        """Return everying printed to the console"""
-        return self.string_io.getvalue()

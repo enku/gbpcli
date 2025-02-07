@@ -117,7 +117,7 @@ class NotesTestCase(TestCase):
         status = create_note(self.fixtures.args, gbp, console)
 
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.getvalue(), "Build not found\n")
+        self.assertEqual(console.err.file.getvalue(), "Build not found\n")
 
     def test_should_print_error_when_invalid_number_given(self):
         gbp = self.fixtures.gbp
@@ -137,6 +137,7 @@ class NotesTestCase(TestCase):
         make_response(gbp, None)
         make_response(gbp, "search_notes.json")
 
+        console.out.print("[green]$ [/green]gbp notes --search lighthouse note")
         status = create_note(self.fixtures.args, gbp, console)
 
         # pylint: disable=duplicate-code
@@ -148,7 +149,7 @@ class NotesTestCase(TestCase):
             field="NOTES",
             key="10,000",
         )
-        self.assertEqual(console.out.getvalue(), EXPECTED_SEARCH_OUTPUT)
+        self.assertEqual(console.out.file.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
     def test_search_no_matches_found(self):
         gbp = self.fixtures.gbp
@@ -168,7 +169,7 @@ class NotesTestCase(TestCase):
             field="NOTES",
             key="python",
         )
-        self.assertEqual(console.err.getvalue(), "No matches found\n")
+        self.assertEqual(console.err.file.getvalue(), "No matches found\n")
 
 
 def fake_editor(text=NOTE, returncode=0):
@@ -184,7 +185,7 @@ def fake_editor(text=NOTE, returncode=0):
     return edit
 
 
-EXPECTED_SEARCH_OUTPUT = """\
+EXPECTED_SEARCH_OUTPUT = """$ gbp notes --search lighthouse note
 Build: lighthouse/10000
 Submitted: Thu Sep  1 09:28:12 2022 -0700
 Completed: Thu Sep  1 09:47:34 2022 -0700

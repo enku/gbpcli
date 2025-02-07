@@ -22,11 +22,12 @@ class LatestTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "latest.json")
 
+        console.out.print("[green]$ [/green]gbp latest lighthouse")
         status = latest(args, gbp, console)
 
         self.assertEqual(status, 0)
-        expected = "3113\n"
-        self.assertEqual(console.out.getvalue(), expected)
+        expected = "$ gbp latest lighthouse\n3113\n"
+        self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(gbp, gbp.query.gbpcli.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self):
@@ -39,6 +40,6 @@ class LatestTestCase(TestCase):
 
         self.assertEqual(status, 1)
         self.assertEqual(
-            self.fixtures.console.err.getvalue(),
+            self.fixtures.console.err.file.getvalue(),
             "No builds exist for the given machine\n",
         )

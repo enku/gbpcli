@@ -22,10 +22,13 @@ class LogsTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "logs.json")
 
+        console.out.print("[green]$ [/green]gbp logs lighthouse 3113")
         status = logs(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), "This is a test!\n")
+        self.assertEqual(
+            console.out.file.getvalue(), "$ gbp logs lighthouse 3113\nThis is a test!\n"
+        )
         self.assert_graphql(gbp, gbp.query.gbpcli.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self):
@@ -36,7 +39,7 @@ class LogsTestCase(TestCase):
 
         status = logs(args, gbp, console)
 
-        self.assertEqual(console.err.getvalue(), "Not Found\n")
+        self.assertEqual(console.err.file.getvalue(), "Not Found\n")
         self.assertEqual(status, 1)
 
     def test_search_logs(self):
@@ -57,4 +60,4 @@ class LogsTestCase(TestCase):
             key="this is a test",
         )
         expected = "lighthouse/10000\nThis is a test!\n"
-        self.assertEqual(console.out.getvalue(), expected)
+        self.assertEqual(console.out.file.getvalue(), expected)

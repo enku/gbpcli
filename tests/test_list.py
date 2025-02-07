@@ -24,16 +24,17 @@ class ListTestCase(TestCase):
         console = self.fixtures.console
         make_response(gbp, "list_with_packages.json")
 
-        status = list_command(args, gbp, self.fixtures.console)
+        console.out.print("[green]$ [/green]gbp list jenkins")
+        status = list_command(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(console.out.file.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=True
         )
 
 
-EXPECTED_OUTPUT = """\
+EXPECTED_OUTPUT = """$ gbp list jenkins
                     💻 jenkins                    
 ╭───────┬────┬───────────────────┬───────────────╮
 │ Flags │ ID │ Built             │ Tags          │
