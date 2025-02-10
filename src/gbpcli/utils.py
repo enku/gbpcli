@@ -28,7 +28,7 @@ class ResolveBuildError(SystemExit):
 def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
     """Resolve build ids, tags, and optional numbers into a Build object
 
-    If there is an finding/calculating the build, then ResolveBuildError, which a
+    If there is an issue finding/calculating the build, then ResolveBuildError, which a
     subclass of SystemExit.
     """
     build = None
@@ -53,7 +53,7 @@ def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
 def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
     """Return the list of "my machines" attached to parsed args
 
-    If There are no return an empty list.
+    If There are none, return an empty list.
     """
     try:
         return cast(list[str], args.my_machines.split())
