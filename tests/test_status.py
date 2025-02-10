@@ -1,14 +1,13 @@
 """Tests for the status subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.status import handler as status
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
 @requires("gbp", "console")
@@ -19,12 +18,13 @@ class StatusTestCase(TestCase):
     maxDiff = None
 
     def test(self):
-        args = Namespace(machine="lighthouse", number="3587")
+        cmdline = "gbp status lighthouse 3587"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "status.json")
 
-        console.out.print("[green]$ [/green]gbp status lighthouse 3587")
+        print_command(cmdline, console)
         status(args, gbp, console)
 
         expected = """$ gbp status lighthouse 3587
@@ -51,13 +51,14 @@ class StatusTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self):
-        args = Namespace(machine="lighthouse", number=None)
+        cmdline = "gbp status lighthouse"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
         make_response(gbp, "status.json")
 
-        console.out.print("[green]$ [/green]gbp status lighthouse")
+        print_command(cmdline, console)
         return_status = status(args, gbp, console)
 
         self.assert_graphql(gbp, gbp.query.gbpcli.latest, index=0, machine="lighthouse")
@@ -65,7 +66,8 @@ class StatusTestCase(TestCase):
         self.assertEqual(return_status, 0)
 
     def test_should_print_error_when_build_does_not_exist(self):
-        args = Namespace(machine="bogus", number="934")
+        cmdline = "gbp status bogus 934"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, {"data": {"build": None}})

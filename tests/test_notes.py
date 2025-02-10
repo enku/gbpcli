@@ -3,17 +3,18 @@
 # pylint: disable=missing-function-docstring,protected-access
 import os
 import subprocess
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import depends, requires
 
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
+
+args = parse_args("gbp notes lighthouse 3109")
 
 
 @depends("gbp")
@@ -23,11 +24,7 @@ def responses(_, fixtures) -> None:
     make_response(gbp, "create_note.json")
 
 
-def args(_options, _fixtures) -> Namespace:
-    return Namespace(machine="lighthouse", number="3109", delete=False, search=False)
-
-
-@requires("gbp", "console", responses, args)
+@requires("gbp", "console", responses)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""
@@ -57,7 +54,7 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"EDITOR": "foo"}, clear=True):
-                    status = create_note(self.fixtures.args, gbp, console)
+                    status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
         self.assert_create_note()
@@ -71,7 +68,7 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
                 with mock.patch.dict(os.environ, {"VISUAL": "foo"}, clear=True):
-                    status = create_note(self.fixtures.args, gbp, console)
+                    status = create_note(args, gbp, console)
 
         self.assertEqual(status, 1)
         self.assertEqual(gbp.query._session.post.call_count, 1)
@@ -83,7 +80,7 @@ class NotesTestCase(TestCase):
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch.dict(os.environ, {}, clear=True):
                 with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                    status = create_note(self.fixtures.args, gbp, console)
+                    status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
         self.assert_create_note()
@@ -91,8 +88,8 @@ class NotesTestCase(TestCase):
     def test_delete_deletes_note(self):
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        self.fixtures.args.delete = True
-        create_note(self.fixtures.args, gbp, console)
+        d_args = parse_args("gbp notes -d lighthouse 3109")
+        create_note(d_args, gbp, console)
 
         self.assert_create_note(note=None)
 
@@ -104,7 +101,7 @@ class NotesTestCase(TestCase):
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                create_note(self.fixtures.args, gbp, console)
+                create_note(args, gbp, console)
 
         self.assert_create_note()
 
@@ -114,7 +111,7 @@ class NotesTestCase(TestCase):
         make_response(gbp, None)
         make_response(gbp, {"data": {"build": None}})
 
-        status = create_note(self.fixtures.args, gbp, console)
+        status = create_note(args, gbp, console)
 
         self.assertEqual(status, 1)
         self.assertEqual(console.err.file.getvalue(), "Build not found\n")
@@ -122,23 +119,22 @@ class NotesTestCase(TestCase):
     def test_should_print_error_when_invalid_number_given(self):
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        self.fixtures.args.number = "foo"
+        my_args = parse_args("gbp notes lighthouse foo")
 
         with self.assertRaises(SystemExit) as context:
-            create_note(self.fixtures.args, gbp, console)
+            create_note(my_args, gbp, console)
 
         self.assertEqual(context.exception.args, ("Invalid build ID: foo",))
 
     def test_search_notes(self):
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        self.fixtures.args.search = True
-        self.fixtures.args.number = "10,000"
+        s_args = parse_args("gbp notes -s lighthouse 10,000")
         make_response(gbp, None)
         make_response(gbp, "search_notes.json")
 
-        console.out.print("[green]$ [/green]gbp notes --search lighthouse note")
-        status = create_note(self.fixtures.args, gbp, console)
+        print_command("gbp notes --search lighthouse note", console)
+        status = create_note(s_args, gbp, console)
 
         # pylint: disable=duplicate-code
         self.assertEqual(status, 0)
@@ -154,12 +150,11 @@ class NotesTestCase(TestCase):
     def test_search_no_matches_found(self):
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        self.fixtures.args.search = True
-        self.fixtures.args.number = "python"
+        s_args = parse_args("gbp notes -s lighthouse python")
         make_response(gbp, None)
         make_response(gbp, {"data": {"search": []}})
 
-        status = create_note(self.fixtures.args, gbp, console)
+        status = create_note(s_args, gbp, console)
 
         self.assertEqual(status, 1)
         self.assert_graphql(

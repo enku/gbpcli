@@ -66,7 +66,7 @@ def tempdir(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[str
 def environ(options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[dict]:
     environ_options = options.get("environ", {})
 
-    with mock.patch.dict(os.environ, environ_options, clear=True) as mocked_environ:
+    with mock.patch.dict(os.environ, environ_options) as mocked_environ:
         yield mocked_environ
 
 

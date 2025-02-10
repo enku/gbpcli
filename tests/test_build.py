@@ -1,13 +1,11 @@
 """Tests for the build subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
-
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.build import handler as build
 
-from . import TestCase, make_response
+from . import TestCase, make_response, parse_args
 
 
 @requires("gbp", "console")
@@ -15,7 +13,8 @@ class MachinesTestCase(TestCase):
     """machines() tests"""
 
     def test(self) -> None:
-        args = Namespace(machine="babette", param=None)
+        cmdline = "gbp build babette"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "schedule_build.json")
@@ -31,7 +30,8 @@ class MachinesTestCase(TestCase):
     def test_with_build_params(self) -> None:
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        args = Namespace(machine="babette", param=["BUILD_TARGET=emptytree"])
+        cmdline = "gbp build babette -p BUILD_TARGET=emptytree"
+        args = parse_args(cmdline)
         make_response(gbp, "schedule_build.json")
 
         status = build(args, gbp, console)
@@ -52,7 +52,8 @@ class MachinesTestCase(TestCase):
         )
 
     def test_when_build_param_missing_equals_sign(self) -> None:
-        args = Namespace(machine="babette", param=["BUILD_TARGETemptytree"])
+        cmdline = "gbp build babette -p BUILD_TARGET"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(self.fixtures.gbp, "schedule_build.json")
@@ -66,7 +67,8 @@ class MachinesTestCase(TestCase):
     def test_with_repo(self) -> None:
         gbp = self.fixtures.gbp
         console = self.fixtures.console
-        args = Namespace(machine="gentoo", param=None, is_repo=True)
+        cmdline = "gbp build -r gentoo"
+        args = parse_args(cmdline)
         make_response(gbp, "schedule_build.json")
 
         status = build(args, gbp, console)

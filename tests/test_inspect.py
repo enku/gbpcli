@@ -1,25 +1,34 @@
 """Tests for the inspect subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.inspect import handler as inspect
 
-from . import LOCAL_TIMEZONE, TestCase, load_ndjson, make_response
+from . import (
+    LOCAL_TIMEZONE,
+    TestCase,
+    load_ndjson,
+    make_response,
+    parse_args,
+    print_command,
+)
 
 
-@requires("gbp", "console")
+@requires("gbp", "console", "environ")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class InspectTestCase(TestCase):
     """inspect() tests"""
 
     maxDiff = None
 
+    options = {"environ": {"GBPCLI_MYMACHINES": "base"}}
+
     def test_entire_tree(self):
-        args = Namespace(machine=None, tail=0, mine=False)
+        cmdline = "gbp inspect"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson")
@@ -47,7 +56,8 @@ class InspectTestCase(TestCase):
         )
 
     def test_single_machine(self):
-        args = Namespace(machine=["base"], mine=False, tail=0)
+        cmdline = "gbp inspect base"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
@@ -55,7 +65,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
-        console.out.print("[green]$ [/green]gbp inspect base")
+        print_command(cmdline, console)
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -65,7 +75,8 @@ class InspectTestCase(TestCase):
         )
 
     def test_single_machine_with_tail(self):
-        args = Namespace(machine=["base"], mine=False, tail=2)
+        cmdline = "gbp inspect --tail=2 base"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=5)
@@ -73,7 +84,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
-        console.out.print("[green]$ [/green]gbp inspect --tail=2 base")
+        print_command(cmdline, console)
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -83,13 +94,14 @@ class InspectTestCase(TestCase):
         )
 
     def test_single_machine_with_build_id(self):
-        args = Namespace(machine=["lighthouse.12672"], mine=False)
+        cmdline = "gbp inspect lighthouse.12672"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
 
         make_response(gbp, "lighthouse.12672.json")
 
-        console.out.print("[green]$ [/green]gbp inspect lighthouse.12672")
+        print_command(cmdline, console)
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -97,7 +109,8 @@ class InspectTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.12672")
 
     def test_with_mine(self):
-        args = Namespace(machine=None, mine=True, tail=0, my_machines="base")
+        cmdline = "gbp inspect --mine"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
@@ -105,7 +118,7 @@ class InspectTestCase(TestCase):
         response = next(graphql_responses)
         make_response(gbp, response)
 
-        console.out.print("[green]$ [/green]gbp inspect --mine")
+        print_command(cmdline, console)
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)

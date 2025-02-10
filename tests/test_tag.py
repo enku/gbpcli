@@ -1,13 +1,11 @@
 """Tests for the tag subcommand"""
 
 # pylint: disable=missing-docstring,protected-access
-from argparse import Namespace
-
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.tag import handler as tag
 
-from . import TestCase, make_response
+from . import TestCase, make_response, parse_args
 
 
 @requires("gbp", "console")
@@ -15,7 +13,8 @@ class TagTestCase(TestCase):
     """tag() tests"""
 
     def test_tag(self):
-        args = Namespace(machine="lighthouse", number="9400", tag="prod", remove=False)
+        cmdline = "gbp tag lighthouse 9400 prod"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         make_response(gbp, "tag_build.json")
 
@@ -27,7 +26,8 @@ class TagTestCase(TestCase):
         )
 
     def test_untag(self):
-        args = Namespace(machine="lighthouse", number=None, tag="prod", remove=True)
+        cmdline = "gbp tag -r lighthouse prod"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         make_response(gbp, "untag_build.json")
 
@@ -39,7 +39,8 @@ class TagTestCase(TestCase):
         )
 
     def test_untag_with_string_starting_with_tagsym_works(self):
-        args = Namespace(machine="lighthouse", number=None, tag="@prod", remove=True)
+        cmdline = "gbp tag -r lighthouse @prod"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         make_response(gbp, "untag_build.json")
 
@@ -51,7 +52,8 @@ class TagTestCase(TestCase):
         )
 
     def test_untag_with_build_number_gives_error(self):
-        args = Namespace(machine="lighthouse", number="9400", tag="prod", remove=True)
+        cmdline = "gbp tag -r lighthouse 9400 prod"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
 
         status = tag(args, gbp, self.fixtures.console)

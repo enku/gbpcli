@@ -1,14 +1,13 @@
 """Tests for the publish subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.publish import handler as publish
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args
 
 
 @requires("gbp", "console")
@@ -17,7 +16,8 @@ class PublishTestCase(TestCase):
     """publish() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number="3109")
+        cmdline = "gbp publish lighthouse 3109"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "publish.json")
@@ -27,7 +27,8 @@ class PublishTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.publish, id="lighthouse.3109")
 
     def test_should_get_latest_when_number_is_none(self):
-        args = Namespace(machine="lighthouse", number=None)
+        cmdline = "gbp publish lighthouse"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, {"data": {"latest": {"id": "lighthouse.2080"}}})

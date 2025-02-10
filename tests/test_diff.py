@@ -1,7 +1,6 @@
 """Tests for the diff subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from json import loads as parse
 from unittest import mock
 
@@ -9,7 +8,15 @@ from unittest_fixtures import requires
 
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, TestCase, http_response, load_data, make_response
+from . import (
+    LOCAL_TIMEZONE,
+    TestCase,
+    http_response,
+    load_data,
+    make_response,
+    parse_args,
+    print_command,
+)
 
 
 @requires("gbp", "console")
@@ -18,12 +25,13 @@ class DiffTestCase(TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self):
-        args = Namespace(machine="lighthouse", left="3111", right="3112")
+        cmdline = "gbp diff lighthouse 3111 3112"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "diff.json")
 
-        console.out.print("[green]$ [/green]gbp diff lighthouse 3111 3112")
+        print_command(cmdline, console)
         status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -48,7 +56,8 @@ diff -r lighthouse/3111 lighthouse/3112
         )
 
     def test_should_print_nothing_when_no_diffs(self):
-        args = Namespace(machine="lighthouse", left="3111", right="3111")
+        cmdline = "gbp diff lighthouse 3111 3111"
+        args = parse_args(cmdline)
         no_diffs_json = parse(load_data("diff_no_content.json"))
         gbp = self.fixtures.gbp
         console = self.fixtures.console
@@ -59,7 +68,8 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assertEqual(console.out.file.getvalue(), "")
 
     def test_when_right_is_none_should_use_latest(self):
-        args = Namespace(machine="lighthouse", left="3111", right=None)
+        cmdline = "gbp diff lighthouse 3111"
+        args = parse_args(cmdline)
         latest_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = self.fixtures.gbp
@@ -94,7 +104,8 @@ diff -r lighthouse/3111 lighthouse/3112
         gbp.query._session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_should_use_published(self):
-        args = Namespace(machine="lighthouse", left=None, right=None)
+        cmdline = "gbp diff lighthouse"
+        args = parse_args(cmdline)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
         gbp = self.fixtures.gbp
@@ -129,7 +140,8 @@ diff -r lighthouse/3111 lighthouse/3112
         gbp.query._session.post.assert_has_calls(expected_calls)
 
     def test_when_left_is_none_and_not_published(self):
-        args = Namespace(machine="jenkins", left=None, right=None)
+        cmdline = "gbp diff jenkins"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         list_json = parse(load_data("list.json"))
@@ -152,7 +164,8 @@ diff -r lighthouse/3111 lighthouse/3112
 
     def test_against_missing_timestamps(self):
         # Legacy builds have no (None) built field
-        args = Namespace(machine="lighthouse", left="3111", right="3112")
+        cmdline = "gbp diff lighthouse 3111 3112"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         mock_json = parse(load_data("diff.json"))
@@ -162,7 +175,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
         make_response(gbp, mock_json)
 
-        console.out.print("[green]$ [/green]gbp diff lighthouse 3111 3112")
+        print_command(cmdline, console)
         status = diff(args, gbp, console)
 
         self.assertEqual(status, 0)

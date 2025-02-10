@@ -1,14 +1,13 @@
 """Tests for the latest subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.latest import handler as latest
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
 @requires("gbp", "console")
@@ -17,12 +16,13 @@ class LatestTestCase(TestCase):
     """latest() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse")
+        cmdline = "gbp latest lighthouse"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "latest.json")
 
-        console.out.print("[green]$ [/green]gbp latest lighthouse")
+        print_command(cmdline, console)
         status = latest(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -31,7 +31,8 @@ class LatestTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.latest, machine="lighthouse")
 
     def test_should_print_error_when_not_found(self):
-        args = Namespace(machine="bogus")
+        cmdline = "gbp latest bogus"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, {"data": {"latest": None}})

@@ -1,14 +1,13 @@
 """Tests for the logs subcommand"""
 
 # pylint: disable=missing-function-docstring
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.logs import handler as logs
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
 @requires("gbp", "console")
@@ -17,12 +16,13 @@ class LogsTestCase(TestCase):
     """logs() tests"""
 
     def test(self):
-        args = Namespace(machine="lighthouse", number="3113", search=False)
+        cmdline = "gbp logs lighthouse 3113"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "logs.json")
 
-        console.out.print("[green]$ [/green]gbp logs lighthouse 3113")
+        print_command(cmdline, console)
         status = logs(args, gbp, console)
 
         self.assertEqual(status, 0)
@@ -32,7 +32,8 @@ class LogsTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.logs, id="lighthouse.3113")
 
     def test_should_print_error_when_logs_dont_exist(self):
-        args = Namespace(machine="lighthouse", number="9999", search=False)
+        cmdline = "gbp logs lighthouse 9999"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, {"data": {"build": None}})
@@ -43,7 +44,8 @@ class LogsTestCase(TestCase):
         self.assertEqual(status, 1)
 
     def test_search_logs(self):
-        args = Namespace(machine="lighthouse", number="this is a test", search=True)
+        cmdline = "gbp logs -s lighthouse 'this is a test'"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "search_notes.json")

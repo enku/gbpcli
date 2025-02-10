@@ -1,14 +1,13 @@
 """Tests for the list subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from argparse import Namespace
 from unittest import mock
 
 from unittest_fixtures import requires
 
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
 @requires("gbp", "console")
@@ -19,12 +18,13 @@ class ListTestCase(TestCase):
     maxDiff = None
 
     def test(self):
-        args = Namespace(machine="jenkins")
+        cmdline = "gbp list jenkins"
+        args = parse_args(cmdline)
         gbp = self.fixtures.gbp
         console = self.fixtures.console
         make_response(gbp, "list_with_packages.json")
 
-        console.out.print("[green]$ [/green]gbp list jenkins")
+        print_command(cmdline, console)
         status = list_command(args, gbp, console)
 
         self.assertEqual(status, 0)
