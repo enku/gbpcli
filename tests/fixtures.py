@@ -46,7 +46,7 @@ def console(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[Con
     yield c
 
     # pylint: disable=no-member,global-statement
-    if "SAVE_VIRTUAL_CONSOLE" in os.environ and c.out.file.getvalue():
+    if "SAVE_VIRTUAL_CONSOLE" in os.environ and c.out.file.getvalue():  # type: ignore
         global COUNTER
 
         COUNTER += 1
