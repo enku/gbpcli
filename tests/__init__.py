@@ -9,10 +9,10 @@ from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
 from typing import Any, Iterator
+from unittest import TestCase as BaseTestCase
 
 import requests
 from rich.theme import Theme
-from unittest_fixtures import BaseTestCase
 
 import gbpcli
 from gbpcli import graphql

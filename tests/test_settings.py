@@ -9,7 +9,7 @@ from unittest import TestCase, mock
 from gbpcli.settings import BaseSettings
 
 
-@dataclass(frozen=True)
+@dataclass(kw_only=True, frozen=True)
 class Settings(BaseSettings):
     env_prefix: ClassVar = "BUILD_PUBLISHER_"
 

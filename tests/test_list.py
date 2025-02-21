@@ -3,25 +3,23 @@
 # pylint: disable=missing-function-docstring,protected-access
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.list import handler as list_command
 
 from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
-@requires("gbp", "console")
+@given("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class ListTestCase(TestCase):
     """list() tests"""
 
-    maxDiff = None
-
-    def test(self):
+    def test(self, fixtures: Fixtures):
         cmdline = "gbp list jenkins"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "list_with_packages.json")
 
         print_command(cmdline, console)

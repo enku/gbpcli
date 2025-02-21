@@ -5,7 +5,7 @@ import os
 import subprocess
 from unittest import mock
 
-from unittest_fixtures import depends, requires
+from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
 
@@ -17,23 +17,23 @@ NOTE = "Hello world\n"
 args = parse_args("gbp notes lighthouse 3109")
 
 
-@depends("gbp")
+@fixture("gbp")
 def responses(_, fixtures) -> None:
     gbp = fixtures.gbp
     make_response(gbp, "status.json")
     make_response(gbp, "create_note.json")
 
 
-@requires("gbp", "console", responses)
+@given("gbp", "console", responses)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""
 
-    maxDiff = None
-
-    def assert_create_note(self, machine="lighthouse", number="3109", note=NOTE):
+    def assert_create_note(
+        self, fixtures: Fixtures, machine="lighthouse", number="3109", note=NOTE
+    ):
         """Assert that the note was created by a GraphQL request"""
-        gbp = self.fixtures.gbp
+        gbp = fixtures.gbp
 
         self.assert_graphql(
             gbp, gbp.query.gbpcli.build, index=0, id=f"{machine}.{number}"
@@ -46,10 +46,10 @@ class NotesTestCase(TestCase):
             note=note,
         )
 
-    def test_create_with_editor(self):
+    def test_create_with_editor(self, fixtures: Fixtures):
         editor = fake_editor()
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
@@ -57,13 +57,15 @@ class NotesTestCase(TestCase):
                     status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assert_create_note()
+        self.assert_create_note(fixtures)
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
-    def test_create_with_editor_but_editor_fails_does_not_create_note(self):
+    def test_create_with_editor_but_editor_fails_does_not_create_note(
+        self, fixtures: Fixtures
+    ):
         editor = fake_editor(returncode=1)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
@@ -74,28 +76,28 @@ class NotesTestCase(TestCase):
         self.assertEqual(gbp.query._session.post.call_count, 1)
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
-    def test_when_isatty_but_no_editor_reads_from_stdin(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_when_isatty_but_no_editor_reads_from_stdin(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch.dict(os.environ, {}, clear=True):
                 with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                     status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assert_create_note()
+        self.assert_create_note(fixtures)
 
-    def test_delete_deletes_note(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_delete_deletes_note(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         d_args = parse_args("gbp notes -d lighthouse 3109")
         create_note(d_args, gbp, console)
 
-        self.assert_create_note(note=None)
+        self.assert_create_note(fixtures, note=None)
 
-    def test_create_with_no_tty(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_create_with_no_tty(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "status.json")
         make_response(gbp, "create_note.json")
 
@@ -103,11 +105,11 @@ class NotesTestCase(TestCase):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                 create_note(args, gbp, console)
 
-        self.assert_create_note()
+        self.assert_create_note(fixtures)
 
-    def test_should_print_error_when_build_does_not_exist(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, None)
         make_response(gbp, {"data": {"build": None}})
 
@@ -116,9 +118,9 @@ class NotesTestCase(TestCase):
         self.assertEqual(status, 1)
         self.assertEqual(console.err.file.getvalue(), "Build not found\n")
 
-    def test_should_print_error_when_invalid_number_given(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_should_print_error_when_invalid_number_given(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         my_args = parse_args("gbp notes lighthouse foo")
 
         with self.assertRaises(SystemExit) as context:
@@ -126,9 +128,9 @@ class NotesTestCase(TestCase):
 
         self.assertEqual(context.exception.args, ("Invalid build ID: foo",))
 
-    def test_search_notes(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_search_notes(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         s_args = parse_args("gbp notes -s lighthouse 10,000")
         make_response(gbp, None)
         make_response(gbp, "search_notes.json")
@@ -147,9 +149,9 @@ class NotesTestCase(TestCase):
         )
         self.assertEqual(console.out.file.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
-    def test_search_no_matches_found(self):
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+    def test_search_no_matches_found(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
+        console = fixtures.console
         s_args = parse_args("gbp notes -s lighthouse python")
         make_response(gbp, None)
         make_response(gbp, {"data": {"search": []}})

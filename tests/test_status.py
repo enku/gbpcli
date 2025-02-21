@@ -3,25 +3,23 @@
 # pylint: disable=missing-function-docstring,protected-access
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.status import handler as status
 
 from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
-@requires("gbp", "console")
+@given("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class StatusTestCase(TestCase):
     """status() tests"""
 
-    maxDiff = None
-
-    def test(self):
+    def test(self, fixtures: Fixtures):
         cmdline = "gbp status lighthouse 3587"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "status.json")
 
         print_command(cmdline, console)
@@ -50,11 +48,11 @@ class StatusTestCase(TestCase):
         self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.3587")
 
-    def test_should_get_latest_when_number_is_none(self):
+    def test_should_get_latest_when_number_is_none(self, fixtures: Fixtures):
         cmdline = "gbp status lighthouse"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
         make_response(gbp, "status.json")
 
@@ -65,11 +63,11 @@ class StatusTestCase(TestCase):
         self.assert_graphql(gbp, gbp.query.gbpcli.build, index=1, id="lighthouse.3587")
         self.assertEqual(return_status, 0)
 
-    def test_should_print_error_when_build_does_not_exist(self):
+    def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
         cmdline = "gbp status bogus 934"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, {"data": {"build": None}})
 
         return_status = status(args, gbp, console)

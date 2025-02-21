@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring,protected-access
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.subcommands.inspect import handler as inspect
 
@@ -17,20 +17,17 @@ from . import (
 )
 
 
-@requires("gbp", "console", "environ")
+@given("gbp", "console", "environ")
+@where(environ={"GBPCLI_MYMACHINES": "base"})
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class InspectTestCase(TestCase):
     """inspect() tests"""
 
-    maxDiff = None
-
-    options = {"environ": {"GBPCLI_MYMACHINES": "base"}}
-
-    def test_entire_tree(self):
+    def test_entire_tree(self, fixtures: Fixtures):
         cmdline = "gbp inspect"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson")
 
         machines_response = next(graphql_responses)
@@ -55,11 +52,11 @@ class InspectTestCase(TestCase):
             gbp, gbp.query.gbpcli.builds, index=2, machine="gbpbox", withPackages=True
         )
 
-    def test_single_machine(self):
+    def test_single_machine(self, fixtures: Fixtures):
         cmdline = "gbp inspect base"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
 
         response = next(graphql_responses)
@@ -74,11 +71,11 @@ class InspectTestCase(TestCase):
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
-    def test_single_machine_with_tail(self):
+    def test_single_machine_with_tail(self, fixtures: Fixtures):
         cmdline = "gbp inspect --tail=2 base"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=5)
 
         response = next(graphql_responses)
@@ -93,11 +90,11 @@ class InspectTestCase(TestCase):
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
 
-    def test_single_machine_with_build_id(self):
+    def test_single_machine_with_build_id(self, fixtures: Fixtures):
         cmdline = "gbp inspect lighthouse.12672"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
 
         make_response(gbp, "lighthouse.12672.json")
 
@@ -108,11 +105,11 @@ class InspectTestCase(TestCase):
         self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.12672")
 
-    def test_with_mine(self):
+    def test_with_mine(self, fixtures: Fixtures):
         cmdline = "gbp inspect --mine"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         graphql_responses = load_ndjson("inspect.ndjson", start=4)
 
         response = next(graphql_responses)

@@ -1,6 +1,6 @@
 """Tests for the main module"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-function-docstring,protected-access,unused-argument
 import argparse
 import importlib
 import os.path
@@ -8,7 +8,7 @@ import sys
 import unittest
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 import gbpcli
 import gbpcli.subcommands.list as list_subcommand
@@ -60,7 +60,7 @@ class BuildParserTestCase(unittest.TestCase):
 
         self.assertIsInstance(parser, argparse.ArgumentParser)
         subparsers = add_subparsers_mock.return_value
-        self.assertEqual(subparsers.add_parser.call_count, len(SUBCOMMANDS))
+        self.assertGreaterEqual(subparsers.add_parser.call_count, len(SUBCOMMANDS))
 
         for subcommand in SUBCOMMANDS:
             with self.subTest(subcommand=subcommand):
@@ -145,14 +145,14 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
-@requires("gbp", "tempdir", "user_config_dir", "console")
+@given("gbp", "tmpdir", "user_config_dir", "console")
 class MainTestCase(TestCase):
     """tests for the main function"""
 
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
     @mock.patch("gbpcli.Console")
-    def test(self, console_mock, parse_args_mock, gbp_mock):
+    def test(self, console_mock, parse_args_mock, gbp_mock, fixtures: Fixtures):
         parse_args_mock.return_value.url = "http://test.invalid/"
         parse_args_mock.return_value.color = "auto"
         func = parse_args_mock.return_value.func
@@ -167,7 +167,7 @@ class MainTestCase(TestCase):
         )
         self.assertEqual(status, 0)
 
-    def test_should_print_help_when_no_func(self):
+    def test_should_print_help_when_no_func(self, fixtures: Fixtures):
         with mock.patch("gbpcli.argparse.ArgumentParser.print_help") as print_help_mock:
             with self.assertRaises(SystemExit) as context:
                 main([])
@@ -178,7 +178,7 @@ class MainTestCase(TestCase):
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.rich.console.Console")
     def test_should_print_to_stderr_and_exit_1_on_exception(
-        self, console_mock, gbp_mock
+        self, console_mock, gbp_mock, fixtures: Fixtures
     ):
         error = APIError("blah", {})
         message = "blah"
@@ -192,15 +192,15 @@ class MainTestCase(TestCase):
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
     @mock.patch("gbpcli.Console")
     def test_should_instantiate_gbp_with_api_key_when_available(
-        self, _mock_console, mock_parse_args, mock_gbp
+        self, _mock_console, mock_parse_args, mock_gbp, fixtures: Fixtures
     ):
-        mock_gbp.return_value = self.fixtures.gbp
+        mock_gbp.return_value = fixtures.gbp
         mock_parse_args.return_value.url = "http://test.invalid/"
         mock_parse_args.return_value.color = "auto"
         func = mock_parse_args.return_value.func
         func.return_value = 0
 
-        filename = os.path.join(self.fixtures.tempdir, "gbpcli.toml")
+        filename = os.path.join(fixtures.tmpdir, "gbpcli.toml")
         with open(filename, "wb") as fp:
             os.chmod(fp.fileno(), 0o600)
             fp.write(b"[gbpcli]\n")
@@ -214,9 +214,11 @@ class MainTestCase(TestCase):
 
     @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.Console")
-    def test_with_config_file_option(self, _mock_console, mock_gbp) -> None:
-        mock_gbp.return_value = self.fixtures.gbp
-        tmpdir = self.fixtures.tempdir
+    def test_with_config_file_option(
+        self, _mock_console, mock_gbp, fixtures: Fixtures
+    ) -> None:
+        mock_gbp.return_value = fixtures.gbp
+        tmpdir = fixtures.tmpdir
 
         filename = os.path.join(tmpdir, "custom.toml")
         with open(filename, "wb") as fp:
@@ -227,9 +229,9 @@ class MainTestCase(TestCase):
 
         mock_gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
 
-    def test_main_no_args(self) -> None:
+    def test_main_no_args(self, fixtures: Fixtures) -> None:
         # admittedly this is mostly to get a good screenshot
-        console = self.fixtures.console
+        console = fixtures.console
 
         console.out.print("[green]$ [/green]gbp")
 
@@ -244,12 +246,12 @@ class MainTestCase(TestCase):
         self.assertEqual(exception.args, (1,))
 
 
-@requires("gbp", "tempdir", "user_config_dir")
+@given("gbp", "tmpdir", "user_config_dir")
 class GetUserConfigTests(TestCase):
     """Tests for the get_user_config function"""
 
-    def test_with_config(self) -> None:
-        filename = os.path.join(self.fixtures.tempdir, "gbpcli.toml")
+    def test_with_config(self, fixtures: Fixtures) -> None:
+        filename = os.path.join(fixtures.tmpdir, "gbpcli.toml")
 
         with open(filename, "wb") as fp:
             fp.write(
@@ -265,14 +267,14 @@ my_machines = ["this", "that", "the_other"]
         self.assertEqual(user_config.url, "http://test.invalid/")
         self.assertEqual(user_config.my_machines, ["this", "that", "the_other"])
 
-    def test_with_no_config(self) -> None:
+    def test_with_no_config(self, fixtures: Fixtures) -> None:
         user_config = gbpcli.get_user_config()
 
         self.assertEqual(user_config.url, None)
         self.assertEqual(user_config.my_machines, None)
 
-    def test_with_given_config(self) -> None:
-        custom_filename = os.path.join(self.fixtures.tempdir, "custom.toml")
+    def test_with_given_config(self, fixtures: Fixtures) -> None:
+        custom_filename = os.path.join(fixtures.tmpdir, "custom.toml")
 
         with open(custom_filename, "wb") as fp:
             fp.write(
@@ -288,8 +290,8 @@ my_machines = ["this", "that", "the_other"]
         self.assertEqual(user_config.url, "http://test.invalid/")
         self.assertEqual(user_config.my_machines, ["this", "that", "the_other"])
 
-    def test_with_given_config_that_does_not_exist(self) -> None:
-        custom_filename = os.path.join(self.fixtures.tempdir, "bogus.toml")
+    def test_with_given_config_that_does_not_exist(self, fixtures: Fixtures) -> None:
+        custom_filename = os.path.join(fixtures.tmpdir, "bogus.toml")
 
         with self.assertRaises(FileNotFoundError):
             gbpcli.get_user_config(custom_filename)

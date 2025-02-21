@@ -1,24 +1,22 @@
 """Tests for the packages subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.packages import handler as packages
 
 from . import TestCase, load_data, make_response, parse_args, print_command
 
 
-@requires("gbp", "console")
+@given("gbp", "console")
 class PackagesTestCase(TestCase):
     """packages() tests"""
 
-    maxDiff = None
-
-    def test(self):
+    def test(self, fixtures: Fixtures):
         cmdline = "gbp packages babette 268"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "packages.json")
 
         print_command(cmdline, console)
@@ -31,11 +29,11 @@ class PackagesTestCase(TestCase):
         self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(gbp, gbp.query.gbpcli.packages, id="babette.268")
 
-    def test_when_build_does_not_exist_prints_error(self):
+    def test_when_build_does_not_exist_prints_error(self, fixtures: Fixtures):
         cmdline = "gbp packages bogus 268"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         no_build = {"data": {"build": None}}
         make_response(gbp, no_build)
 

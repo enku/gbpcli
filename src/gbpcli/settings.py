@@ -8,7 +8,7 @@ from typing import Any, ClassVar, Self
 from strtobool import strtobool  # type: ignore
 
 
-@dataclass(frozen=True)
+@dataclass(kw_only=True, frozen=True)
 class BaseSettings:
     """Base class for Settings
 

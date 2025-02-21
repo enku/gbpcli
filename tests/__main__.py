@@ -1,12 +1,19 @@
 """Run tests for gbpcli"""
 
 import argparse
+import os
 import unittest
 
 
 def main() -> None:
     """Program entry point"""
     args = parse_args()
+    os.environ["DJANGO_SETTINGS_MODULE"] = args.settings
+
+    # These values are required in order to import the publisher module
+    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid/")
+    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
+
     loader = unittest.TestLoader()
     loader.testNamePatterns = [f"*{pattern}*" for pattern in args.tests] or None
     tests = loader.discover("")
@@ -19,7 +26,9 @@ def main() -> None:
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments"""
+    default_settings = os.environ.get("DJANGO_SETTINGS_MODULE", "tests.settings")
     parser = argparse.ArgumentParser()
+    parser.add_argument("--settings", default=default_settings)
     parser.add_argument("-f", "--failfast", action="store_true", default=False)
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
     parser.add_argument("tests", nargs="*", default=[])

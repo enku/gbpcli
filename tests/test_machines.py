@@ -1,27 +1,26 @@
 """Tests for the machines subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-function-docstring,protected-access,unused-argument
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.subcommands.machines import handler as machines
 
 from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
-@requires("gbp", "console", "environ")
+@given("gbp", "console", "environ")
+@where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class MachinesTestCase(TestCase):
     """machines() tests"""
 
-    options = {"environ": {"GBPCLI_MYMACHINES": "babette lighthouse"}}
-
-    def test(self):
+    def test(self, fixtures: Fixtures):
         cmdline = "gbp machines"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "machines.json")
 
         print_command(cmdline, console)
@@ -31,11 +30,11 @@ class MachinesTestCase(TestCase):
         self.assertEqual(console.out.file.getvalue(), EXPECTED_OUTPUT)
         self.assert_graphql(gbp, gbp.query.gbpcli.machines, names=None)
 
-    def test_with_mine(self):
+    def test_with_mine(self, fixtures: Fixtures):
         cmdline = "gbp machines --mine"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "machines_filtered.json")
 
         print_command(cmdline, console)

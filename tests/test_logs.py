@@ -3,23 +3,23 @@
 # pylint: disable=missing-function-docstring
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.logs import handler as logs
 
 from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
 
 
-@requires("gbp", "console")
+@given("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class LogsTestCase(TestCase):
     """logs() tests"""
 
-    def test(self):
+    def test(self, fixtures: Fixtures):
         cmdline = "gbp logs lighthouse 3113"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "logs.json")
 
         print_command(cmdline, console)
@@ -31,11 +31,11 @@ class LogsTestCase(TestCase):
         )
         self.assert_graphql(gbp, gbp.query.gbpcli.logs, id="lighthouse.3113")
 
-    def test_should_print_error_when_logs_dont_exist(self):
+    def test_should_print_error_when_logs_dont_exist(self, fixtures: Fixtures):
         cmdline = "gbp logs lighthouse 9999"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, {"data": {"build": None}})
 
         status = logs(args, gbp, console)
@@ -43,11 +43,11 @@ class LogsTestCase(TestCase):
         self.assertEqual(console.err.file.getvalue(), "Not Found\n")
         self.assertEqual(status, 1)
 
-    def test_search_logs(self):
+    def test_search_logs(self, fixtures: Fixtures):
         cmdline = "gbp logs -s lighthouse 'this is a test'"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "search_notes.json")
         make_response(gbp, "logs.json")
 

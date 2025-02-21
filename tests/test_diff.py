@@ -4,7 +4,7 @@
 from json import loads as parse
 from unittest import mock
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.diff import handler as diff
 
@@ -19,16 +19,16 @@ from . import (
 )
 
 
-@requires("gbp", "console")
+@given("gbp", "console")
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class DiffTestCase(TestCase):
     """diff() tests"""
 
-    def test_should_display_diffs(self):
+    def test_should_display_diffs(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse 3111 3112"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         make_response(gbp, "diff.json")
 
         print_command(cmdline, console)
@@ -55,25 +55,25 @@ diff -r lighthouse/3111 lighthouse/3112
             gbp, gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
 
-    def test_should_print_nothing_when_no_diffs(self):
+    def test_should_print_nothing_when_no_diffs(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse 3111 3111"
         args = parse_args(cmdline)
         no_diffs_json = parse(load_data("diff_no_content.json"))
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         gbp.query._session.post.return_value = http_response(json=no_diffs_json)
 
         diff(args, gbp, console)
 
         self.assertEqual(console.out.file.getvalue(), "")
 
-    def test_when_right_is_none_should_use_latest(self):
+    def test_when_right_is_none_should_use_latest(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse 3111"
         args = parse_args(cmdline)
         latest_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         gbp.query._session.post.side_effect = (
             http_response(json=latest_json),
             http_response(json=mock_diff_json),
@@ -103,13 +103,13 @@ diff -r lighthouse/3111 lighthouse/3112
         ]
         gbp.query._session.post.assert_has_calls(expected_calls)
 
-    def test_when_left_is_none_should_use_published(self):
+    def test_when_left_is_none_should_use_published(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse"
         args = parse_args(cmdline)
         list_json = parse(load_data("list.json"))
         mock_diff_json = parse(load_data("diff.json"))
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         gbp.query._session.post.side_effect = (
             http_response(json=list_json),
             http_response(json=mock_diff_json),
@@ -139,11 +139,11 @@ diff -r lighthouse/3111 lighthouse/3112
         ]
         gbp.query._session.post.assert_has_calls(expected_calls)
 
-    def test_when_left_is_none_and_not_published(self):
+    def test_when_left_is_none_and_not_published(self, fixtures: Fixtures):
         cmdline = "gbp diff jenkins"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         list_json = parse(load_data("list.json"))
 
         # Make sure there are not published builds
@@ -162,12 +162,12 @@ diff -r lighthouse/3111 lighthouse/3112
             console.err.file.getvalue(), "No builds given and no builds published\n"
         )
 
-    def test_against_missing_timestamps(self):
+    def test_against_missing_timestamps(self, fixtures: Fixtures):
         # Legacy builds have no (None) built field
         cmdline = "gbp diff lighthouse 3111 3112"
         args = parse_args(cmdline)
-        gbp = self.fixtures.gbp
-        console = self.fixtures.console
+        gbp = fixtures.gbp
+        console = fixtures.console
         mock_json = parse(load_data("diff.json"))
 
         # Emulate an old build where we didn't have a built field

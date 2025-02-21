@@ -2,28 +2,46 @@
 
 # pylint: disable=missing-docstring
 
-import io
 import os
-import tempfile
+from typing import Any
 from unittest import mock
 
-import rich.console
-from unittest_fixtures import FixtureContext, FixtureOptions, Fixtures, depends
+import gbp_testkit.fixtures as testkit
+from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 from gbpcli import GBP
 from gbpcli.config import AuthDict
-from gbpcli.theme import get_theme_from_string
-from gbpcli.types import Console
 
-COUNTER = 0
+console = testkit.console
+tmpdir = testkit.tmpdir
 
 
-def gbp(options: FixtureOptions, _fixtures: Fixtures) -> GBP:
+@fixture("tmpdir")
+def environ(
+    options: dict[str, str] | None, fixtures: Fixtures
+) -> FixtureContext[dict[str, str]]:
+    options = options or {}
+    mock_environ = {
+        **next(testkit.environ(options, fixtures), {}),
+        "BUILD_PUBLISHER_API_KEY_ENABLE": "no",
+        "BUILD_PUBLISHER_JENKINS_BASE_URL": "https://jenkins.invalid/",
+        "BUILD_PUBLISHER_RECORDS_BACKEND": "memory",
+        "BUILD_PUBLISHER_STORAGE_PATH": str(fixtures.tmpdir / "gbp"),
+        "BUILD_PUBLISHER_WORKER_BACKEND": "sync",
+        "BUILD_PUBLISHER_WORKER_THREAD_WAIT": "yes",
+        **options,
+    }
+    with mock.patch.dict(os.environ, mock_environ):
+        yield mock_environ
+
+
+@fixture()
+def gbp(options: dict[str, Any] | None, _fixtures: Fixtures) -> GBP:
     """Return a GBP instance with a mock session attribute"""
     # pylint: disable=protected-access
-    gbp_options = options.get("gbp", {})
-    url = gbp_options.get("url", "http://test.invalid/")
-    auth: AuthDict | None = gbp_options.get("auth", None)
+    options = options or {}
+    url = options.get("url", "http://test.invalid/")
+    auth: AuthDict | None = options.get("auth", None)
     _gbp = GBP(url, auth=auth)
     headers = _gbp.query._session.headers
     _gbp.query._session = mock.Mock()
@@ -32,47 +50,9 @@ def gbp(options: FixtureOptions, _fixtures: Fixtures) -> GBP:
     return _gbp
 
 
-@depends()
-def console(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[Console]:
-    outfile = io.StringIO()
-    errfile = io.StringIO()
-    theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
-    out = rich.console.Console(
-        file=outfile, width=88, theme=theme, highlight=False, record=True
-    )
-    err = rich.console.Console(file=errfile, width=88, record=True)
-    c = Console(out=out, err=err)
-
-    yield c
-
-    # pylint: disable=no-member,global-statement
-    if "SAVE_VIRTUAL_CONSOLE" in os.environ and c.out.file.getvalue():  # type: ignore
-        global COUNTER
-
-        COUNTER += 1
-        filename = f"{COUNTER}.svg"
-        c.out.save_svg(filename, title="Gentoo Build Publisher")
-
-
-def tempdir(_options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[str]:
-    """Create a tempdir for the given test
-
-    The tempdir will be cleaned in the tearDown step
-    """
-    with tempfile.TemporaryDirectory() as _tempdir:
-        yield _tempdir
-
-
-def environ(options: FixtureOptions, _fixtures: Fixtures) -> FixtureContext[dict]:
-    environ_options = options.get("environ", {})
-
-    with mock.patch.dict(os.environ, environ_options) as mocked_environ:
-        yield mocked_environ
-
-
-@depends(tempdir)
-def user_config_dir(_options: FixtureOptions, fixtures: Fixtures):
+@fixture("tmpdir")
+def user_config_dir(_options: None, fixtures: Fixtures):
     with mock.patch(
-        "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tempdir
+        "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tmpdir
     ) as patch:
         yield patch

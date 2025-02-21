@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring,protected-access
 import argparse
 
-from unittest_fixtures import requires
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
@@ -12,15 +12,17 @@ from gbpcli.utils import get_my_machines_from_args, resolve_build_id
 from . import TestCase, http_response
 
 
-@requires("gbp")
+@given("gbp")
 class CheckTestCase(TestCase):
     """check() tests"""
 
-    def test_should_raise_apierror_if_query_response_has_errors(self):
+    def test_should_raise_apierror_if_query_response_has_errors(
+        self, fixtures: Fixtures
+    ):
         error1 = {"message": "The end is near", "locations": [], "path": None}
         error2 = {"message": "Oh no!", "locations": [], "path": None}
         response_with_errors = {"data": {"build": None}, "errors": [error1, error2]}
-        gbp = self.fixtures.gbp
+        gbp = fixtures.gbp
         gbp.query._session.post.return_value = http_response(json=response_with_errors)
 
         with self.assertRaises(APIError) as context:
@@ -31,12 +33,14 @@ class CheckTestCase(TestCase):
         self.assertEqual(exception.data, {"build": None})
 
 
-@requires("gbp")
+@given("gbp")
 class ResolveBuildIdTestCase(TestCase):
     """resolve_build_id() tests"""
 
-    def test_returns_latest_build_for_machine_when_build_id_is_none(self):
-        gbp = self.fixtures.gbp
+    def test_returns_latest_build_for_machine_when_build_id_is_none(
+        self, fixtures: Fixtures
+    ):
+        gbp = fixtures.gbp
         gbp.query._session.post.return_value = http_response(
             json={"data": {"latest": {"id": "lighthouse.123"}}}
         )
@@ -45,8 +49,8 @@ class ResolveBuildIdTestCase(TestCase):
 
         self.assertEqual(result, Build(machine="lighthouse", number=123))
 
-    def test_aborts_when_build_id_is_none_and_no_latest(self):
-        gbp = self.fixtures.gbp
+    def test_aborts_when_build_id_is_none_and_no_latest(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
         gbp.query._session.post.return_value = http_response(
             json={"data": {"latest": None}}
         )
@@ -56,8 +60,8 @@ class ResolveBuildIdTestCase(TestCase):
 
         self.assertEqual(context.exception.args, ("No builds for lighthouse",))
 
-    def test_returns_build_when_given_tag(self):
-        gbp = self.fixtures.gbp
+    def test_returns_build_when_given_tag(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
         gbp.query._session.post.return_value = http_response(
             json={"data": {"resolveBuildTag": {"id": "lighthouse.123"}}}
         )
@@ -66,8 +70,8 @@ class ResolveBuildIdTestCase(TestCase):
 
         self.assertEqual(result, Build(machine="lighthouse", number=123))
 
-    def test_aborts_when_given_tag_that_does_not_exist(self):
-        gbp = self.fixtures.gbp
+    def test_aborts_when_given_tag_that_does_not_exist(self, fixtures: Fixtures):
+        gbp = fixtures.gbp
         gbp.query._session.post.return_value = http_response(
             json={"data": {"resolveBuildTag": None}}
         )
@@ -77,8 +81,10 @@ class ResolveBuildIdTestCase(TestCase):
 
         self.assertEqual(context.exception.args, ("No such tag for lighthouse: prod",))
 
-    def test_returns_build_with_given_id_if_given_build_id_is_numeric(self):
-        gbp = self.fixtures.gbp
+    def test_returns_build_with_given_id_if_given_build_id_is_numeric(
+        self, fixtures: Fixtures
+    ):
+        gbp = fixtures.gbp
 
         result = resolve_build_id("lighthouse", "456", gbp)
 
