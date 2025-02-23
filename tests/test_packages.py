@@ -1,12 +1,12 @@
 """Tests for the packages subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from gbp_testkit.helpers import parse_args
+from gbp_testkit.helpers import parse_args, print_command
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.packages import handler as packages
 
-from . import TestCase, load_data, make_response, print_command
+from . import TestCase, load_data, make_response
 
 
 @given("gbp", "console")

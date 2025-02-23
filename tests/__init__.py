@@ -13,8 +13,6 @@ import requests
 from rich.theme import Theme
 
 from gbpcli import graphql
-from gbpcli.config import Config
-from gbpcli.types import Console
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = datetime.timezone(datetime.timedelta(days=-1, seconds=61200), "PDT")
@@ -113,8 +111,3 @@ def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
         response.headers["Content-Type"] = "application/json"
 
     return response
-
-
-def print_command(cmdline: str, console: Console) -> None:
-    """Pretty print the cmdline to console"""
-    console.out.print(f"[green]$ [/green]{cmdline}")
