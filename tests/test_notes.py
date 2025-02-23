@@ -5,11 +5,12 @@ import os
 import subprocess
 from unittest import mock
 
+from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args, print_command
+from . import LOCAL_TIMEZONE, TestCase, make_response, print_command
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"

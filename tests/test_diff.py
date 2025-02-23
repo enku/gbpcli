@@ -4,6 +4,7 @@
 from json import loads as parse
 from unittest import mock
 
+from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.diff import handler as diff
@@ -14,7 +15,6 @@ from . import (
     http_response,
     load_data,
     make_response,
-    parse_args,
     print_command,
 )
 

@@ -1,9 +1,7 @@
 """Tests for the Gentoo Build Publisher CLI"""
 
 # pylint: disable=protected-access
-import argparse
 import datetime
-import shlex
 import tempfile
 from json import dumps as stringify
 from json import loads as parse
@@ -14,7 +12,6 @@ from unittest import TestCase as BaseTestCase
 import requests
 from rich.theme import Theme
 
-import gbpcli
 from gbpcli import graphql
 from gbpcli.config import Config
 from gbpcli.types import Console
@@ -116,14 +113,6 @@ def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
         response.headers["Content-Type"] = "application/json"
 
     return response
-
-
-def parse_args(cmdline: str) -> argparse.Namespace:
-    """Return cmdline as parsed arguments"""
-    args = shlex.split(cmdline)
-    parser = gbpcli.build_parser(Config(url="http://gbp.invalid/"))
-
-    return parser.parse_args(args[1:])
 
 
 def print_command(cmdline: str, console: Console) -> None:

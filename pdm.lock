@@ -526,11 +526,11 @@ files = [
 
 [[package]]
 name = "gbp-testkit"
-version = "0.1.dev11"
+version = "0.1.dev12"
 requires_python = ">=3.11"
 git = "https://github.com/enku/gbp-testkit.git"
 ref = "master"
-revision = "21fc832463a7ea6895307ee2c4a54d9e72463fda"
+revision = "ecffea59afde0f715a01d42ee0bb90735b057432"
 summary = "Gentoo Build Publisher testing tools"
 groups = ["dev"]
 dependencies = [

@@ -1,11 +1,12 @@
 """Tests for the keep subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
+from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.keep import handler as keep
 
-from . import TestCase, make_response, parse_args
+from . import TestCase, make_response
 
 
 @given("gbp", "console")

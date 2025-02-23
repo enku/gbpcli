@@ -1,11 +1,12 @@
 """Tests for the tag subcommand"""
 
 # pylint: disable=missing-docstring,protected-access
+from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.tag import handler as tag
 
-from . import TestCase, make_response, parse_args
+from . import TestCase, make_response
 
 
 @given("gbp", "console")

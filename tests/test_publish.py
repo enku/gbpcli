@@ -3,11 +3,12 @@
 # pylint: disable=missing-function-docstring,protected-access
 from unittest import mock
 
+from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.publish import handler as publish
 
-from . import LOCAL_TIMEZONE, TestCase, make_response, parse_args
+from . import LOCAL_TIMEZONE, TestCase, make_response
 
 
 @given("gbp", "console")
