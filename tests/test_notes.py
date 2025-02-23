@@ -18,7 +18,7 @@ args = parse_args("gbp notes lighthouse 3109")
 
 
 @fixture("gbp")
-def responses(_, fixtures) -> None:
+def responses(fixtures) -> None:
     gbp = fixtures.gbp
     make_response(gbp, "status.json")
     make_response(gbp, "create_note.json")

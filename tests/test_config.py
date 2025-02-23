@@ -11,7 +11,7 @@ from . import TestCase
 
 
 @fixture("tmpdir")
-def filename(_, fixtures):
+def filename(fixtures):
     return os.path.join(fixtures.tmpdir, "gbpcli.toml")
 
 

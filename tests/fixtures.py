@@ -3,7 +3,6 @@
 # pylint: disable=missing-docstring
 
 import os
-from typing import Any
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
@@ -18,30 +17,29 @@ tmpdir = testkit.tmpdir
 
 @fixture("tmpdir")
 def environ(
-    options: dict[str, str] | None, fixtures: Fixtures
+    fixtures: Fixtures,
+    environ: dict[str, str] | None = None,  # pylint: disable=redefined-outer-name
 ) -> FixtureContext[dict[str, str]]:
-    options = options or {}
     mock_environ = {
-        **next(testkit.environ(options, fixtures), {}),
+        **next(testkit.environ(fixtures), {}),
         "BUILD_PUBLISHER_API_KEY_ENABLE": "no",
         "BUILD_PUBLISHER_JENKINS_BASE_URL": "https://jenkins.invalid/",
         "BUILD_PUBLISHER_RECORDS_BACKEND": "memory",
         "BUILD_PUBLISHER_STORAGE_PATH": str(fixtures.tmpdir / "gbp"),
         "BUILD_PUBLISHER_WORKER_BACKEND": "sync",
         "BUILD_PUBLISHER_WORKER_THREAD_WAIT": "yes",
-        **options,
+        **(environ or {}),
     }
     with mock.patch.dict(os.environ, mock_environ):
         yield mock_environ
 
 
 @fixture()
-def gbp(options: dict[str, Any] | None, _fixtures: Fixtures) -> GBP:
+def gbp(
+    _fixtures: Fixtures, url: str = "http://test.invalid/", auth: AuthDict | None = None
+) -> GBP:
     """Return a GBP instance with a mock session attribute"""
     # pylint: disable=protected-access
-    options = options or {}
-    url = options.get("url", "http://test.invalid/")
-    auth: AuthDict | None = options.get("auth", None)
     _gbp = GBP(url, auth=auth)
     headers = _gbp.query._session.headers
     _gbp.query._session = mock.Mock()
@@ -51,7 +49,7 @@ def gbp(options: dict[str, Any] | None, _fixtures: Fixtures) -> GBP:
 
 
 @fixture("tmpdir")
-def user_config_dir(_options: None, fixtures: Fixtures):
+def user_config_dir(fixtures: Fixtures):
     with mock.patch(
         "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tmpdir
     ) as patch:

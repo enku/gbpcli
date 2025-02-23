@@ -48,7 +48,7 @@ class GBPQueryTestCase(TestCase):
 
 
 @fixture("environ")
-def parser(_options, _fixtures):
+def parser(_fixtures):
     return build_parser(config.Config())
 
 
