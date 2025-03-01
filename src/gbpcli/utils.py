@@ -2,8 +2,11 @@
 
 import argparse
 import datetime as dt
+import os
+from pathlib import Path
 from typing import Any, Iterable, cast
 
+from dotenv import load_dotenv
 from rich.table import Table
 
 from gbpcli import GBP
@@ -12,6 +15,7 @@ from gbpcli.types import Build
 # This is the datetime of the first git commit of gentoo-build-publisher
 EPOCH = dt.datetime.fromtimestamp(1616266641, tz=dt.UTC)
 
+DEFAULT_SERVER_CONF = "/etc/gentoo-build-publisher.conf"
 TAG_SYM = "@"
 
 ColumnData = Iterable[tuple[str, dict[str, Any]]]
@@ -59,6 +63,21 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
         return cast(list[str], args.my_machines.split())
     except AttributeError:
         return []
+
+
+def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
+    """Silently load the server config into the environment
+
+    Contents of the file are loaded as environment variables. Return True.
+
+    If the path does not exist or is not readable. Return False
+    """
+    if not (os.path.exists(path) and os.access(path, os.R_OK)):
+        return False
+
+    load_dotenv(path)
+
+    return True
 
 
 def add_columns(table: Table, data: ColumnData) -> None:

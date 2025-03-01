@@ -1,13 +1,14 @@
 """Tests for the "utils" module"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-docstring,protected-access,unused-argument
 import argparse
+import os
 
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
-from gbpcli.utils import get_my_machines_from_args, resolve_build_id
+from gbpcli.utils import get_my_machines_from_args, load_env, resolve_build_id
 
 from . import TestCase, http_response
 
@@ -135,3 +136,31 @@ class GetMyMachinesFromArgsTestCase(TestCase):
         machines = get_my_machines_from_args(args)
 
         self.assertEqual(machines, [])
+
+
+@given("environ", "tmpdir")
+class LoadEnvTests(TestCase):
+    def test_loads_config(self, fixtures: Fixtures) -> None:
+        path = fixtures.tmpdir / "config.env"
+        path.write_text("TEST=foobar\n")
+
+        status = load_env(path)
+
+        self.assertTrue(status)
+        self.assertEqual(os.environ["TEST"], "foobar")
+
+    def test_file_does_not_exist(self, fixtures: Fixtures) -> None:
+        path = fixtures.tmpdir / "bogus.env"
+
+        status = load_env(path)
+
+        self.assertFalse(status)
+
+    def test_file_not_readable(self, fixtures: Fixtures) -> None:
+        path = fixtures.tmpdir / "unreadable.env"
+        path.write_text("TEST=foobar\n")
+        path.chmod(0o000)
+
+        status = load_env(path)
+
+        self.assertFalse(status)

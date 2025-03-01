@@ -12,6 +12,7 @@ dependencies = [
     "yarl",
     "platformdirs>=4.2.0",
     "distutils-strtobool>=0.1.0",
+    "python-dotenv>=1.0.1",
 ]
 requires-python = ">=3.11"
 classifiers = [
