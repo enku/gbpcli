@@ -81,5 +81,5 @@ dev = [
     "types-toml>=0.10.8.7",
     "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
     "gbp-testkit @ git+https://github.com/enku/gbp-testkit.git@master",
-    "gentoo-build-publisher>=2.3.0",
+    "gentoo-build-publisher>=2.4.0rc1",
 ]
