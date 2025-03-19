@@ -75,7 +75,7 @@ def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
     if not (os.path.exists(path) and os.access(path, os.R_OK)):
         return False
 
-    load_dotenv(path)
+    load_dotenv(path, override=True)
 
     return True
 
