@@ -72,6 +72,9 @@ def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
 
     If the path does not exist or is not readable. Return False
     """
+    if os.environ.get("GBPCLI_DONTLOADSERVERENV", ""):
+        return False
+
     if not (os.path.exists(path) and os.access(path, os.R_OK)):
         return False
 

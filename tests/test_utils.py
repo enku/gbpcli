@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring,protected-access,unused-argument
 import argparse
 import os
+from unittest import mock
 
 from unittest_fixtures import Fixtures, given
 
@@ -164,3 +165,13 @@ class LoadEnvTests(TestCase):
         status = load_env(path)
 
         self.assertFalse(status)
+
+    def test_env_variable_override(self, fixtures: Fixtures) -> None:
+        path = fixtures.tmpdir / "config.env"
+        path.write_text("TEST=foobar\n")
+
+        with mock.patch.dict(os.environ, {"GBPCLI_DONTLOADSERVERENV": "1"}):
+            status = load_env(path)
+
+        self.assertFalse(status)
+        self.assertTrue("TEST" not in os.environ)
