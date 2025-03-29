@@ -28,7 +28,28 @@ class PackagesTestCase(TestCase):
             "utf-8"
         )
         self.assertEqual(console.out.file.getvalue(), expected)
-        self.assert_graphql(gbp, gbp.query.gbpcli.packages, id="babette.268")
+        self.assert_graphql(
+            gbp, gbp.query.gbpcli.packages, id="babette.268", buildId=False
+        )
+
+    def test_with_build_ids(self, fixtures: Fixtures):
+        cmdline = "gbp packages -b lighthouse 33655"
+        args = parse_args(cmdline)
+        gbp = fixtures.gbp
+        console = fixtures.console
+        make_response(gbp, "packages-b.json")
+
+        print_command(cmdline, console)
+        status = packages(args, gbp, console)
+
+        self.assertEqual(status, 0)
+        expected = "$ gbp packages -b lighthouse 33655\n" + load_data(
+            "packages-b.txt"
+        ).decode("utf-8")
+        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assert_graphql(
+            gbp, gbp.query.gbpcli.packages, id="lighthouse.33655", buildId=True
+        )
 
     def test_when_build_does_not_exist_prints_error(self, fixtures: Fixtures):
         cmdline = "gbp packages bogus 268"

@@ -127,9 +127,14 @@ class GBP:
         )
         return cast(str, api_response["scheduleBuild"])
 
-    def packages(self, build: Build) -> list[str] | None:
-        """Return the list of packages for a build"""
-        data = graphql.check(self.query.gbpcli.packages(id=build.id))["build"]
+    def packages(self, build: Build, build_ids: bool = False) -> list[str] | None:
+        """Return the list of packages for a build
+
+        If build_id is True, include the package's build id in the result.
+        """
+        data = graphql.check(
+            self.query.gbpcli.packages(id=build.id, buildId=build_ids)
+        )["build"]
         return data and cast(list[str] | None, data.get("packages"))
 
     def keep(self, build: Build) -> dict[str, bool]:
