@@ -69,7 +69,7 @@ class DistributionQueries:
         self._session = session
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.url!r}, {self._distribution!r}, ...)"
+        return f"{type(self).__name__}({self._url!r}, {self._distribution!r}, ...)"
 
     # The CLI is a short-lived process so we're not concerned about cache size
     @cache  # pylint: disable=method-cache-max-size-none

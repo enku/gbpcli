@@ -84,6 +84,14 @@ class QueriesTestCase(TestCase):
         expected = f'Basic {graphql.auth_encode("test", "secret")}'
         self.assertEqual(queries._session.headers["Authorization"], expected)
 
+    def test_repr(self):
+        queries = graphql.Queries(URL("https://gbp.invalid"))
+
+        self.assertEqual(
+            "DistributionQueries('https://gbp.invalid', 'gbpcli', ...)",
+            repr(queries.gbpcli),
+        )
+
 
 class AuthEncodeTests(TestCase):
     def test(self):
