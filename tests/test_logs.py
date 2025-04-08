@@ -64,3 +64,16 @@ class LogsTestCase(TestCase):
         )
         expected = "lighthouse/10000\nThis is a test!\n"
         self.assertEqual(console.out.file.getvalue(), expected)
+
+    def test_search_no_matches(self, fixtures: Fixtures) -> None:
+        cmdline = "gbp logs -s lighthouse 'this is a test'"
+        args = parse_args(cmdline)
+        gbp = fixtures.gbp
+        console = fixtures.console
+        make_response(gbp, {"data": {"search": []}})
+
+        status = logs(args, gbp, console)
+
+        self.assertEqual(status, 1)
+        expected = "No matches found\n"
+        self.assertEqual(console.err.file.getvalue(), expected)
