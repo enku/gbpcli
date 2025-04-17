@@ -9,22 +9,11 @@ from unittest_fixtures import Fixtures, fixture, given
 from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
 
-from . import TestCase, make_response
+from . import TestCase
 
 
 @given("gbp")
 class GGPTestCase(TestCase):
-    def test_search_notes_deprecation(self, fixtures: Fixtures):
-        gbp = fixtures.gbp
-        make_response(gbp, "search_notes.json")
-
-        with self.assertWarns(DeprecationWarning) as context:
-            gbp.search_notes("lighthouse", "test")
-
-        self.assertEqual(
-            context.warning.args[0], "This method is deprecated. Use search() instead"
-        )
-
     def test_url(self, fixtures: Fixtures) -> None:
         gbp = GBP("http://gbp.invalid/")
 

@@ -1,7 +1,6 @@
 """Abstraction of the Gentoo Build Publisher API"""
 
 # mypy: disable-error-code="attr-defined"
-import warnings
 from typing import Any, cast
 
 import yarl
@@ -174,16 +173,6 @@ class GBP:
         builds = api_response["search"]
 
         return [Build.from_api_response(i) for i in builds]
-
-    def search_notes(self, machine: str, key: str) -> list[Build]:
-        """Search builds for the given machine name for notes containing key.
-
-        This method is deprecated. Use search() instead.
-        """
-        message = "This method is deprecated. Use search() instead"
-        warnings.warn(message, DeprecationWarning, stacklevel=2)
-
-        return self.search(machine, SearchField.notes, key)
 
     def tag(self, build: Build, tag: str) -> None:
         """Add the given tag to the build"""
