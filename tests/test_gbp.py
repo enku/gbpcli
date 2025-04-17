@@ -64,7 +64,7 @@ class BuildParserTestCase(TestCase):
         self.assertEqual(args.my_machines, "this that the other")
 
     def test_my_machines_not_passed(self, fixtures: Fixtures):
-        argv = []
+        argv: list[str] = []
 
         args = fixtures.parser.parse_args(argv)
 
@@ -72,7 +72,7 @@ class BuildParserTestCase(TestCase):
 
     def test_my_machines_from_environ(self, fixtures: Fixtures):
         os.environ["GBPCLI_MYMACHINES"] = "this that the other"
-        argv = []
+        argv: list[str] = []
 
         parser_ = build_parser(config.Config())
         args = parser_.parse_args(argv)
