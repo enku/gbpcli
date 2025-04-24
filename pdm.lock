@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:49c01dbe513411fc66aff331ae90b388794aa2f2f896552930017527ae8f60e7"
+content_hash = "sha256:f6c1354808e0066b75fbe555961c7ab6fe387ca0b562710b9bcc4065be39e3d4"
 
 [[metadata.targets]]
 requires_python = ">=3.11"
@@ -528,25 +528,12 @@ files = [
 ]
 
 [[package]]
-name = "gbp-testkit"
-version = "0.1.dev24"
-requires_python = ">=3.11"
-git = "https://github.com/enku/gbp-testkit.git"
-ref = "master"
-revision = "0333484010c40d1eb38bbcb1e83ec3abc1d7fec1"
-summary = "Gentoo Build Publisher testing tools"
-groups = ["dev"]
-dependencies = [
-    "django>=5.1.6",
-    "factory-boy>=3.3.3",
-    "types-requests>=2.32.0.20241016",
-    "unittest-fixtures @ git+https://github.com/enku/unittest-fixtures.git",
-]
-
-[[package]]
 name = "gentoo-build-publisher"
-version = "2.4.0"
+version = "2.5.0a2.dev20+gc958b45"
 requires_python = ">=3.11"
+git = "https://github.com/enku/gentoo-build-publisher.git"
+ref = "master"
+revision = "c958b4595c54a6e230233d0e41d9b4cf54b6970f"
 summary = "Gentoo Build Publisher"
 groups = ["dev"]
 dependencies = [
@@ -562,9 +549,21 @@ dependencies = [
     "rich>=13.7.0",
     "yarl!=1.9.1",
 ]
-files = [
-    {file = "gentoo_build_publisher-2.4.0-py3-none-any.whl", hash = "sha256:544aa5d78b97521676f371d8005ab0fe9c3e84662bf87a930fe2089a8222bdcc"},
-    {file = "gentoo_build_publisher-2.4.0.tar.gz", hash = "sha256:ccc775d70eda5af014ea2770688d008130ebcc74ad4bfdd17aea9960899702c2"},
+
+[[package]]
+name = "gentoo-build-publisher"
+version = "2.5.0a2.dev20"
+extras = ["test"]
+requires_python = ">=3.11"
+git = "https://github.com/enku/gentoo-build-publisher.git"
+ref = "master"
+revision = "c958b4595c54a6e230233d0e41d9b4cf54b6970f"
+summary = "Gentoo Build Publisher"
+groups = ["dev"]
+dependencies = [
+    "factory-boy>=3.3.3",
+    "gentoo-build-publisher @ git+https://github.com/enku/gentoo-build-publisher.git@master",
+    "unittest-fixtures",
 ]
 
 [[package]]
@@ -1224,10 +1223,12 @@ files = [
 name = "unittest-fixtures"
 version = "1.0.0"
 requires_python = ">=3.11"
-git = "https://github.com/enku/unittest-fixtures.git"
-revision = "d25aa508da2417e871569ffcb0db904b42803e51"
 summary = "A small library for loading unittest fixtures"
 groups = ["dev"]
+files = [
+    {file = "unittest_fixtures-1.0.0-py3-none-any.whl", hash = "sha256:3001fdc9f9354537208dbf5f0655198fa838c513f99d84b448117b4eec247e40"},
+    {file = "unittest_fixtures-1.0.0.tar.gz", hash = "sha256:361d6d4d5faa5b3951574560f51ff1201caf393d92191f8ef202a590a7ccc897"},
+]
 
 [[package]]
 name = "urllib3"
