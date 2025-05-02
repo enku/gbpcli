@@ -190,3 +190,14 @@ diff -r lighthouse/3111 lighthouse/3112
 +sys-kernel/vanilla-sources-6.0.0-1
 """,
         )
+
+    def test_left_and_right_equal(self, fixtures: Fixtures) -> None:
+        cmdline = "gbp diff lighthouse 3111 3111"
+        args = parse_args(cmdline)
+        gbp = fixtures.gbp
+        console = fixtures.console
+
+        diff(args, gbp, console)
+
+        self.assertEqual(console.out.file.getvalue(), "")
+        gbp.query._session.post.assert_not_called()

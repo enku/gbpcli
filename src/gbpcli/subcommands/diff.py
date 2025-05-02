@@ -28,6 +28,9 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
         console.err.print("Need at least two builds to diff")
         return 1
 
+    if left == right:
+        return 0
+
     left_build, right_build, diff = gbp.diff(args.machine, left, right)
 
     if not diff:
