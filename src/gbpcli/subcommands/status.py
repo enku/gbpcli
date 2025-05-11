@@ -74,7 +74,7 @@ def print_note(console: Console, note: str | None) -> None:
     table = Table(
         "📎 Notes", box=box.ROUNDED, pad_edge=False, style="box", header_style="header"
     )
-    table.add_row("[note]" + note.rstrip("\n") + "[/note]")
+    table.add_row(f"[note]{note.rstrip('\n')}[/note]")
 
     console.out.print(table)
 
