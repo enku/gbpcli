@@ -43,11 +43,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def create_grid() -> Table:
     """Create and return a grid with the specified number of columns"""
-    grid = Table.grid()
-    grid.add_column()
-    grid.add_column()
-
-    return grid
+    return Table.grid("", "")
 
 
 def add_timestamps_to_grid(grid: Table, build: Build) -> None:
@@ -75,8 +71,9 @@ def print_note(console: Console, note: str | None) -> None:
         return
 
     console.out.print()
-    table = Table(box=box.ROUNDED, pad_edge=False, style="box")
-    table.add_column("📎 Notes", header_style="header")
+    table = Table(
+        "📎 Notes", box=box.ROUNDED, pad_edge=False, style="box", header_style="header"
+    )
     table.add_row("[note]" + note.rstrip("\n") + "[/note]")
 
     console.out.print(table)

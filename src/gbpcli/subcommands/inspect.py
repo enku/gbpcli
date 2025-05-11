@@ -105,8 +105,7 @@ def render_build(build: Build) -> RenderableType:
 
     if note := build.info.note:
         note = note.rstrip("\n")
-        grid = Table.grid()
-        grid.add_column()
+        grid = Table.grid("")
         grid.add_row(build_str)
         grid.add_row(Panel(f"[note]{note}[/note]", expand=False, style="box"))
 
