@@ -120,7 +120,7 @@ def get_user_config(filename: str | None = None) -> config.Config:
         return config.Config()
 
 
-def set_environ():
+def set_environ() -> None:
     """Set default environment variables
 
     These are needed in order to load modules from Gentoo Build Publisher
