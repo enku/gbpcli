@@ -43,7 +43,7 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
     return 0
 
 
-def add_build_to_row(build: Build, table: Table):
+def add_build_to_row(build: Build, table: Table) -> None:
     """Add the given Build to the Table"""
     # In the old days, we didn't have a "built" field. Fall back to submitted
     assert build.info is not None
