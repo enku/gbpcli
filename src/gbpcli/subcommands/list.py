@@ -45,9 +45,10 @@ def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
 
 def add_build_to_row(build: Build, table: Table) -> None:
     """Add the given Build to the Table"""
-    # In the old days, we didn't have a "built" field. Fall back to submitted
-    assert build.info is not None
+    if build.info is None:  # This should never happen though
+        return
 
+    # In the old days, we didn't have a "built" field. Fall back to submitted
     timestamp = build.info.built or build.info.submitted
 
     table.add_row(
