@@ -3,7 +3,14 @@ import argparse
 import datetime as dt
 from unittest import TestCase, mock
 
-from gbpcli.render import build_to_str, format_machine, format_tags, timestr, yesno
+from gbpcli.render import (
+    build_to_str,
+    format_flags,
+    format_machine,
+    format_tags,
+    timestr,
+    yesno,
+)
 from gbpcli.types import Build, BuildInfo, Package
 
 from . import LOCAL_TIMEZONE
@@ -126,3 +133,46 @@ class FormatMachineTest(TestCase):
 
         expected = "[machine]polaris[/machine]"
         self.assertEqual(formatted, expected)
+
+
+class FormatFlagsTests(TestCase):
+    """Tests for the format_flags method"""
+
+    def test(self) -> None:
+        build = Build(
+            machine="babette",
+            number=123,
+            info=BuildInfo(
+                keep=False,
+                note=None,
+                published=True,
+                tags=["foo"],
+                submitted=dt.datetime(2025, 6, 13, 6, 50, tzinfo=dt.UTC),
+                completed=dt.datetime(2025, 6, 13, 6, 55, tzinfo=dt.UTC),
+                built=dt.datetime(2025, 6, 13, 6, 49, tzinfo=dt.UTC),
+            ),
+            packages_built=[
+                Package(
+                    cpv="media-video/totem-43.2",
+                    build_time=dt.datetime(2025, 6, 13, 4, 49, tzinfo=dt.UTC),
+                )
+            ],
+        )
+        self.assertEqual(
+            "[package]*[/package] [published]P[/published] ", format_flags(build)
+        )
+
+    def test_build_without_info(self) -> None:
+        build = Build(
+            machine="babette",
+            number=123,
+            info=None,
+            packages_built=[
+                Package(
+                    cpv="media-video/totem-43.2",
+                    build_time=dt.datetime(2025, 6, 13, 4, 49, tzinfo=dt.UTC),
+                )
+            ],
+        )
+        with self.assertRaises(ValueError):
+            format_flags(build)

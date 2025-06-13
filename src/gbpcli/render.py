@@ -92,7 +92,8 @@ def format_flags(build: Build) -> str:
 
     Which means that the build has packages built and is published.
     """
-    assert build.info is not None
+    if build.info is None:
+        raise ValueError("Build contains no `.info")
 
     return (
         f"{'[package]*[/package]' if build.packages_built else ' '}"
