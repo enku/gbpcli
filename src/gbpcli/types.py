@@ -7,6 +7,8 @@ from typing import Any, Self
 
 import rich.console
 
+fromisoformat = dt.datetime.fromisoformat
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class BuildInfo:
@@ -22,6 +24,23 @@ class BuildInfo:
     submitted: dt.datetime
     completed: dt.datetime | None = None
     built: dt.datetime | None = None
+
+    @classmethod
+    def from_api_response(cls: type[Self], api_response: dict[str, Any]) -> Self:
+        """Return a BuildInfo given the response from the API"""
+        built = api_response.get("built")
+        completed = api_response.get("completed")
+        submitted = api_response["submitted"]
+
+        return cls(
+            keep=api_response.get("keep", False),
+            published=api_response.get("published", False),
+            tags=api_response.get("tags", []),
+            note=api_response.get("notes"),
+            submitted=fromisoformat(submitted),
+            completed=fromisoformat(completed) if completed is not None else None,
+            built=fromisoformat(built) if built is not None else None,
+        )
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -56,11 +75,6 @@ class Build:
     @classmethod
     def from_api_response(cls: type[Self], api_response: dict[str, Any]) -> Self:
         """Return a Build with BuildInfo given the response from the API"""
-        completed = api_response.get("completed")
-        submitted = api_response["submitted"]
-        fromisoformat = dt.datetime.fromisoformat
-        built = api_response.get("built")
-
         packages_built = (
             None
             if (packages := api_response.get("packagesBuilt", None)) is None
@@ -72,16 +86,8 @@ class Build:
                 for i in packages
             ]
         )
+        info = BuildInfo.from_api_response(api_response)
 
-        info = BuildInfo(
-            keep=api_response.get("keep", False),
-            published=api_response.get("published", False),
-            tags=api_response.get("tags", []),
-            note=api_response.get("notes"),
-            submitted=fromisoformat(submitted),
-            completed=fromisoformat(completed) if completed is not None else None,
-            built=fromisoformat(built) if built is not None else None,
-        )
         return cls.from_id(api_response["id"], info=info, packages_built=packages_built)
 
 
