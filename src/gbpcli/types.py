@@ -76,19 +76,16 @@ class Build:
             ]
         )
 
-        return cls.from_id(
-            api_response["id"],
-            info=BuildInfo(
-                keep=api_response.get("keep", False),
-                published=api_response.get("published", False),
-                tags=api_response.get("tags", []),
-                note=api_response.get("notes"),
-                submitted=fromisoformat(submitted),
-                completed=fromisoformat(completed) if completed is not None else None,
-                built=fromisoformat(built) if built is not None else None,
-            ),
-            packages_built=packages_built,
+        info = BuildInfo(
+            keep=api_response.get("keep", False),
+            published=api_response.get("published", False),
+            tags=api_response.get("tags", []),
+            note=api_response.get("notes"),
+            submitted=fromisoformat(submitted),
+            completed=fromisoformat(completed) if completed is not None else None,
+            built=fromisoformat(built) if built is not None else None,
         )
+        return cls.from_id(api_response["id"], info=info, packages_built=packages_built)
 
 
 class ChangeState(IntEnum):
