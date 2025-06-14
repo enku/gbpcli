@@ -3,7 +3,7 @@
 import datetime as dt
 from dataclasses import dataclass
 from enum import Enum, IntEnum
-from typing import Any, TypeVar
+from typing import Any, Self
 
 import rich.console
 
@@ -32,9 +32,6 @@ class Package:
     build_time: dt.datetime
 
 
-T = TypeVar("T", bound="Build")
-
-
 @dataclass(frozen=True, kw_only=True, slots=True)
 class Build:
     """A GBP Build"""
@@ -50,14 +47,14 @@ class Build:
         return f"{self.machine}.{self.number}"
 
     @classmethod
-    def from_id(cls: type[T], build_id: str, **kwargs: Any) -> T:
+    def from_id(cls: type[Self], build_id: str, **kwargs: Any) -> Self:
         """Create from GBP build id"""
         parts = build_id.partition(".")
 
         return cls(machine=parts[0], number=int(parts[2]), **kwargs)
 
     @classmethod
-    def from_api_response(cls: type[T], api_response: dict[str, Any]) -> T:
+    def from_api_response(cls: type[Self], api_response: dict[str, Any]) -> Self:
         """Return a Build with BuildInfo given the response from the API"""
         completed = api_response.get("completed")
         submitted = api_response["submitted"]
