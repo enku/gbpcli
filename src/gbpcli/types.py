@@ -8,6 +8,7 @@ from typing import Any, Self
 import rich.console
 
 fromisoformat = dt.datetime.fromisoformat
+fromtimestamp = dt.datetime.fromtimestamp
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)
@@ -50,6 +51,22 @@ class Package:
     cpv: str
     build_time: dt.datetime
 
+    @classmethod
+    def from_api_response(
+        cls: type[Self], api_response: dict[str, Any]
+    ) -> list[Self] | None:
+        """Return a list of Packages from the api reponse.
+
+        If the response's "packagesBuild" field is None, return None.
+        """
+        if (packages := api_response.get("packagesBuilt", None)) is None:
+            return None
+
+        return [
+            cls(cpv=p["cpv"], build_time=fromtimestamp(p.get("buildTime", 0)))
+            for p in packages
+        ]
+
 
 @dataclass(frozen=True, kw_only=True, slots=True)
 class Build:
@@ -75,17 +92,7 @@ class Build:
     @classmethod
     def from_api_response(cls: type[Self], api_response: dict[str, Any]) -> Self:
         """Return a Build with BuildInfo given the response from the API"""
-        packages_built = (
-            None
-            if (packages := api_response.get("packagesBuilt", None)) is None
-            else [
-                Package(
-                    cpv=i["cpv"],
-                    build_time=dt.datetime.fromtimestamp(i.get("buildTime", 0)),
-                )
-                for i in packages
-            ]
-        )
+        packages_built = Package.from_api_response(api_response)
         info = BuildInfo.from_api_response(api_response)
 
         return cls.from_id(api_response["id"], info=info, packages_built=packages_built)
