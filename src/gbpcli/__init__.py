@@ -7,21 +7,19 @@ import argparse
 import os
 import os.path
 import sys
-import warnings
 from importlib.metadata import entry_points, version
-from typing import Any, cast
+from typing import cast
 
 import argcomplete
 import platformdirs
 import requests
 import rich.console
-import yarl
 from rich.theme import Theme
 
 from gbpcli import config, graphql
 from gbpcli.gbp import GBP
 from gbpcli.theme import get_theme_from_string
-from gbpcli.types import Build, Change, ChangeState, Console, SearchField
+from gbpcli.types import Console
 
 COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")

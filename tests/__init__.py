@@ -2,7 +2,6 @@
 
 # pylint: disable=protected-access
 import datetime
-import tempfile
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
