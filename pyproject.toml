@@ -68,6 +68,9 @@ max-line-length = 88
 init-hook = "import sys; sys.path.insert(0, 'tests')"
 ignore-imports = "yes"
 
+[tool.pylint.variables]
+init-import = "yes"
+
 [tool.isort]
 profile = "black"
 
