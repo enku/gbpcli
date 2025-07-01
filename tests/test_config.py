@@ -2,6 +2,7 @@
 import contextlib
 import io
 import os.path
+from unittest import mock
 
 from unittest_fixtures import Fixtures, fixture, given
 
@@ -84,3 +85,9 @@ class IsReadableByOthersTests(TestCase):
         with open(fixtures.filename, "wb+") as fp:
             os.chmod(fp.fileno(), 0o600)
             self.assertFalse(config.is_readable_by_others(fp.fileno()))
+
+    @mock.patch.object(config.platform, "system", mock.Mock(return_value="Bogus"))
+    def test_unknown_os(self, fixtures: Fixtures) -> None:
+        with open(fixtures.filename, "wb+") as fp:
+            with self.assertRaises(NotImplementedError):
+                config.is_readable_by_others(fp.fileno())
