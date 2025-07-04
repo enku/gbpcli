@@ -5,12 +5,15 @@ import os
 import subprocess
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase
+from . import fixtures as tf
+from . import make_response
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
@@ -18,14 +21,14 @@ NOTE = "Hello world\n"
 args = parse_args("gbp notes lighthouse 3109")
 
 
-@fixture("gbp")
+@fixture(tf.gbp)
 def responses(fixtures) -> None:
     gbp = fixtures.gbp
     make_response(gbp, "status.json")
     make_response(gbp, "create_note.json")
 
 
-@given("gbp", "console", responses)
+@given(tf.gbp, testkit.console, responses)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""

@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring,protected-access,unused-argument
 import os
 
+import gbp_testkit.fixtures as testkit
 import requests.exceptions
 from unittest_fixtures import Fixtures, fixture, given
 
@@ -10,9 +11,10 @@ from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
 
 from . import TestCase
+from . import fixtures as tf
 
 
-@given("gbp")
+@given(tf.gbp)
 class GGPTestCase(TestCase):
     def test_url(self, fixtures: Fixtures) -> None:
         gbp = GBP("http://gbp.invalid/")
@@ -20,7 +22,7 @@ class GGPTestCase(TestCase):
         self.assertEqual(gbp.query._url, "http://gbp.invalid/graphql")
 
 
-@given("gbp")
+@given(tf.gbp)
 class GBPQueryTestCase(TestCase):
     """Tests for the .query method"""
 
@@ -41,7 +43,7 @@ def parser(_fixtures):
     return build_parser(config.Config())
 
 
-@given("tmpdir", parser)
+@given(testkit.tmpdir, parser)
 class BuildParserTestCase(TestCase):
     """Tests for the build_parser method"""
 

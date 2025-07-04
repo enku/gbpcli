@@ -5,16 +5,19 @@ import argparse
 import os
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
 from gbpcli.utils import get_my_machines_from_args, load_env, resolve_build_id
 
-from . import TestCase, http_response
+from . import TestCase
+from . import fixtures as tf
+from . import http_response
 
 
-@given("gbp")
+@given(tf.gbp)
 class CheckTestCase(TestCase):
     """check() tests"""
 
@@ -35,7 +38,7 @@ class CheckTestCase(TestCase):
         self.assertEqual(exception.data, {"build": None})
 
 
-@given("gbp")
+@given(tf.gbp)
 class ResolveBuildIdTestCase(TestCase):
     """resolve_build_id() tests"""
 
@@ -139,7 +142,7 @@ class GetMyMachinesFromArgsTestCase(TestCase):
         self.assertEqual(machines, [])
 
 
-@given("environ", "tmpdir")
+@given(testkit.environ, testkit.tmpdir)
 class LoadEnvTests(TestCase):
     def test_loads_config(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "config.env"

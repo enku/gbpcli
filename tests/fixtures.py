@@ -11,11 +11,8 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 from gbpcli import GBP
 from gbpcli.config import AuthDict
 
-console = testkit.console
-tmpdir = testkit.tmpdir
 
-
-@fixture("tmpdir")
+@fixture(testkit.tmpdir)
 def environ(
     fixtures: Fixtures,
     environ: dict[str, str] | None = None,  # pylint: disable=redefined-outer-name
@@ -48,7 +45,7 @@ def gbp(
     return _gbp
 
 
-@fixture("tmpdir")
+@fixture(testkit.tmpdir)
 def user_config_dir(fixtures: Fixtures):
     with mock.patch(
         "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tmpdir

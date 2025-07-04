@@ -8,6 +8,7 @@ import sys
 import unittest
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given
 
 import gbpcli
@@ -17,6 +18,7 @@ from gbpcli.graphql import APIError, auth_encode
 from gbpcli.theme import get_theme_from_string
 
 from . import TestCase
+from . import fixtures as tf
 
 SUBCOMMANDS = [
     "build",
@@ -145,7 +147,7 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
-@given("gbp", "tmpdir", "user_config_dir", "console")
+@given(tf.gbp, testkit.tmpdir, tf.user_config_dir, testkit.console)
 class MainTestCase(TestCase):
     """tests for the main function"""
 
@@ -246,7 +248,7 @@ class MainTestCase(TestCase):
         self.assertEqual(exception.args, (1,))
 
 
-@given("gbp", "tmpdir", "user_config_dir")
+@given(tf.gbp, testkit.tmpdir, tf.user_config_dir)
 class GetUserConfigTests(TestCase):
     """Tests for the get_user_config function"""
 

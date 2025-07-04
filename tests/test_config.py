@@ -4,6 +4,7 @@ import io
 import os.path
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli import config
@@ -11,12 +12,12 @@ from gbpcli import config
 from . import TestCase
 
 
-@fixture("tmpdir")
+@fixture(testkit.tmpdir)
 def filename(fixtures):
     return os.path.join(fixtures.tmpdir, "gbpcli.toml")
 
 
-@given("tmpdir", filename)
+@given(testkit.tmpdir, filename)
 class ConfigTests(TestCase):
     def test_from_file(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:
@@ -74,7 +75,7 @@ auth = { user = "test", api_key = "secret" }
         self.assertEqual(conf.auth, None)
 
 
-@given("tmpdir", filename)
+@given(testkit.tmpdir, filename)
 class IsReadableByOthersTests(TestCase):
     def test_true(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:

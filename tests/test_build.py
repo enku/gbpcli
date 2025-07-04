@@ -1,15 +1,18 @@
 """Tests for the build subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.build import handler as build
 
-from . import TestCase, make_response
+from . import TestCase
+from . import fixtures as tf
+from . import make_response
 
 
-@given("gbp", "console")
+@given(tf.gbp, testkit.console)
 class MachinesTestCase(TestCase):
     """machines() tests"""
 

@@ -3,15 +3,18 @@
 # pylint: disable=missing-function-docstring,protected-access
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.publish import handler as publish
 
-from . import LOCAL_TIMEZONE, TestCase, make_response
+from . import LOCAL_TIMEZONE, TestCase
+from . import fixtures as tf
+from . import make_response
 
 
-@given("gbp", "console")
+@given(tf.gbp, testkit.console)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class PublishTestCase(TestCase):
     """publish() tests"""

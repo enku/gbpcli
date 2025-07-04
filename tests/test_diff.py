@@ -4,15 +4,18 @@
 from json import loads as parse
 from unittest import mock
 
+import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, TestCase, http_response, load_data, make_response
+from . import LOCAL_TIMEZONE, TestCase
+from . import fixtures as tf
+from . import http_response, load_data, make_response
 
 
-@given("gbp", "console")
+@given(tf.gbp, testkit.console)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class DiffTestCase(TestCase):
     """diff() tests"""
