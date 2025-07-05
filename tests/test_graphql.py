@@ -8,10 +8,10 @@ from yarl import URL
 
 from gbpcli import graphql
 
-from . import TestCase, http_response
+from . import lib
 
 
-class QueryTestCase(TestCase):
+class QueryTestCase(lib.TestCase):
     def test_passes_given_query_and_vars_to_graphql_request(self):
         session = mock.Mock(spec=requests.Session)
         query = graphql.Query("query foo { bar }", "https://gbp.invalid", session)
@@ -27,7 +27,7 @@ class QueryTestCase(TestCase):
     def test_raises_when_http_response_is_an_error(self):
         session = mock.Mock(spec=requests.Session)
         query = graphql.Query("query foo { bar }", "https://gbp.invalid", session)
-        session.post.return_value = http_response(status_code=404)
+        session.post.return_value = lib.http_response(status_code=404)
 
         with self.assertRaises(requests.exceptions.HTTPError):
             query()
@@ -36,14 +36,14 @@ class QueryTestCase(TestCase):
         session = mock.Mock(spec=requests.Session)
         query = graphql.Query("query foo { bar }", "https://gbp.invalid", session)
         data_and_errors = {"data": {"foo": "bar"}, "errors": [{"this": "that"}]}
-        session.post.return_value = http_response(json=data_and_errors)
+        session.post.return_value = lib.http_response(json=data_and_errors)
 
         response = query()
 
         self.assertEqual(response, ({"foo": "bar"}, [{"this": "that"}]))
 
 
-class QueriesTestCase(TestCase):
+class QueriesTestCase(lib.TestCase):
     """Tests for the Queries wrapper"""
 
     def test_returns_query_on_attribute_access(self):
@@ -93,7 +93,7 @@ class QueriesTestCase(TestCase):
         )
 
 
-class AuthEncodeTests(TestCase):
+class AuthEncodeTests(lib.TestCase):
     def test(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization#basic_authentication
         user = "aladdin"

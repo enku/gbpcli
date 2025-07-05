@@ -17,7 +17,7 @@ from gbpcli import build_parser, config, main
 from gbpcli.graphql import APIError, auth_encode
 from gbpcli.theme import get_theme_from_string
 
-from . import TestCase, lib
+from . import lib
 
 SUBCOMMANDS = [
     "build",
@@ -147,7 +147,7 @@ class GetConsoleTestCase(unittest.TestCase):
 
 
 @given(lib.gbp, testkit.tmpdir, lib.user_config_dir, testkit.console)
-class MainTestCase(TestCase):
+class MainTestCase(lib.TestCase):
     """tests for the main function"""
 
     @mock.patch("gbpcli.GBP")
@@ -248,7 +248,7 @@ class MainTestCase(TestCase):
 
 
 @given(lib.gbp, testkit.tmpdir, lib.user_config_dir)
-class GetUserConfigTests(TestCase):
+class GetUserConfigTests(lib.TestCase):
     """Tests for the get_user_config function"""
 
     def test_with_config(self, fixtures: Fixtures) -> None:
@@ -298,7 +298,7 @@ my_machines = ["this", "that", "the_other"]
             gbpcli.get_user_config(custom_filename)
 
 
-class EnsureArgsHasFuncTests(TestCase):
+class EnsureArgsHasFuncTests(lib.TestCase):
     """Tests for the ensure_args_has_func helper function"""
 
     def test_has_func(self) -> None:

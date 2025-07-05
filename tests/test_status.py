@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.status import handler as status
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class StatusTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class StatusTestCase(lib.TestCase):
     """status() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class StatusTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "status.json")
+        lib.make_response(gbp, "status.json")
 
         print_command(cmdline, console)
         status(args, gbp, console)
@@ -55,8 +55,8 @@ class StatusTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
-        make_response(gbp, "status.json")
+        lib.make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
+        lib.make_response(gbp, "status.json")
 
         print_command(cmdline, console)
         return_status = status(args, gbp, console)
@@ -70,7 +70,7 @@ class StatusTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"build": None}})
+        lib.make_response(gbp, {"data": {"build": None}})
 
         return_status = status(args, gbp, console)
 

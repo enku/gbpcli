@@ -13,7 +13,7 @@ from gbpcli.render import (
 )
 from gbpcli.types import Build, BuildInfo, Package
 
-from . import LOCAL_TIMEZONE
+from . import lib
 
 
 class YesNoTestCase(TestCase):
@@ -36,7 +36,7 @@ class TimestrTestCase(TestCase):
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
 
 
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
 class BuildToStrTests(TestCase):
     build = Build(
         machine="babette",

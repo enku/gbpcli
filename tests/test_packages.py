@@ -7,11 +7,11 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.packages import handler as packages
 
-from . import TestCase, lib, load_data, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-class PackagesTestCase(TestCase):
+class PackagesTestCase(lib.TestCase):
     """packages() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -19,15 +19,15 @@ class PackagesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "packages.json")
+        lib.make_response(gbp, "packages.json")
 
         print_command(cmdline, console)
         status = packages(args, gbp, console)
 
         self.assertEqual(status, 0)
-        expected = "$ gbp packages babette 268\n" + load_data("packages.txt").decode(
-            "utf-8"
-        )
+        expected = "$ gbp packages babette 268\n" + lib.load_data(
+            "packages.txt"
+        ).decode("utf-8")
         self.assertEqual(console.out.file.getvalue(), expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.packages, id="babette.268", buildId=False
@@ -38,13 +38,13 @@ class PackagesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "packages-b.json")
+        lib.make_response(gbp, "packages-b.json")
 
         print_command(cmdline, console)
         status = packages(args, gbp, console)
 
         self.assertEqual(status, 0)
-        expected = "$ gbp packages -b lighthouse 33655\n" + load_data(
+        expected = "$ gbp packages -b lighthouse 33655\n" + lib.load_data(
             "packages-b.txt"
         ).decode("utf-8")
         self.assertEqual(console.out.file.getvalue(), expected)
@@ -58,7 +58,7 @@ class PackagesTestCase(TestCase):
         gbp = fixtures.gbp
         console = fixtures.console
         no_build = {"data": {"build": None}}
-        make_response(gbp, no_build)
+        lib.make_response(gbp, no_build)
 
         status = packages(args, gbp, console)
 

@@ -11,7 +11,7 @@ from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
@@ -22,13 +22,13 @@ args = parse_args("gbp notes lighthouse 3109")
 @fixture(lib.gbp)
 def responses(fixtures) -> None:
     gbp = fixtures.gbp
-    make_response(gbp, "status.json")
-    make_response(gbp, "create_note.json")
+    lib.make_response(gbp, "status.json")
+    lib.make_response(gbp, "create_note.json")
 
 
 @given(lib.gbp, testkit.console, responses)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class NotesTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class NotesTestCase(lib.TestCase):
     """notes tests"""
 
     def assert_create_note(
@@ -100,8 +100,8 @@ class NotesTestCase(TestCase):
     def test_create_with_no_tty(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "status.json")
-        make_response(gbp, "create_note.json")
+        lib.make_response(gbp, "status.json")
+        lib.make_response(gbp, "create_note.json")
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
@@ -112,8 +112,8 @@ class NotesTestCase(TestCase):
     def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, None)
-        make_response(gbp, {"data": {"build": None}})
+        lib.make_response(gbp, None)
+        lib.make_response(gbp, {"data": {"build": None}})
 
         status = create_note(args, gbp, console)
 
@@ -134,8 +134,8 @@ class NotesTestCase(TestCase):
         gbp = fixtures.gbp
         console = fixtures.console
         s_args = parse_args("gbp notes -s lighthouse 10,000")
-        make_response(gbp, None)
-        make_response(gbp, "search_notes.json")
+        lib.make_response(gbp, None)
+        lib.make_response(gbp, "search_notes.json")
 
         print_command("gbp notes --search lighthouse note", console)
         status = create_note(s_args, gbp, console)
@@ -155,8 +155,8 @@ class NotesTestCase(TestCase):
         gbp = fixtures.gbp
         console = fixtures.console
         s_args = parse_args("gbp notes -s lighthouse python")
-        make_response(gbp, None)
-        make_response(gbp, {"data": {"search": []}})
+        lib.make_response(gbp, None)
+        lib.make_response(gbp, {"data": {"search": []}})
 
         status = create_note(s_args, gbp, console)
 

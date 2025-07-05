@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.latest import handler as latest
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class LatestTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class LatestTestCase(lib.TestCase):
     """latest() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class LatestTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "latest.json")
+        lib.make_response(gbp, "latest.json")
 
         print_command(cmdline, console)
         status = latest(args, gbp, console)
@@ -37,7 +37,7 @@ class LatestTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"latest": None}})
+        lib.make_response(gbp, {"data": {"latest": None}})
 
         status = latest(args, gbp, console)
 

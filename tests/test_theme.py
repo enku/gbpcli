@@ -5,7 +5,7 @@
 
 from gbpcli.theme import DEFAULT_THEME, get_theme_from_string
 
-from . import ThemeTests
+from .lib import ThemeTests
 
 
 class GetColormapFromString(ThemeTests):

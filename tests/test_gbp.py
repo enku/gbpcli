@@ -10,11 +10,11 @@ from unittest_fixtures import Fixtures, fixture, given
 from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
 
-from . import TestCase, lib
+from . import lib
 
 
 @given(lib.gbp)
-class GGPTestCase(TestCase):
+class GGPTestCase(lib.TestCase):
     def test_url(self, fixtures: Fixtures) -> None:
         gbp = GBP("http://gbp.invalid/")
 
@@ -22,7 +22,7 @@ class GGPTestCase(TestCase):
 
 
 @given(lib.gbp)
-class GBPQueryTestCase(TestCase):
+class GBPQueryTestCase(lib.TestCase):
     """Tests for the .query method"""
 
     def test_does_not_exit_when_flag_turned_off(self, fixtures: Fixtures):
@@ -43,7 +43,7 @@ def parser(_fixtures):
 
 
 @given(testkit.tmpdir, parser)
-class BuildParserTestCase(TestCase):
+class BuildParserTestCase(lib.TestCase):
     """Tests for the build_parser method"""
 
     def test_my_machines_string(self, fixtures: Fixtures):

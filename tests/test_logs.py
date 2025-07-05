@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.logs import handler as logs
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class LogsTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class LogsTestCase(lib.TestCase):
     """logs() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class LogsTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "logs.json")
+        lib.make_response(gbp, "logs.json")
 
         print_command(cmdline, console)
         status = logs(args, gbp, console)
@@ -38,7 +38,7 @@ class LogsTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"build": None}})
+        lib.make_response(gbp, {"data": {"build": None}})
 
         status = logs(args, gbp, console)
 
@@ -50,8 +50,8 @@ class LogsTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "search_notes.json")
-        make_response(gbp, "logs.json")
+        lib.make_response(gbp, "search_notes.json")
+        lib.make_response(gbp, "logs.json")
 
         status = logs(args, gbp, console)
 
@@ -71,7 +71,7 @@ class LogsTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"search": []}})
+        lib.make_response(gbp, {"data": {"search": []}})
 
         status = logs(args, gbp, console)
 

@@ -12,11 +12,11 @@ from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
 from gbpcli.utils import get_my_machines_from_args, load_env, resolve_build_id
 
-from . import TestCase, http_response, lib
+from . import lib
 
 
 @given(lib.gbp)
-class CheckTestCase(TestCase):
+class CheckTestCase(lib.TestCase):
     """check() tests"""
 
     def test_should_raise_apierror_if_query_response_has_errors(
@@ -26,7 +26,9 @@ class CheckTestCase(TestCase):
         error2 = {"message": "Oh no!", "locations": [], "path": None}
         response_with_errors = {"data": {"build": None}, "errors": [error1, error2]}
         gbp = fixtures.gbp
-        gbp.query._session.post.return_value = http_response(json=response_with_errors)
+        gbp.query._session.post.return_value = lib.http_response(
+            json=response_with_errors
+        )
 
         with self.assertRaises(APIError) as context:
             check(gbp.query.gbpcli.machines())
@@ -37,14 +39,14 @@ class CheckTestCase(TestCase):
 
 
 @given(lib.gbp)
-class ResolveBuildIdTestCase(TestCase):
+class ResolveBuildIdTestCase(lib.TestCase):
     """resolve_build_id() tests"""
 
     def test_returns_latest_build_for_machine_when_build_id_is_none(
         self, fixtures: Fixtures
     ):
         gbp = fixtures.gbp
-        gbp.query._session.post.return_value = http_response(
+        gbp.query._session.post.return_value = lib.http_response(
             json={"data": {"latest": {"id": "lighthouse.123"}}}
         )
 
@@ -54,7 +56,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_aborts_when_build_id_is_none_and_no_latest(self, fixtures: Fixtures):
         gbp = fixtures.gbp
-        gbp.query._session.post.return_value = http_response(
+        gbp.query._session.post.return_value = lib.http_response(
             json={"data": {"latest": None}}
         )
 
@@ -65,7 +67,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_returns_build_when_given_tag(self, fixtures: Fixtures):
         gbp = fixtures.gbp
-        gbp.query._session.post.return_value = http_response(
+        gbp.query._session.post.return_value = lib.http_response(
             json={"data": {"resolveBuildTag": {"id": "lighthouse.123"}}}
         )
 
@@ -75,7 +77,7 @@ class ResolveBuildIdTestCase(TestCase):
 
     def test_aborts_when_given_tag_that_does_not_exist(self, fixtures: Fixtures):
         gbp = fixtures.gbp
-        gbp.query._session.post.return_value = http_response(
+        gbp.query._session.post.return_value = lib.http_response(
             json={"data": {"resolveBuildTag": None}}
         )
 
@@ -94,7 +96,7 @@ class ResolveBuildIdTestCase(TestCase):
         self.assertEqual(result, Build(machine="lighthouse", number=456))
 
 
-class GetMyMachinesFromArgsTestCase(TestCase):
+class GetMyMachinesFromArgsTestCase(lib.TestCase):
     """Tests for the get_my_machines_from_args method"""
 
     def test_when_argument_is_none(self):
@@ -141,7 +143,7 @@ class GetMyMachinesFromArgsTestCase(TestCase):
 
 
 @given(testkit.environ, testkit.tmpdir)
-class LoadEnvTests(TestCase):
+class LoadEnvTests(lib.TestCase):
     def test_loads_config(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "config.env"
         path.write_text("TEST=foobar\n")

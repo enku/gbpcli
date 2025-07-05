@@ -9,13 +9,13 @@ from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.subcommands.inspect import handler as inspect
 
-from . import LOCAL_TIMEZONE, TestCase, lib, load_ndjson, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console, testkit.environ)
 @where(environ={"GBPCLI_MYMACHINES": "base"})
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class InspectTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class InspectTestCase(lib.TestCase):
     """inspect() tests"""
 
     def test_entire_tree(self, fixtures: Fixtures):
@@ -23,16 +23,16 @@ class InspectTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        graphql_responses = load_ndjson("inspect.ndjson")
+        graphql_responses = lib.load_ndjson("inspect.ndjson")
 
         machines_response = next(graphql_responses)
-        make_response(gbp, machines_response)
+        lib.make_response(gbp, machines_response)
 
         machines_count = len(machines_response["data"]["machines"])
         assert machines_count == 2
 
         for _ in range(machines_count):
-            make_response(gbp, next(graphql_responses))
+            lib.make_response(gbp, next(graphql_responses))
 
         console.out.print("[green]$ [/green]gbp inspect")
         status = inspect(args, gbp, console)
@@ -52,10 +52,10 @@ class InspectTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        graphql_responses = load_ndjson("inspect.ndjson", start=4)
+        graphql_responses = lib.load_ndjson("inspect.ndjson", start=4)
 
         response = next(graphql_responses)
-        make_response(gbp, response)
+        lib.make_response(gbp, response)
 
         print_command(cmdline, console)
         status = inspect(args, gbp, console)
@@ -71,10 +71,10 @@ class InspectTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        graphql_responses = load_ndjson("inspect.ndjson", start=5)
+        graphql_responses = lib.load_ndjson("inspect.ndjson", start=5)
 
         response = next(graphql_responses)
-        make_response(gbp, response)
+        lib.make_response(gbp, response)
 
         print_command(cmdline, console)
         status = inspect(args, gbp, console)
@@ -91,7 +91,7 @@ class InspectTestCase(TestCase):
         gbp = fixtures.gbp
         console = fixtures.console
 
-        make_response(gbp, "lighthouse.12672.json")
+        lib.make_response(gbp, "lighthouse.12672.json")
 
         print_command(cmdline, console)
         status = inspect(args, gbp, console)
@@ -105,10 +105,10 @@ class InspectTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        graphql_responses = load_ndjson("inspect.ndjson", start=4)
+        graphql_responses = lib.load_ndjson("inspect.ndjson", start=4)
 
         response = next(graphql_responses)
-        make_response(gbp, response)
+        lib.make_response(gbp, response)
 
         print_command(cmdline, console)
         status = inspect(args, gbp, console)

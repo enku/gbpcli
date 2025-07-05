@@ -7,11 +7,11 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.keep import handler as keep
 
-from . import TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-class KeepTestCase(TestCase):
+class KeepTestCase(lib.TestCase):
     """keep() tests"""
 
     def test_keep(self, fixtures: Fixtures):
@@ -19,7 +19,7 @@ class KeepTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "keep_build.json")
+        lib.make_response(gbp, "keep_build.json")
 
         status = keep(args, gbp, console)
 
@@ -33,7 +33,7 @@ class KeepTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"keepBuild": None}})
+        lib.make_response(gbp, {"data": {"keepBuild": None}})
 
         status = keep(args, gbp, console)
         self.assertEqual(status, 1)
@@ -44,7 +44,7 @@ class KeepTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "release_build.json")
+        lib.make_response(gbp, "release_build.json")
 
         status = keep(args, gbp, console)
 
@@ -58,7 +58,7 @@ class KeepTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"releaseBuild": None}})
+        lib.make_response(gbp, {"data": {"releaseBuild": None}})
 
         status = keep(args, gbp, console)
 

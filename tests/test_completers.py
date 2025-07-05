@@ -9,7 +9,7 @@ from gbpcli import GBP
 from gbpcli.subcommands import completers
 from gbpcli.types import Build
 
-from . import TestCase
+from .lib import TestCase
 
 
 def patch_gbp(func):

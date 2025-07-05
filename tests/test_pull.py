@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.pull import handler as pull
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class PullTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class PullTestCase(lib.TestCase):
     """pull() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class PullTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "pull.json")
+        lib.make_response(gbp, "pull.json")
 
         pull(args, gbp, console)
 
@@ -35,7 +35,7 @@ class PullTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "pull.json")
+        lib.make_response(gbp, "pull.json")
 
         pull(args, gbp, console)
 
@@ -52,7 +52,7 @@ class PullTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "pull.json")
+        lib.make_response(gbp, "pull.json")
 
         pull(args, gbp, console)
 

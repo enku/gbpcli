@@ -9,13 +9,13 @@ from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.subcommands.machines import handler as machines
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console, testkit.environ)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class MachinesTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class MachinesTestCase(lib.TestCase):
     """machines() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -23,7 +23,7 @@ class MachinesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "machines.json")
+        lib.make_response(gbp, "machines.json")
 
         print_command(cmdline, console)
         status = machines(args, gbp, console)
@@ -37,7 +37,7 @@ class MachinesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "machines_filtered.json")
+        lib.make_response(gbp, "machines_filtered.json")
 
         print_command(cmdline, console)
         status = machines(args, gbp, console)

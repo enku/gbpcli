@@ -9,7 +9,7 @@ from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli import config
 
-from . import TestCase
+from .lib import TestCase
 
 
 @fixture(testkit.tmpdir)

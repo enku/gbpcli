@@ -7,18 +7,18 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.tag import handler as tag
 
-from . import TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-class TagTestCase(TestCase):
+class TagTestCase(lib.TestCase):
     """tag() tests"""
 
     def test_tag(self, fixtures: Fixtures):
         cmdline = "gbp tag lighthouse 9400 prod"
         args = parse_args(cmdline)
         gbp = fixtures.gbp
-        make_response(gbp, "tag_build.json")
+        lib.make_response(gbp, "tag_build.json")
 
         status = tag(args, gbp, fixtures.console)
 
@@ -31,7 +31,7 @@ class TagTestCase(TestCase):
         cmdline = "gbp tag -r lighthouse prod"
         args = parse_args(cmdline)
         gbp = fixtures.gbp
-        make_response(gbp, "untag_build.json")
+        lib.make_response(gbp, "untag_build.json")
 
         status = tag(args, gbp, fixtures.console)
 
@@ -44,7 +44,7 @@ class TagTestCase(TestCase):
         cmdline = "gbp tag -r lighthouse @prod"
         args = parse_args(cmdline)
         gbp = fixtures.gbp
-        make_response(gbp, "untag_build.json")
+        lib.make_response(gbp, "untag_build.json")
 
         status = tag(args, gbp, fixtures.console)
 

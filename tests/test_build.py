@@ -7,11 +7,11 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.build import handler as build
 
-from . import TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-class MachinesTestCase(TestCase):
+class MachinesTestCase(lib.TestCase):
     """machines() tests"""
 
     def test(self, fixtures: Fixtures) -> None:
@@ -19,7 +19,7 @@ class MachinesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "schedule_build.json")
+        lib.make_response(gbp, "schedule_build.json")
 
         status = build(args, gbp, console)
 
@@ -34,7 +34,7 @@ class MachinesTestCase(TestCase):
         console = fixtures.console
         cmdline = "gbp build babette -p BUILD_TARGET=emptytree"
         args = parse_args(cmdline)
-        make_response(gbp, "schedule_build.json")
+        lib.make_response(gbp, "schedule_build.json")
 
         status = build(args, gbp, console)
 
@@ -58,7 +58,7 @@ class MachinesTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(fixtures.gbp, "schedule_build.json")
+        lib.make_response(fixtures.gbp, "schedule_build.json")
 
         status = build(args, gbp, console)
 
@@ -71,7 +71,7 @@ class MachinesTestCase(TestCase):
         console = fixtures.console
         cmdline = "gbp build -r gentoo"
         args = parse_args(cmdline)
-        make_response(gbp, "schedule_build.json")
+        lib.make_response(gbp, "schedule_build.json")
 
         status = build(args, gbp, console)
 

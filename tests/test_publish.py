@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.publish import handler as publish
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class PublishTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class PublishTestCase(lib.TestCase):
     """publish() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class PublishTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "publish.json")
+        lib.make_response(gbp, "publish.json")
 
         publish(args, gbp, console)
 
@@ -33,8 +33,8 @@ class PublishTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, {"data": {"latest": {"id": "lighthouse.2080"}}})
-        make_response(gbp, "publish.json")
+        lib.make_response(gbp, {"data": {"latest": {"id": "lighthouse.2080"}}})
+        lib.make_response(gbp, "publish.json")
 
         status = publish(args, gbp, console)
 

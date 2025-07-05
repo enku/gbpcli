@@ -9,12 +9,12 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.list import handler as list_command
 
-from . import LOCAL_TIMEZONE, TestCase, lib, make_response
+from . import lib
 
 
 @given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
-class ListTestCase(TestCase):
+@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+class ListTestCase(lib.TestCase):
     """list() tests"""
 
     def test(self, fixtures: Fixtures):
@@ -22,7 +22,7 @@ class ListTestCase(TestCase):
         args = parse_args(cmdline)
         gbp = fixtures.gbp
         console = fixtures.console
-        make_response(gbp, "list_with_packages.json")
+        lib.make_response(gbp, "list_with_packages.json")
 
         print_command(cmdline, console)
         status = list_command(args, gbp, console)
