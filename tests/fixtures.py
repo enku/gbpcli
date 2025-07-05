@@ -46,7 +46,7 @@ def gbp(
 
 
 @fixture(testkit.tmpdir)
-def user_config_dir(fixtures: Fixtures):
+def user_config_dir(fixtures: Fixtures) -> FixtureContext[mock.Mock]:
     with mock.patch(
         "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tmpdir
     ) as patch:
