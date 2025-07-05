@@ -10,12 +10,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.diff import handler as diff
 
-from . import LOCAL_TIMEZONE, TestCase
-from . import fixtures as tf
-from . import http_response, load_data, make_response
+from . import LOCAL_TIMEZONE, TestCase, http_response, lib, load_data, make_response
 
 
-@given(tf.gbp, testkit.console)
+@given(lib.gbp, testkit.console)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class DiffTestCase(TestCase):
     """diff() tests"""

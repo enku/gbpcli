@@ -11,9 +11,7 @@ from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
 
-from . import LOCAL_TIMEZONE, TestCase
-from . import fixtures as tf
-from . import make_response
+from . import LOCAL_TIMEZONE, TestCase, lib, make_response
 
 MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
@@ -21,14 +19,14 @@ NOTE = "Hello world\n"
 args = parse_args("gbp notes lighthouse 3109")
 
 
-@fixture(tf.gbp)
+@fixture(lib.gbp)
 def responses(fixtures) -> None:
     gbp = fixtures.gbp
     make_response(gbp, "status.json")
     make_response(gbp, "create_note.json")
 
 
-@given(tf.gbp, testkit.console, responses)
+@given(lib.gbp, testkit.console, responses)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class NotesTestCase(TestCase):
     """notes tests"""

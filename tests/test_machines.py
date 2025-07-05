@@ -9,12 +9,10 @@ from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.subcommands.machines import handler as machines
 
-from . import LOCAL_TIMEZONE, TestCase
-from . import fixtures as tf
-from . import make_response
+from . import LOCAL_TIMEZONE, TestCase, lib, make_response
 
 
-@given(tf.gbp, testkit.console, testkit.environ)
+@given(lib.gbp, testkit.console, testkit.environ)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class MachinesTestCase(TestCase):

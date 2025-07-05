@@ -10,11 +10,10 @@ from unittest_fixtures import Fixtures, fixture, given
 from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
 
-from . import TestCase
-from . import fixtures as tf
+from . import TestCase, lib
 
 
-@given(tf.gbp)
+@given(lib.gbp)
 class GGPTestCase(TestCase):
     def test_url(self, fixtures: Fixtures) -> None:
         gbp = GBP("http://gbp.invalid/")
@@ -22,7 +21,7 @@ class GGPTestCase(TestCase):
         self.assertEqual(gbp.query._url, "http://gbp.invalid/graphql")
 
 
-@given(tf.gbp)
+@given(lib.gbp)
 class GBPQueryTestCase(TestCase):
     """Tests for the .query method"""
 
@@ -38,7 +37,7 @@ class GBPQueryTestCase(TestCase):
         self.assertIs(cxt.exception, error)
 
 
-@fixture("environ")
+@fixture(testkit.environ)
 def parser(_fixtures):
     return build_parser(config.Config())
 

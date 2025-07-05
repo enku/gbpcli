@@ -7,12 +7,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.keep import handler as keep
 
-from . import TestCase
-from . import fixtures as tf
-from . import make_response
+from . import TestCase, lib, make_response
 
 
-@given(tf.gbp, testkit.console)
+@given(lib.gbp, testkit.console)
 class KeepTestCase(TestCase):
     """keep() tests"""
 

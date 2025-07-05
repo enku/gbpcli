@@ -7,12 +7,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.build import handler as build
 
-from . import TestCase
-from . import fixtures as tf
-from . import make_response
+from . import TestCase, lib, make_response
 
 
-@given(tf.gbp, testkit.console)
+@given(lib.gbp, testkit.console)
 class MachinesTestCase(TestCase):
     """machines() tests"""
 

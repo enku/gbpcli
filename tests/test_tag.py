@@ -7,12 +7,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.tag import handler as tag
 
-from . import TestCase
-from . import fixtures as tf
-from . import make_response
+from . import TestCase, lib, make_response
 
 
-@given(tf.gbp, testkit.console)
+@given(lib.gbp, testkit.console)
 class TagTestCase(TestCase):
     """tag() tests"""
 

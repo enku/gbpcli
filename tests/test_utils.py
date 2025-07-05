@@ -12,12 +12,10 @@ from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
 from gbpcli.utils import get_my_machines_from_args, load_env, resolve_build_id
 
-from . import TestCase
-from . import fixtures as tf
-from . import http_response
+from . import TestCase, http_response, lib
 
 
-@given(tf.gbp)
+@given(lib.gbp)
 class CheckTestCase(TestCase):
     """check() tests"""
 
@@ -38,7 +36,7 @@ class CheckTestCase(TestCase):
         self.assertEqual(exception.data, {"build": None})
 
 
-@given(tf.gbp)
+@given(lib.gbp)
 class ResolveBuildIdTestCase(TestCase):
     """resolve_build_id() tests"""
 

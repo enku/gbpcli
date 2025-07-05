@@ -9,12 +9,10 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.subcommands.latest import handler as latest
 
-from . import LOCAL_TIMEZONE, TestCase
-from . import fixtures as tf
-from . import make_response
+from . import LOCAL_TIMEZONE, TestCase, lib, make_response
 
 
-@given(tf.gbp, testkit.console)
+@given(lib.gbp, testkit.console)
 @mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=LOCAL_TIMEZONE)
 class LatestTestCase(TestCase):
     """latest() tests"""
