@@ -13,8 +13,7 @@ from gbpcli.subcommands.diff import handler as diff
 from . import lib
 
 
-@given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+@given(lib.gbp, testkit.console, lib.local_timezone)
 class DiffTestCase(lib.TestCase):
     """diff() tests"""
 

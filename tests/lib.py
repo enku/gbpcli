@@ -100,6 +100,14 @@ def user_config_dir(fixtures: Fixtures) -> FixtureContext[mock.Mock]:
         yield patch
 
 
+@fixture()
+def local_timezone(
+    _: Fixtures, local_timezone: dt.timezone = LOCAL_TIMEZONE
+) -> FixtureContext[dt.timezone]:
+    with mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=local_timezone):
+        yield local_timezone
+
+
 def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Response:
     """Create a mock requests.Response object"""
     # pylint: disable=protected-access

@@ -1,8 +1,6 @@
 """Tests for the publish subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from unittest import mock
-
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args
 from unittest_fixtures import Fixtures, given
@@ -12,8 +10,7 @@ from gbpcli.subcommands.publish import handler as publish
 from . import lib
 
 
-@given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+@given(lib.gbp, testkit.console, lib.local_timezone)
 class PublishTestCase(lib.TestCase):
     """publish() tests"""
 

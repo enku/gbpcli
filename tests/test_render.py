@@ -1,7 +1,9 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,unused-argument
 import argparse
 import datetime as dt
-from unittest import TestCase, mock
+from unittest import TestCase
+
+from unittest_fixtures import Fixtures, given
 
 from gbpcli.render import (
     build_to_str,
@@ -36,7 +38,7 @@ class TimestrTestCase(TestCase):
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
 
 
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+@given(lib.local_timezone)
 class BuildToStrTests(TestCase):
     build = Build(
         machine="babette",
@@ -62,7 +64,7 @@ class BuildToStrTests(TestCase):
         ],
     )
 
-    def test(self) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         result = build_to_str(self.build)
 
         expected = """\
@@ -82,7 +84,7 @@ This is a test
 """
         self.assertEqual(expected, result)
 
-    def test_no_info(self) -> None:
+    def test_no_info(self, fixtures: Fixtures) -> None:
         build = Build(machine="babette", number=12)
 
         with self.assertRaises(ValueError):

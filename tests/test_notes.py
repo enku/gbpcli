@@ -26,8 +26,7 @@ def responses(fixtures) -> None:
     lib.make_response(gbp, "create_note.json")
 
 
-@given(lib.gbp, testkit.console, responses)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+@given(lib.gbp, testkit.console, responses, lib.local_timezone)
 class NotesTestCase(lib.TestCase):
     """notes tests"""
 

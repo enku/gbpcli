@@ -1,8 +1,6 @@
 """Tests for the machines subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access,unused-argument
-from unittest import mock
-
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from unittest_fixtures import Fixtures, given, where
@@ -12,9 +10,8 @@ from gbpcli.subcommands.machines import handler as machines
 from . import lib
 
 
-@given(lib.gbp, testkit.console, testkit.environ)
+@given(lib.gbp, testkit.console, testkit.environ, lib.local_timezone)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
 class MachinesTestCase(lib.TestCase):
     """machines() tests"""
 

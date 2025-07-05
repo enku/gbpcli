@@ -1,8 +1,6 @@
 """Tests for the logs subcommand"""
 
 # pylint: disable=missing-function-docstring
-from unittest import mock
-
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
 from unittest_fixtures import Fixtures, given
@@ -12,8 +10,7 @@ from gbpcli.subcommands.logs import handler as logs
 from . import lib
 
 
-@given(lib.gbp, testkit.console)
-@mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=lib.LOCAL_TIMEZONE)
+@given(lib.gbp, testkit.console, lib.local_timezone)
 class LogsTestCase(lib.TestCase):
     """logs() tests"""
 
