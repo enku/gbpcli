@@ -3,7 +3,6 @@
 # pylint: disable=missing-docstring,redefined-outer-name,protected-access
 
 import datetime as dt
-import os
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
@@ -58,25 +57,6 @@ class ThemeTests(BaseTestCase):
         style_color = theme.styles[style].color
         assert style_color is not None, msg
         self.assertEqual(style_color.name, color, msg)
-
-
-@fixture(testkit.tmpdir)
-def environ(
-    fixtures: Fixtures,
-    environ: dict[str, str] | None = None,  # pylint: disable=redefined-outer-name
-) -> FixtureContext[dict[str, str]]:
-    mock_environ = {
-        **next(testkit.environ(fixtures), {}),
-        "BUILD_PUBLISHER_API_KEY_ENABLE": "no",
-        "BUILD_PUBLISHER_JENKINS_BASE_URL": "https://jenkins.invalid/",
-        "BUILD_PUBLISHER_RECORDS_BACKEND": "memory",
-        "BUILD_PUBLISHER_STORAGE_PATH": str(fixtures.tmpdir / "gbp"),
-        "BUILD_PUBLISHER_WORKER_BACKEND": "sync",
-        "BUILD_PUBLISHER_WORKER_THREAD_WAIT": "yes",
-        **(environ or {}),
-    }
-    with mock.patch.dict(os.environ, mock_environ):
-        yield mock_environ
 
 
 @fixture()
