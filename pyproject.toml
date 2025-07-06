@@ -58,7 +58,7 @@ version = { source = "scm" }
 skip-magic-trailing-comma = true
 
 [tool.coverage.run]
-source = ["gbpcli"]
+source = ["gbpcli", "tests"]
 omit = ["src/gbpcli/__main__.py"]
 
 [tool.flake8]
