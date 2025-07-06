@@ -35,7 +35,7 @@ class TestCase(BaseTestCase):
 
         try:
             call = calls[index]
-        except IndexError:
+        except IndexError:  # pragma: no cover
             self.fail("Query not called")
 
         assert call[0] == (gbp.query._url,)
