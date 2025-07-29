@@ -25,6 +25,76 @@ COLOR_CHOICES = {"always": True, "never": False, "auto": None}
 DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 
+def main(argv: list[str] | None = None) -> int:
+    """Main entry point"""
+    set_environ()
+    user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
+    args = get_arguments(user_config, argv)
+    theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
+    console = get_console(COLOR_CHOICES[args.color], theme)
+
+    try:
+        return cast(int, args.func(args, GBP(args.url, auth=user_config.auth), console))
+    except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
+        console.err.print(str(error))
+        return 1
+
+
+def set_environ() -> None:
+    """Set default environment variables
+
+    These are needed in order to load modules from Gentoo Build Publisher
+    """
+    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
+    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
+
+
+def get_user_config(filename: str | None = None) -> config.Config:
+    """Return Config from the user's"""
+    config_dir = platformdirs.user_config_dir()
+    user_config_file = filename or os.path.join(config_dir, "gbpcli.toml")
+
+    try:
+        with open(user_config_file, "rb") as fp:
+            return config.Config.from_file(fp)
+    except FileNotFoundError:
+        if filename:
+            raise
+        return config.Config()
+
+
+def get_arguments(
+    user_config: config.Config, argv: list[str] | None = None
+) -> argparse.Namespace:
+    """Return command line arguments given the argv
+
+    This method ensures that args.func is defined as it's mandatory for calling
+    subcommands. If there are none the help message is printed to stderr and SystemExit
+    is raised.
+    """
+    argv = argv if argv is not None else sys.argv[1:]
+    parser = build_parser(user_config)
+    supress_completer = argcomplete.completers.SuppressCompleter()
+    argcomplete.autocomplete(parser, default_completer=supress_completer)
+    args = parser.parse_args(argv)
+    ensure_args_has_func(args, parser)
+
+    return args
+
+
+def get_console(force_terminal: bool | None, theme: Theme) -> Console:
+    """Return a rich.Console instance
+
+    If force_terminal is true, force a tty on the console.
+    If the ColorMap is given this is used as the Console theme
+    """
+    out = rich.console.Console(
+        force_terminal=force_terminal, color_system="auto", highlight=False, theme=theme
+    )
+    return Console(out=out, err=rich.console.Console(file=sys.stderr))
+
+
 def build_parser(user_config: config.Config) -> argparse.ArgumentParser:
     """Set command-line arguments"""
     usage = "Command-line interface to Gentoo Build Publisher\n\nCommands:\n\n"
@@ -73,61 +143,6 @@ def build_parser(user_config: config.Config) -> argparse.ArgumentParser:
     return parser
 
 
-def get_arguments(
-    user_config: config.Config, argv: list[str] | None = None
-) -> argparse.Namespace:
-    """Return command line arguments given the argv
-
-    This method ensures that args.func is defined as it's mandatory for calling
-    subcommands. If there are none the help message is printed to stderr and SystemExit
-    is raised.
-    """
-    argv = argv if argv is not None else sys.argv[1:]
-    parser = build_parser(user_config)
-    supress_completer = argcomplete.completers.SuppressCompleter()
-    argcomplete.autocomplete(parser, default_completer=supress_completer)
-    args = parser.parse_args(argv)
-    ensure_args_has_func(args, parser)
-
-    return args
-
-
-def get_console(force_terminal: bool | None, theme: Theme) -> Console:
-    """Return a rich.Console instance
-
-    If force_terminal is true, force a tty on the console.
-    If the ColorMap is given this is used as the Console theme
-    """
-    out = rich.console.Console(
-        force_terminal=force_terminal, color_system="auto", highlight=False, theme=theme
-    )
-    return Console(out=out, err=rich.console.Console(file=sys.stderr))
-
-
-def get_user_config(filename: str | None = None) -> config.Config:
-    """Return Config from the user's"""
-    config_dir = platformdirs.user_config_dir()
-    user_config_file = filename or os.path.join(config_dir, "gbpcli.toml")
-
-    try:
-        with open(user_config_file, "rb") as fp:
-            return config.Config.from_file(fp)
-    except FileNotFoundError:
-        if filename:
-            raise
-        return config.Config()
-
-
-def set_environ() -> None:
-    """Set default environment variables
-
-    These are needed in order to load modules from Gentoo Build Publisher
-    """
-    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
-    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
-
-
 def ensure_args_has_func(
     args: argparse.Namespace, parser: argparse.ArgumentParser
 ) -> None:
@@ -138,18 +153,3 @@ def ensure_args_has_func(
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
         raise SystemExit(1)
-
-
-def main(argv: list[str] | None = None) -> int:
-    """Main entry point"""
-    set_environ()
-    user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
-    args = get_arguments(user_config, argv)
-    theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
-    console = get_console(COLOR_CHOICES[args.color], theme)
-
-    try:
-        return cast(int, args.func(args, GBP(args.url, auth=user_config.auth), console))
-    except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
-        console.err.print(str(error))
-        return 1
