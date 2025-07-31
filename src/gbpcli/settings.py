@@ -43,16 +43,15 @@ class BaseSettings:
 
 def string_value_to_field_value(value: str, type_: str | type[Any]) -> Any:
     """Coerse the given string value to the given type"""
-    if type_ == "bool" or type_ is bool:
-        return get_bool(value)
-
-    if type_ == "int" or type_ is int:
-        return int(value)
-
-    if type_ == "Path" or type_ is Path:
-        return Path(value)
-
-    return value
+    match getattr(type_, "__name__", type_):
+        case "bool":
+            return get_bool(value)
+        case "int":
+            return int(value)
+        case "Path":
+            return Path(value)
+        case _:
+            return value
 
 
 def get_bool(value: str | bytes | bool) -> bool:
