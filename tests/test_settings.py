@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import ClassVar
 from unittest import TestCase, mock
 
-from gbpcli.settings import BaseSettings
+from gbpcli.settings import BaseSettings, string_value_to_field_value
+
+svtfv = string_value_to_field_value
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -60,3 +62,25 @@ class SettingsTestCase(TestCase):
         with self.assertRaises(AttributeError):
             # pylint: disable=no-member,pointless-statement
             settings.IS  # type: ignore
+
+
+class StringValueToFieldValue(TestCase):
+    def test_int(self) -> None:
+        self.assertEqual(58, svtfv("58", int))
+
+    def test_int_str(self) -> None:
+        self.assertEqual(58, svtfv("58", "int"))
+
+    def test_bool_str(self) -> None:
+        self.assertEqual(True, svtfv("True", "bool"))
+        self.assertEqual(False, svtfv("False", "bool"))
+        self.assertEqual(False, svtfv("No", "bool"))
+
+    def test_path(self) -> None:
+        self.assertEqual(Path("/dev/null"), svtfv("/dev/null", Path))
+
+    def test_path_str(self) -> None:
+        self.assertEqual(Path("/dev/null"), svtfv("/dev/null", "Path"))
+
+    def test_other(self) -> None:
+        self.assertEqual("None", svtfv("None", type(None)))
