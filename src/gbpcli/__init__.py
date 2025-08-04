@@ -28,6 +28,7 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
     set_environ()
+    utils.load_env()
     user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
     args = get_arguments(user_config, argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
@@ -153,3 +154,8 @@ def ensure_args_has_func(
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
         raise SystemExit(1)
+
+
+# avoiding a circular import
+# pylint: disable=wrong-import-position,cyclic-import
+from gbpcli import utils
