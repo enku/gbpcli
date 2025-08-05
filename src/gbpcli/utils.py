@@ -9,7 +9,7 @@ from typing import Any, Iterable, cast
 from dotenv import load_dotenv
 from rich.table import Table
 
-from gbpcli import GBP
+from gbpcli.gbp import GBP
 from gbpcli.types import Build
 
 # This is the datetime of the first git commit of gentoo-build-publisher

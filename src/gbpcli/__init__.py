@@ -16,7 +16,7 @@ import requests
 import rich.console
 from rich.theme import Theme
 
-from gbpcli import config, graphql
+from gbpcli import config, graphql, utils
 from gbpcli.gbp import GBP
 from gbpcli.theme import get_theme_from_string
 from gbpcli.types import Console
@@ -154,8 +154,3 @@ def ensure_args_has_func(
     if not hasattr(args, "func"):
         parser.print_help(file=sys.stderr)
         raise SystemExit(1)
-
-
-# avoiding a circular import
-# pylint: disable=wrong-import-position,cyclic-import
-from gbpcli import utils
