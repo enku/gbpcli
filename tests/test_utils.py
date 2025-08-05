@@ -3,6 +3,7 @@
 # pylint: disable=missing-docstring,protected-access,unused-argument
 import argparse
 import os
+import sys
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
@@ -10,7 +11,7 @@ from unittest_fixtures import Fixtures, given
 
 from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
-from gbpcli.utils import get_my_machines_from_args, load_env, resolve_build_id
+from gbpcli.utils import get_my_machines_from_args, load_env, re_path, resolve_build_id
 
 from . import lib
 
@@ -178,3 +179,27 @@ class LoadEnvTests(lib.TestCase):
 
         self.assertFalse(status)
         self.assertTrue("TEST" not in os.environ)
+
+
+class RePath(lib.TestCase):
+    def test(self) -> None:
+        orig_path = sys.path.copy()
+
+        try:
+            with mock.patch.dict(os.environ, {"PYTHONPATH": "/dev/null"}):
+                re_path()
+                self.assertEqual(sys.path[0], "/dev/null")
+        finally:
+            sys.path = orig_path
+
+    def test_when_already_in_path(self) -> None:
+        orig_path = sys.path.copy()
+
+        try:
+            sys.path.append("/dev/null")
+            with mock.patch.dict(os.environ, {"PYTHONPATH": "/dev/null"}):
+                re_path()
+                self.assertEqual(1, sys.path.count("/dev/null"))
+                self.assertEqual(sys.path[-1], "/dev/null")
+        finally:
+            sys.path = orig_path

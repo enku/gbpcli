@@ -3,6 +3,7 @@
 import argparse
 import datetime as dt
 import os
+import sys
 from pathlib import Path
 from typing import Any, Iterable, cast
 
@@ -78,6 +79,8 @@ def set_env() -> None:
 def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
     """Silently load the server config into the environment
 
+    Also re-evaluate sys.path according to PYTHONPATH.
+
     Contents of the file are loaded as environment variables. Return True.
 
     If the path does not exist or is not readable. Return False
@@ -89,8 +92,19 @@ def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
         return False
 
     load_dotenv(path, override=True)
+    re_path()
 
     return True
+
+
+def re_path() -> None:
+    """Evaluate PYTHONPATH and set sys.path accordingly"""
+    environ = os.environ
+    pythonpath = environ.get("PYTHONPATH", "")
+
+    for path in pythonpath.split(os.pathsep):
+        if path not in sys.path:
+            sys.path.insert(0, path)
 
 
 def add_columns(table: Table, data: ColumnData) -> None:
