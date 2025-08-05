@@ -1,7 +1,6 @@
 """Command Line interface for Gentoo Build Publisher"""
 
 # PYTHON_ARGCOMPLETE_OK
-from __future__ import annotations
 
 import argparse
 import os
