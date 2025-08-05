@@ -65,6 +65,16 @@ def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
         return []
 
 
+def set_env() -> None:
+    """Set default environment variables
+
+    These are needed in order to load modules from Gentoo Build Publisher
+    """
+    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
+    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
+
+
 def load_env(path: str | Path = DEFAULT_SERVER_CONF) -> bool:
     """Silently load the server config into the environment
 

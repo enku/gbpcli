@@ -27,7 +27,7 @@ DEFAULT_URL = os.getenv("BUILD_PUBLISHER_URL", "http://localhost/")
 
 def main(argv: list[str] | None = None) -> int:
     """Main entry point"""
-    set_environ()
+    utils.set_env()
     utils.load_env()
     user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
     args = get_arguments(user_config, argv)
@@ -39,16 +39,6 @@ def main(argv: list[str] | None = None) -> int:
     except (graphql.APIError, requests.HTTPError, requests.ConnectionError) as error:
         console.err.print(str(error))
         return 1
-
-
-def set_environ() -> None:
-    """Set default environment variables
-
-    These are needed in order to load modules from Gentoo Build Publisher
-    """
-    os.environ.setdefault("BUILD_PUBLISHER_JENKINS_BASE_URL", "http://jenkins.invalid")
-    os.environ.setdefault("BUILD_PUBLISHER_STORAGE_PATH", "__testing__")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gbpcli.django_settings")
 
 
 def get_user_config(filename: str | None = None) -> config.Config:
