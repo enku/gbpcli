@@ -35,8 +35,7 @@ class BaseSettings:
     @classmethod
     def from_environ(cls: type[Self], prefix: str | None = None) -> Self:
         """Return settings instantiated from environment variables"""
-        if prefix is None:
-            prefix = cls.env_prefix
+        prefix = prefix if prefix is not None else cls.env_prefix
 
         return cls.from_dict(prefix, dict(os.environ))
 
