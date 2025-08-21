@@ -1,12 +1,15 @@
 """Tests for the notes subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-function-docstring
+import datetime as dt
 import os
 import subprocess
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
+from gentoo_build_publisher import publisher
+from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.notes import handler as create_note
@@ -17,16 +20,18 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 args = parse_args("gbp notes lighthouse 3109")
+build = Build(machine="lighthouse", build_id="3109")
 
 
-@fixture(lib.gbp)
-def responses(fixtures) -> None:
-    gbp = fixtures.gbp
-    lib.make_response(gbp, "status.json")
-    lib.make_response(gbp, "create_note.json")
+@fixture(testkit.publisher)
+def pulled_build(_: Fixtures) -> None:
+    timestamp = dt.datetime(2025, 8, 21, 16, 8)
+    publisher.pull(build)
+    record = publisher.record(build)
+    publisher.save(record, submitted=timestamp, completed=timestamp)
 
 
-@given(lib.gbp, testkit.console, responses, lib.local_timezone)
+@given(pulled_build, testkit.gbp, testkit.console, lib.local_timezone)
 class NotesTestCase(lib.TestCase):
     """notes tests"""
 
@@ -54,11 +59,12 @@ class NotesTestCase(lib.TestCase):
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
-                with mock.patch.dict(os.environ, {"EDITOR": "foo"}, clear=True):
+                with mock.patch.dict(os.environ, VISUAL="foo"):
                     status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assert_create_note(fixtures)
+        record = publisher.record(build)
+        self.assertEqual(record.note, NOTE)
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_create_with_editor_but_editor_fails_does_not_create_note(
@@ -70,51 +76,58 @@ class NotesTestCase(lib.TestCase):
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
             with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
-                with mock.patch.dict(os.environ, {"VISUAL": "foo"}, clear=True):
+                with mock.patch.dict(os.environ, VISUAL="foo"):
                     status = create_note(args, gbp, console)
 
         self.assertEqual(status, 1)
-        self.assertEqual(gbp.query._session.post.call_count, 1)
+        record = publisher.record(build)
+        self.assertEqual(record.note, None)
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_when_isatty_but_no_editor_reads_from_stdin(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
-            with mock.patch.dict(os.environ, {}, clear=True):
+            with mock.patch.dict(os.environ):
+                os.environ.pop("VISUAL", None)
+                os.environ.pop("EDITOR", None)
                 with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                     status = create_note(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assert_create_note(fixtures)
+        record = publisher.record(build)
+        self.assertEqual(record.note, NOTE)
 
     def test_delete_deletes_note(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
         d_args = parse_args("gbp notes -d lighthouse 3109")
-        create_note(d_args, gbp, console)
+        record = publisher.record(build)
+        publisher.repo.build_records.save(record, note=NOTE)
 
-        self.assert_create_note(fixtures, note=None)
+        status = create_note(d_args, gbp, console)
+
+        self.assertEqual(status, 0)
+        record = publisher.record(build)
+        self.assertEqual(record.note, None)
 
     def test_create_with_no_tty(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
-        lib.make_response(gbp, "status.json")
-        lib.make_response(gbp, "create_note.json")
 
         with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
             with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
                 create_note(args, gbp, console)
 
-        self.assert_create_note(fixtures)
+        record = publisher.record(build)
+        self.assertEqual(record.note, NOTE)
 
     def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
-        lib.make_response(gbp, None)
-        lib.make_response(gbp, {"data": {"build": None}})
+        s_args = parse_args("gbp notes lighthouse 9999")
 
-        status = create_note(args, gbp, console)
+        status = create_note(s_args, gbp, console)
 
         self.assertEqual(status, 1)
         self.assertEqual(console.err.file.getvalue(), "Build not found\n")
@@ -132,21 +145,20 @@ class NotesTestCase(lib.TestCase):
     def test_search_notes(self, fixtures: Fixtures):
         gbp = fixtures.gbp
         console = fixtures.console
+        record = publisher.record(build)
+        publisher.save(record, note="10,000 maniacs")
         s_args = parse_args("gbp notes -s lighthouse 10,000")
-        lib.make_response(gbp, None)
-        lib.make_response(gbp, "search_notes.json")
 
         print_command("gbp notes --search lighthouse note", console)
-        status = create_note(s_args, gbp, console)
+        with mock.patch.object(
+            gbp.query.gbpcli, "search", wraps=gbp.query.gbpcli.search
+        ) as search:
+            status = create_note(s_args, gbp, console)
 
         # pylint: disable=duplicate-code
         self.assertEqual(status, 0)
-        self.assert_graphql(
-            gbp,
-            gbp.query.gbpcli.search,
-            machine="lighthouse",
-            field="NOTES",
-            key="10,000",
+        search.assert_called_once_with(
+            machine="lighthouse", field="NOTES", key="10,000"
         )
         self.assertEqual(console.out.file.getvalue(), EXPECTED_SEARCH_OUTPUT)
 
@@ -154,18 +166,15 @@ class NotesTestCase(lib.TestCase):
         gbp = fixtures.gbp
         console = fixtures.console
         s_args = parse_args("gbp notes -s lighthouse python")
-        lib.make_response(gbp, None)
-        lib.make_response(gbp, {"data": {"search": []}})
 
-        status = create_note(s_args, gbp, console)
+        with mock.patch.object(
+            gbp.query.gbpcli, "search", wraps=gbp.query.gbpcli.search
+        ) as search:
+            status = create_note(s_args, gbp, console)
 
         self.assertEqual(status, 1)
-        self.assert_graphql(
-            gbp,
-            gbp.query.gbpcli.search,
-            machine="lighthouse",
-            field="NOTES",
-            key="python",
+        search.assert_called_once_with(
+            machine="lighthouse", field="NOTES", key="python"
         )
         self.assertEqual(console.err.file.getvalue(), "No matches found\n")
 
@@ -184,14 +193,14 @@ def fake_editor(text=NOTE, returncode=0):
 
 
 EXPECTED_SEARCH_OUTPUT = """$ gbp notes --search lighthouse note
-Build: lighthouse/10000
-Submitted: Thu Sep  1 09:28:12 2022 -0700
-Completed: Thu Sep  1 09:47:34 2022 -0700
+Build: lighthouse/3109
+Submitted: Thu Aug 21 14:08:00 2025 -0700
+Completed: Thu Aug 21 14:08:00 2025 -0700
 Published: no
-Keep: yes
-Tags: 10000
+Keep: no
+Tags: 
 Packages-built: None
 
-This is a note!
+10,000 maniacs
 
 """
