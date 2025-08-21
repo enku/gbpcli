@@ -1,28 +1,49 @@
 """Tests for the status subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
+import datetime as dt
+
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import parse_args, print_command
-from unittest_fixtures import Fixtures, given
+from gentoo_build_publisher import publisher
+from gentoo_build_publisher.types import Build
+from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli.subcommands.status import handler as status
 
 from . import lib
 
+BUILD = Build(machine="lighthouse", build_id="3587")
 
-@given(lib.gbp, testkit.console, lib.local_timezone)
+
+@fixture(testkit.publisher)
+def pulled_build(_: Fixtures) -> None:
+    build = BUILD
+    builder = publisher.jenkins.artifact_builder  # type: ignore
+    builder.build(build, "app-editors/vim-8.2.3582")
+    builder.build(build, "app-editors/vim-core-8.2.3582")
+    publisher.pull(build, tags=["testing"])
+
+    publisher.save(
+        publisher.record(build),
+        built=dt.datetime(2021, 11, 13, 4, 23, 34, tzinfo=dt.UTC),
+        submitted=dt.datetime(2021, 11, 13, 4, 25, 53, tzinfo=dt.UTC),
+        completed=dt.datetime(2021, 11, 13, 4, 29, 34, tzinfo=dt.UTC),
+        note="This is a build note.\nHello world!",
+    )
+
+
+@given(testkit.gbp, testkit.console, lib.local_timezone, pulled_build)
 class StatusTestCase(lib.TestCase):
     """status() tests"""
 
     def test(self, fixtures: Fixtures):
         cmdline = "gbp status lighthouse 3587"
         args = parse_args(cmdline)
-        gbp = fixtures.gbp
         console = fixtures.console
-        lib.make_response(gbp, "status.json")
 
         print_command(cmdline, console)
-        status(args, gbp, console)
+        status(args, fixtures.gbp, console)
 
         expected = """$ gbp status lighthouse 3587
 ╭────────────────────────────────────────────────╮
@@ -45,31 +66,24 @@ class StatusTestCase(lib.TestCase):
 ╰─────────────────────╯
 """
         self.assertEqual(console.out.file.getvalue(), expected)
-        self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.3587")
 
     def test_should_get_latest_when_number_is_none(self, fixtures: Fixtures):
         cmdline = "gbp status lighthouse"
         args = parse_args(cmdline)
-        gbp = fixtures.gbp
         console = fixtures.console
-        lib.make_response(gbp, {"data": {"latest": {"id": "lighthouse.3587"}}})
-        lib.make_response(gbp, "status.json")
 
         print_command(cmdline, console)
-        return_status = status(args, gbp, console)
+        return_status = status(args, fixtures.gbp, console)
 
-        self.assert_graphql(gbp, gbp.query.gbpcli.latest, index=0, machine="lighthouse")
-        self.assert_graphql(gbp, gbp.query.gbpcli.build, index=1, id="lighthouse.3587")
         self.assertEqual(return_status, 0)
+        self.assertTrue(" lighthouse 3587 " in console.out.file.getvalue())
 
     def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
         cmdline = "gbp status bogus 934"
         args = parse_args(cmdline)
-        gbp = fixtures.gbp
         console = fixtures.console
-        lib.make_response(gbp, {"data": {"build": None}})
 
-        return_status = status(args, gbp, console)
+        return_status = status(args, fixtures.gbp, console)
 
         self.assertEqual(return_status, 1)
         self.assertEqual(console.err.file.getvalue(), "Not found\n")
