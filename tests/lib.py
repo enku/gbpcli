@@ -101,6 +101,7 @@ def pulled_build(  # pylint: disable=too-many-arguments
     packages: Sequence[str] = (),
     note: str | None = None,
     tags: Sequence[str] | None = None,
+    logs: str | None = None,
 ) -> None:
     build = build or fixtures.build
     builder = publisher.jenkins.artifact_builder  # type: ignore
@@ -115,6 +116,7 @@ def pulled_build(  # pylint: disable=too-many-arguments
         submitted=submitted,
         completed=completed,
         note=note,
+        logs=logs,
     )
 
 
