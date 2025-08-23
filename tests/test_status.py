@@ -4,12 +4,9 @@
 import datetime as dt
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import parse_args, print_command
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given
-
-from gbpcli.subcommands.status import handler as status
 
 from . import lib
 
@@ -33,17 +30,12 @@ def pulled_build(_: Fixtures) -> None:
     )
 
 
-@given(testkit.gbp, testkit.console, lib.local_timezone, pulled_build)
+@given(testkit.gbpcli, lib.local_timezone, pulled_build)
 class StatusTestCase(lib.TestCase):
     """status() tests"""
 
     def test(self, fixtures: Fixtures):
-        cmdline = "gbp status lighthouse 3587"
-        args = parse_args(cmdline)
-        console = fixtures.console
-
-        print_command(cmdline, console)
-        status(args, fixtures.gbp, console)
+        fixtures.gbpcli("gbp status lighthouse 3587")
 
         expected = """$ gbp status lighthouse 3587
 ╭────────────────────────────────────────────────╮
@@ -65,25 +57,16 @@ class StatusTestCase(lib.TestCase):
 │Hello world!         │
 ╰─────────────────────╯
 """
-        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.out.file.getvalue(), expected)
 
     def test_should_get_latest_when_number_is_none(self, fixtures: Fixtures):
-        cmdline = "gbp status lighthouse"
-        args = parse_args(cmdline)
-        console = fixtures.console
-
-        print_command(cmdline, console)
-        return_status = status(args, fixtures.gbp, console)
+        return_status = fixtures.gbpcli("gbp status lighthouse")
 
         self.assertEqual(return_status, 0)
-        self.assertTrue(" lighthouse 3587 " in console.out.file.getvalue())
+        self.assertTrue(" lighthouse 3587 " in fixtures.console.out.file.getvalue())
 
     def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
-        cmdline = "gbp status bogus 934"
-        args = parse_args(cmdline)
-        console = fixtures.console
-
-        return_status = status(args, fixtures.gbp, console)
+        return_status = fixtures.gbpcli("gbp status bogus 934")
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(console.err.file.getvalue(), "Not found\n")
+        self.assertEqual(fixtures.console.err.file.getvalue(), "Not found\n")

@@ -2,12 +2,9 @@
 
 # pylint: disable=missing-function-docstring,protected-access,unused-argument
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import parse_args, print_command
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given, where
-
-from gbpcli.subcommands.machines import handler as machines
 
 from . import lib
 
@@ -24,31 +21,19 @@ def builds_fixture(_: Fixtures) -> None:
 
 
 @given(builds_fixture)
-@given(testkit.gbp, testkit.console, testkit.environ, lib.local_timezone)
+@given(testkit.gbpcli, testkit.environ, lib.local_timezone)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
 class MachinesTestCase(lib.TestCase):
     """machines() tests"""
 
     def test(self, fixtures: Fixtures):
-        cmdline = "gbp machines"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-
-        print_command(cmdline, console)
-        status = machines(args, gbp, console)
+        status = fixtures.gbpcli("gbp machines")
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(fixtures.console.out.file.getvalue(), EXPECTED_OUTPUT)
 
     def test_with_mine(self, fixtures: Fixtures):
-        cmdline = "gbp machines --mine"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-
-        print_command(cmdline, console)
-        status = machines(args, gbp, console)
+        status = fixtures.gbpcli("gbp machines --mine")
 
         self.assertEqual(status, 0)
         expected = """$ gbp machines --mine
@@ -60,7 +45,7 @@ class MachinesTestCase(lib.TestCase):
 │ lighthouse │     29 │  10694 │
 ╰────────────┴────────┴────────╯
 """
-        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.out.file.getvalue(), expected)
 
 
 def create_machine_builds(machine: str, count: int, stop: int):
