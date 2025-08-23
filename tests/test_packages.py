@@ -1,66 +1,55 @@
 """Tests for the packages subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-docstring
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import parse_args, print_command
-from unittest_fixtures import Fixtures, given
-
-from gbpcli.subcommands.packages import handler as packages
+from gentoo_build_publisher import publisher
+from unittest_fixtures import Fixtures, given, where
 
 from . import lib
 
+PACKAGES = [
+    "app-portage/gentoolkit-0.5.1-r1",
+    "dev-perl/Pod-Parser-1.630.0-r1",
+    "media-libs/harfbuzz-2.9.1",
+    "x11-libs/cairo-1.16.0-r4",
+]
 
-@given(lib.gbp, testkit.console)
+
+@given(testkit.gbpcli, lib.pulled_build)
+@where(pulled_build__packages=PACKAGES)
 class PackagesTestCase(lib.TestCase):
     """packages() tests"""
 
     def test(self, fixtures: Fixtures):
-        cmdline = "gbp packages babette 268"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, "packages.json")
+        build = fixtures.build
+        cmdline = f"gbp packages {build.machine} {build.build_id}"
 
-        print_command(cmdline, console)
-        status = packages(args, gbp, console)
+        status = fixtures.gbpcli(cmdline)
 
         self.assertEqual(status, 0)
-        expected = "$ gbp packages babette 268\n" + lib.load_data(
-            "packages.txt"
-        ).decode("utf-8")
-        self.assertEqual(console.stdout, expected)
-        self.assert_graphql(
-            gbp, gbp.query.gbpcli.packages, id="babette.268", buildId=False
+        expected = (
+            f"$ {cmdline}\n"
+            + "\n".join(p.cpv for p in publisher.get_packages(build))
+            + "\n"
         )
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_with_build_ids(self, fixtures: Fixtures):
-        cmdline = "gbp packages -b lighthouse 33655"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, "packages-b.json")
+        build = fixtures.build
+        cmdline = f"gbp packages -b {build.machine} {build.build_id}"
 
-        print_command(cmdline, console)
-        status = packages(args, gbp, console)
+        status = fixtures.gbpcli(cmdline)
 
         self.assertEqual(status, 0)
-        expected = "$ gbp packages -b lighthouse 33655\n" + lib.load_data(
-            "packages-b.txt"
-        ).decode("utf-8")
-        self.assertEqual(console.stdout, expected)
-        self.assert_graphql(
-            gbp, gbp.query.gbpcli.packages, id="lighthouse.33655", buildId=True
+        expected = (
+            f"$ {cmdline}\n"
+            + "\n".join(p.cpvb() for p in publisher.get_packages(build))
+            + "\n"
         )
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_when_build_does_not_exist_prints_error(self, fixtures: Fixtures):
-        cmdline = "gbp packages bogus 268"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        no_build = {"data": {"build": None}}
-        lib.make_response(gbp, no_build)
-
-        status = packages(args, gbp, console)
+        status = fixtures.gbpcli("gbp packages bogus 268")
 
         self.assertEqual(status, 1)
-        self.assertEqual(console.stderr, "Not Found\n")
+        self.assertEqual(fixtures.console.stderr, "Not Found\n")
