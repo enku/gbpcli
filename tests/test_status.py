@@ -41,16 +41,16 @@ class StatusTestCase(lib.TestCase):
 │Hello world!         │
 ╰─────────────────────╯
 """
-        self.assertEqual(fixtures.console.out.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_should_get_latest_when_number_is_none(self, fixtures: Fixtures):
         return_status = fixtures.gbpcli("gbp status lighthouse")
 
         self.assertEqual(return_status, 0)
-        self.assertTrue(" lighthouse 3587 " in fixtures.console.out.file.getvalue())
+        self.assertTrue(" lighthouse 3587 " in fixtures.console.stdout)
 
     def test_should_print_error_when_build_does_not_exist(self, fixtures: Fixtures):
         return_status = fixtures.gbpcli("gbp status bogus 934")
 
         self.assertEqual(return_status, 1)
-        self.assertEqual(fixtures.console.err.file.getvalue(), "Not found\n")
+        self.assertEqual(fixtures.console.stderr, "Not found\n")

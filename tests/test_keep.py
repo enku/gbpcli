@@ -26,7 +26,7 @@ class KeepTestCase(lib.TestCase):
         status = fixtures.gbpcli("gbp keep bogus 9000")
 
         self.assertEqual(status, 1)
-        self.assertEqual(fixtures.console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(fixtures.console.stderr, "Not Found\n")
 
     def test_release(self, fixtures: Fixtures):
         build = fixtures.build
@@ -45,4 +45,4 @@ class KeepTestCase(lib.TestCase):
         status = fixtures.gbpcli("gbp keep -r bogus 9000")
 
         self.assertEqual(status, 1)
-        self.assertEqual(fixtures.console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(fixtures.console.stderr, "Not Found\n")

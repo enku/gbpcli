@@ -20,7 +20,7 @@ class MachinesTestCase(lib.TestCase):
         status = fixtures.gbpcli(cmdline)
 
         self.assertEqual(status, 0)
-        self.assertEqual(fixtures.console.out.file.getvalue(), f"$ {cmdline}\n")
+        self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
         self.assertEqual(scheduled_builds, [("babette", {})])
 
     def test_with_build_params(self, fixtures: Fixtures) -> None:
@@ -30,7 +30,7 @@ class MachinesTestCase(lib.TestCase):
         status = fixtures.gbpcli(cmdline)
 
         self.assertEqual(status, 0)
-        self.assertEqual(fixtures.console.out.file.getvalue(), f"$ {cmdline}\n")
+        self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
         self.assertEqual(scheduled_builds, [("babette", {"BUILD_TARGET": "emptytree"})])
 
     def test_when_build_param_missing_equals_sign(self, fixtures: Fixtures) -> None:
@@ -38,7 +38,7 @@ class MachinesTestCase(lib.TestCase):
 
         self.assertEqual(status, 1)
         error_msg = "Build parameters must be of the format name=value\n"
-        self.assertEqual(fixtures.console.err.file.getvalue(), error_msg)
+        self.assertEqual(fixtures.console.stderr, error_msg)
 
     def test_with_repo(self, fixtures: Fixtures) -> None:
         scheduled_builds = publisher.jenkins.scheduled_builds  # type: ignore
@@ -47,5 +47,5 @@ class MachinesTestCase(lib.TestCase):
         status = fixtures.gbpcli(cmdline)
 
         self.assertEqual(status, 0)
-        self.assertEqual(fixtures.console.out.file.getvalue(), f"$ {cmdline}\n")
+        self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
         self.assertEqual(scheduled_builds, [("repos/job/gentoo", {})])

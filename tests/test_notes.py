@@ -102,7 +102,7 @@ class NotesTestCase(lib.TestCase):
         status = fixtures.gbpcli("gbp notes lighthouse 9999")
 
         self.assertEqual(status, 1)
-        self.assertEqual(fixtures.console.err.file.getvalue(), "Build not found\n")
+        self.assertEqual(fixtures.console.stderr, "Build not found\n")
 
     def test_should_print_error_when_invalid_number_given(self, fixtures: Fixtures):
         with self.assertRaises(SystemExit) as context:
@@ -124,7 +124,7 @@ class NotesTestCase(lib.TestCase):
         search.assert_called_once_with(
             machine="lighthouse", field="NOTES", key="10,000"
         )
-        self.assertEqual(fixtures.console.out.file.getvalue(), EXPECTED_SEARCH_OUTPUT)
+        self.assertEqual(fixtures.console.stdout, EXPECTED_SEARCH_OUTPUT)
 
     def test_search_no_matches_found(self, fixtures: Fixtures):
         with mock.patch.object(
@@ -136,7 +136,7 @@ class NotesTestCase(lib.TestCase):
         search.assert_called_once_with(
             machine="lighthouse", field="NOTES", key="python"
         )
-        self.assertEqual(fixtures.console.err.file.getvalue(), "No matches found\n")
+        self.assertEqual(fixtures.console.stderr, "No matches found\n")
 
 
 def fake_editor(text=NOTE, returncode=0):

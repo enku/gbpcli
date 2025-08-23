@@ -19,14 +19,14 @@ class LogsTestCase(lib.TestCase):
 
         self.assertEqual(status, 0)
         self.assertEqual(
-            fixtures.console.out.file.getvalue(),
+            fixtures.console.stdout,
             f"$ gbp logs {build.machine} {build.build_id}\nThis is a test!\n",
         )
 
     def test_should_print_error_when_logs_dont_exist(self, fixtures: Fixtures):
         status = fixtures.gbpcli("gbp logs lighthouse 9999")
 
-        self.assertEqual(fixtures.console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(fixtures.console.stderr, "Not Found\n")
         self.assertEqual(status, 1)
 
     def test_search_logs(self, fixtures: Fixtures):
@@ -35,9 +35,9 @@ class LogsTestCase(lib.TestCase):
 
         status = fixtures.gbpcli(cmdline)
 
-        self.assertEqual(status, 0, fixtures.console.err.file.getvalue())
+        self.assertEqual(status, 0, fixtures.console.stderr)
         expected = f"$ {cmdline}\n{build.machine}/{build.build_id}\nThis is a test!\n"
-        self.assertEqual(fixtures.console.out.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_search_no_matches(self, fixtures: Fixtures) -> None:
         build = fixtures.build
@@ -47,4 +47,4 @@ class LogsTestCase(lib.TestCase):
 
         self.assertEqual(status, 1)
         expected = "No matches found\n"
-        self.assertEqual(fixtures.console.err.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.stderr, expected)

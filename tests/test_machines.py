@@ -30,7 +30,7 @@ class MachinesTestCase(lib.TestCase):
         status = fixtures.gbpcli("gbp machines")
 
         self.assertEqual(status, 0)
-        self.assertEqual(fixtures.console.out.file.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(fixtures.console.stdout, EXPECTED_OUTPUT)
 
     def test_with_mine(self, fixtures: Fixtures):
         status = fixtures.gbpcli("gbp machines --mine")
@@ -45,7 +45,7 @@ class MachinesTestCase(lib.TestCase):
 │ lighthouse │     29 │  10694 │
 ╰────────────┴────────┴────────╯
 """
-        self.assertEqual(fixtures.console.out.file.getvalue(), expected)
+        self.assertEqual(fixtures.console.stdout, expected)
 
 
 def create_machine_builds(machine: str, count: int, stop: int):

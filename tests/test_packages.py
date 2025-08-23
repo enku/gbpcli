@@ -28,7 +28,7 @@ class PackagesTestCase(lib.TestCase):
         expected = "$ gbp packages babette 268\n" + lib.load_data(
             "packages.txt"
         ).decode("utf-8")
-        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assertEqual(console.stdout, expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.packages, id="babette.268", buildId=False
         )
@@ -47,7 +47,7 @@ class PackagesTestCase(lib.TestCase):
         expected = "$ gbp packages -b lighthouse 33655\n" + lib.load_data(
             "packages-b.txt"
         ).decode("utf-8")
-        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assertEqual(console.stdout, expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.packages, id="lighthouse.33655", buildId=True
         )
@@ -63,4 +63,4 @@ class PackagesTestCase(lib.TestCase):
         status = packages(args, gbp, console)
 
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(console.stderr, "Not Found\n")

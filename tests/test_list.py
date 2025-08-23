@@ -25,7 +25,7 @@ class ListTestCase(lib.TestCase):
         status = list_command(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), EXPECTED_OUTPUT)
+        self.assertEqual(console.stdout, EXPECTED_OUTPUT)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=True
         )

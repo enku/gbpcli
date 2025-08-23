@@ -43,7 +43,7 @@ diff -r lighthouse/3111 lighthouse/3112
 -sys-kernel/vanilla-sources-5.19.12-1
 +sys-kernel/vanilla-sources-6.0.0-1
 """
-        self.assertEqual(console.out.file.getvalue(), expected)
+        self.assertEqual(console.stdout, expected)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
         )
@@ -58,7 +58,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
         diff(args, gbp, console)
 
-        self.assertEqual(console.out.file.getvalue(), "")
+        self.assertEqual(console.stdout, "")
 
     def test_when_right_is_none_should_use_latest(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse 3111"
@@ -151,9 +151,7 @@ diff -r lighthouse/3111 lighthouse/3112
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
         )
-        self.assertEqual(
-            console.err.file.getvalue(), "No builds given and no builds published\n"
-        )
+        self.assertEqual(console.stderr, "No builds given and no builds published\n")
 
     def test_against_missing_timestamps(self, fixtures: Fixtures):
         # Legacy builds have no (None) built field
@@ -173,7 +171,7 @@ diff -r lighthouse/3111 lighthouse/3112
 
         self.assertEqual(status, 0)
         self.assertEqual(
-            console.out.file.getvalue(),
+            console.stdout,
             """$ gbp diff lighthouse 3111 3112
 diff -r lighthouse/3111 lighthouse/3112
 --- lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
@@ -199,5 +197,5 @@ diff -r lighthouse/3111 lighthouse/3112
 
         diff(args, gbp, console)
 
-        self.assertEqual(console.out.file.getvalue(), "")
+        self.assertEqual(console.stdout, "")
         gbp.query._session.post.assert_not_called()

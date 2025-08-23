@@ -45,6 +45,5 @@ class TagTestCase(lib.TestCase):
 
         self.assertEqual(status, 1)
         self.assertEqual(
-            fixtures.console.err.file.getvalue(),
-            "When removing a tag, omit the build number\n",
+            fixtures.console.stderr, "When removing a tag, omit the build number\n"
         )

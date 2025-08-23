@@ -35,7 +35,7 @@ class InspectTestCase(lib.TestCase):
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), INSPECT_ALL)
+        self.assertEqual(console.stdout, INSPECT_ALL)
         self.assert_graphql(gbp, gbp.query.gbpcli.machine_names)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, index=1, machine="base", withPackages=True
@@ -58,7 +58,7 @@ class InspectTestCase(lib.TestCase):
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE)
+        self.assertEqual(console.stdout, INSPECT_SINGLE)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
@@ -77,7 +77,7 @@ class InspectTestCase(lib.TestCase):
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_WITH_TAIL)
+        self.assertEqual(console.stdout, INSPECT_SINGLE_WITH_TAIL)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
@@ -94,7 +94,7 @@ class InspectTestCase(lib.TestCase):
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_WITH_BUILD_ID)
+        self.assertEqual(console.stdout, INSPECT_SINGLE_WITH_BUILD_ID)
         self.assert_graphql(gbp, gbp.query.gbpcli.build, id="lighthouse.12672")
 
     def test_with_mine(self, fixtures: Fixtures):
@@ -111,7 +111,7 @@ class InspectTestCase(lib.TestCase):
         status = inspect(args, gbp, console)
 
         self.assertEqual(status, 0)
-        self.assertEqual(console.out.file.getvalue(), INSPECT_SINGLE_MINE)
+        self.assertEqual(console.stdout, INSPECT_SINGLE_MINE)
         self.assert_graphql(
             gbp, gbp.query.gbpcli.builds, machine="base", withPackages=True
         )
