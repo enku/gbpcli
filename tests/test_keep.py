@@ -2,65 +2,47 @@
 
 # pylint: disable=missing-function-docstring,protected-access
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import parse_args
+from gentoo_build_publisher import publisher
 from unittest_fixtures import Fixtures, given
-
-from gbpcli.subcommands.keep import handler as keep
 
 from . import lib
 
 
-@given(lib.gbp, testkit.console)
+@given(testkit.gbpcli, lib.pulled_build)
 class KeepTestCase(lib.TestCase):
     """keep() tests"""
 
     def test_keep(self, fixtures: Fixtures):
-        cmdline = "gbp keep lighthouse 3210"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, "keep_build.json")
+        build = fixtures.build
 
-        status = keep(args, gbp, console)
+        status = fixtures.gbpcli(f"gbp keep {build.machine} {build.build_id}")
 
         self.assertEqual(status, 0)
-        self.assert_graphql(gbp, gbp.query.gbpcli.keep_build, id="lighthouse.3210")
+        self.assertTrue(publisher.record(build).keep)
 
     def test_keep_should_print_error_when_build_does_not_exist(
         self, fixtures: Fixtures
     ):
-        cmdline = "gbp keep lighthouse 3210"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, {"data": {"keepBuild": None}})
+        status = fixtures.gbpcli("gbp keep bogus 9000")
 
-        status = keep(args, gbp, console)
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(fixtures.console.err.file.getvalue(), "Not Found\n")
 
     def test_release(self, fixtures: Fixtures):
-        cmdline = "gbp keep -r lighthouse 3210"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, "release_build.json")
+        build = fixtures.build
+        record = publisher.record(build)
+        publisher.save(record, keep=True)
 
-        status = keep(args, gbp, console)
+        status = fixtures.gbpcli(f"gbp keep -r {build.machine} {build.build_id}")
 
         self.assertEqual(status, 0)
-        self.assert_graphql(gbp, gbp.query.gbpcli.release_build, id="lighthouse.3210")
+        record = publisher.record(build)
+        self.assertFalse(record.keep)
 
     def test_release_should_print_error_when_build_does_not_exist(
         self, fixtures: Fixtures
     ):
-        cmdline = "gbp keep -r lighthouse 3210"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, {"data": {"releaseBuild": None}})
-
-        status = keep(args, gbp, console)
+        status = fixtures.gbpcli("gbp keep -r bogus 9000")
 
         self.assertEqual(status, 1)
-        self.assertEqual(console.err.file.getvalue(), "Not Found\n")
+        self.assertEqual(fixtures.console.err.file.getvalue(), "Not Found\n")
