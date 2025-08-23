@@ -1,7 +1,6 @@
 """Tests for the notes subcommand"""
 
 # pylint: disable=missing-function-docstring
-import datetime as dt
 import os
 import subprocess
 from unittest import mock
@@ -9,7 +8,7 @@ from unittest import mock
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, fixture, given
+from unittest_fixtures import Fixtures, given, where
 
 from . import lib
 
@@ -19,15 +18,8 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
-@fixture(testkit.publisher)
-def pulled_build(_: Fixtures) -> None:
-    timestamp = dt.datetime(2025, 8, 21, 16, 8)
-    publisher.pull(BUILD)
-    record = publisher.record(BUILD)
-    publisher.save(record, submitted=timestamp, completed=timestamp)
-
-
-@given(pulled_build, testkit.gbpcli, lib.local_timezone)
+@given(lib.pulled_build, testkit.gbpcli, lib.local_timezone)
+@where(pulled_build__build=BUILD)
 class NotesTestCase(lib.TestCase):
     """notes tests"""
 
@@ -162,8 +154,8 @@ def fake_editor(text=NOTE, returncode=0):
 
 EXPECTED_SEARCH_OUTPUT = """$ gbp notes -s lighthouse 10,000
 Build: lighthouse/3109
-Submitted: Thu Aug 21 14:08:00 2025 -0700
-Completed: Thu Aug 21 14:08:00 2025 -0700
+Submitted: Fri Nov 12 21:25:53 2021 -0700
+Completed: Fri Nov 12 21:29:34 2021 -0700
 Published: no
 Keep: no
 Tags: 

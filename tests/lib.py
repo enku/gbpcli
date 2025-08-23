@@ -6,12 +6,14 @@ import datetime as dt
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Sequence
 from unittest import TestCase as BaseTestCase
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
 import requests
+from gentoo_build_publisher import publisher
+from gentoo_build_publisher.types import Build
 from rich.theme import Theme
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
@@ -86,6 +88,34 @@ def local_timezone(
 ) -> FixtureContext[dt.timezone]:
     with mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=local_timezone):
         yield local_timezone
+
+
+@fixture(testkit.publisher, testkit.build)
+def pulled_build(  # pylint: disable=too-many-arguments
+    fixtures: Fixtures,
+    *,
+    build: Build | None = None,
+    built: dt.datetime = dt.datetime(2021, 11, 13, 4, 23, 34, tzinfo=dt.UTC),
+    submitted: dt.datetime = dt.datetime(2021, 11, 13, 4, 25, 53, tzinfo=dt.UTC),
+    completed: dt.datetime = dt.datetime(2021, 11, 13, 4, 29, 34, tzinfo=dt.UTC),
+    packages: Sequence[str] = (),
+    note: str | None = None,
+    tags: Sequence[str] | None = None,
+) -> None:
+    build = build or fixtures.build
+    builder = publisher.jenkins.artifact_builder  # type: ignore
+
+    for package in packages:
+        builder.build(build, package)
+
+    publisher.pull(build, tags=list(tags) if tags else None)
+    publisher.save(
+        publisher.record(build),
+        built=built,
+        submitted=submitted,
+        completed=completed,
+        note=note,
+    )
 
 
 def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Response:

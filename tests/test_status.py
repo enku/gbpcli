@@ -1,36 +1,20 @@
 """Tests for the status subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-import datetime as dt
-
 import gbp_testkit.fixtures as testkit
-from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
-from unittest_fixtures import Fixtures, fixture, given
+from unittest_fixtures import Fixtures, given, where
 
 from . import lib
 
 BUILD = Build(machine="lighthouse", build_id="3587")
+PACKAGES = ["app-editors/vim-8.2.3582", "app-editors/vim-core-8.2.3582"]
 
 
-@fixture(testkit.publisher)
-def pulled_build(_: Fixtures) -> None:
-    build = BUILD
-    builder = publisher.jenkins.artifact_builder  # type: ignore
-    builder.build(build, "app-editors/vim-8.2.3582")
-    builder.build(build, "app-editors/vim-core-8.2.3582")
-    publisher.pull(build, tags=["testing"])
-
-    publisher.save(
-        publisher.record(build),
-        built=dt.datetime(2021, 11, 13, 4, 23, 34, tzinfo=dt.UTC),
-        submitted=dt.datetime(2021, 11, 13, 4, 25, 53, tzinfo=dt.UTC),
-        completed=dt.datetime(2021, 11, 13, 4, 29, 34, tzinfo=dt.UTC),
-        note="This is a build note.\nHello world!",
-    )
-
-
-@given(testkit.gbpcli, lib.local_timezone, pulled_build)
+@given(testkit.gbpcli, lib.local_timezone, lib.pulled_build)
+@where(pulled_build__build=BUILD, pulled_build__packages=PACKAGES)
+@where(pulled_build__tags=["testing"])
+@where(pulled_build__note="This is a build note.\nHello world!\n")
 class StatusTestCase(lib.TestCase):
     """status() tests"""
 
