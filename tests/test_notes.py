@@ -26,23 +26,6 @@ NOTE = "Hello world\n"
 class NotesTestCase(lib.TestCase):
     """notes tests"""
 
-    def assert_create_note(
-        self, fixtures: Fixtures, machine="lighthouse", number="3109", note=NOTE
-    ):
-        """Assert that the note was created by a GraphQL request"""
-        gbp = fixtures.gbp
-
-        self.assert_graphql(
-            gbp, gbp.query.gbpcli.build, index=0, id=f"{machine}.{number}"
-        )
-        self.assert_graphql(
-            gbp,
-            gbp.query.gbpcli.create_note,
-            id=f"{machine}.{number}",
-            index=1,
-            note=note,
-        )
-
     def test_create_with_editor(self, fixtures: Fixtures):
         editor = fake_editor()
 
