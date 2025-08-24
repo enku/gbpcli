@@ -26,22 +26,6 @@ __unittest = True  # pylint: disable=invalid-name
 class TestCase(BaseTestCase):
     """Custom test case for gbpcli"""
 
-    def assert_graphql(self, gbp, query: graphql.Query, index=0, **variables):
-        """Assert that self.gbp made a the given graphql query"""
-        calls = gbp.query._session.post.call_args_list
-
-        try:
-            call = calls[index]
-        except IndexError:  # pragma: no cover
-            self.fail("Query not called")
-
-        assert call[0] == (gbp.query._url,)
-
-        json = {"query": str(query), "variables": variables}
-        expected = {"json": json}
-
-        self.assertEqual(call[1], expected)
-
 
 class ThemeTests(BaseTestCase):
     """Custom assertions for theme tests"""
