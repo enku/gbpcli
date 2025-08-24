@@ -1,6 +1,6 @@
 """Tests for the machines subcommand"""
 
-# pylint: disable=missing-docstring,unused-argument
+# pylint: disable=missing-docstring
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
@@ -11,13 +11,13 @@ from . import lib
 
 @fixture(testkit.publisher)
 def builds_fixture(_: Fixtures) -> None:
-    lib.create_machine_builds("arm64-base", 6, 36)
-    lib.create_machine_builds("babette", 14, 631)
-    lib.create_machine_builds("base", 16, 643)
-    lib.create_machine_builds("blackwidow", 24, 10994)
-    lib.create_machine_builds("gbpbox", 12, 224)
-    lib.create_machine_builds("lighthouse", 29, 10694)
-    lib.create_machine_builds("testing", 23, 10159)
+    lib.create_machine_builds("arm64-base", 1, 36)
+    lib.create_machine_builds("babette", 2, 631)
+    lib.create_machine_builds("base", 3, 643)
+    lib.create_machine_builds("blackwidow", 4, 10994)
+    lib.create_machine_builds("gbpbox", 5, 224)
+    lib.create_machine_builds("lighthouse", 6, 10694)
+    lib.create_machine_builds("testing", 7, 10159)
 
 
 @given(builds_fixture)
@@ -41,8 +41,8 @@ class MachinesTestCase(TestCase):
 ╭────────────┬────────┬────────╮
 │ Machine    │ Builds │ Latest │
 ├────────────┼────────┼────────┤
-│ babette    │     14 │    631 │
-│ lighthouse │     29 │  10694 │
+│ babette    │      2 │    631 │
+│ lighthouse │      6 │  10694 │
 ╰────────────┴────────┴────────╯
 """
         self.assertEqual(fixtures.console.stdout, expected)
@@ -53,12 +53,12 @@ EXPECTED_OUTPUT = """$ gbp machines
 ╭────────────┬────────┬────────╮
 │ Machine    │ Builds │ Latest │
 ├────────────┼────────┼────────┤
-│ arm64-base │      6 │     36 │
-│ babette    │     14 │    631 │
-│ base       │     16 │    643 │
-│ blackwidow │     24 │  10994 │
-│ gbpbox     │     12 │    224 │
-│ lighthouse │     29 │  10694 │
-│ testing    │     23 │  10159 │
+│ arm64-base │      1 │     36 │
+│ babette    │      2 │    631 │
+│ base       │      3 │    643 │
+│ blackwidow │      4 │  10994 │
+│ gbpbox     │      5 │    224 │
+│ lighthouse │      6 │  10694 │
+│ testing    │      7 │  10159 │
 ╰────────────┴────────┴────────╯
 """
