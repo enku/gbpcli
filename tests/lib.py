@@ -16,8 +16,7 @@ from gentoo_build_publisher.types import Build
 from rich.theme import Theme
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
-from gbpcli import GBP, graphql
-from gbpcli.config import AuthDict
+from gbpcli import graphql
 
 LOCAL_TIMEZONE = dt.timezone(dt.timedelta(days=-1, seconds=61200), "PDT")
 NO_JSON = object()
@@ -57,19 +56,6 @@ class ThemeTests(BaseTestCase):
         style_color = theme.styles[style].color
         assert style_color is not None, msg
         self.assertEqual(style_color.name, color, msg)
-
-
-@fixture()
-def gbp(
-    _fixtures: Fixtures, url: str = "http://test.invalid/", auth: AuthDict | None = None
-) -> GBP:
-    """Return a GBP instance with a mock session attribute"""
-    _gbp = GBP(url, auth=auth)
-    headers = _gbp.query._session.headers
-    _gbp.query._session = mock.Mock()
-    _gbp.query._session.headers = headers
-
-    return _gbp
 
 
 @fixture(testkit.tmpdir)
