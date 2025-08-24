@@ -2,8 +2,6 @@
 
 # pylint: disable=missing-function-docstring,protected-access,unused-argument
 import gbp_testkit.fixtures as testkit
-from gentoo_build_publisher import publisher
-from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given, where
 
 from . import lib
@@ -11,13 +9,13 @@ from . import lib
 
 @fixture(testkit.publisher)
 def builds_fixture(_: Fixtures) -> None:
-    create_machine_builds("arm64-base", 6, 36)
-    create_machine_builds("babette", 14, 631)
-    create_machine_builds("base", 16, 643)
-    create_machine_builds("blackwidow", 24, 10994)
-    create_machine_builds("gbpbox", 12, 224)
-    create_machine_builds("lighthouse", 29, 10694)
-    create_machine_builds("testing", 23, 10159)
+    lib.create_machine_builds("arm64-base", 6, 36)
+    lib.create_machine_builds("babette", 14, 631)
+    lib.create_machine_builds("base", 16, 643)
+    lib.create_machine_builds("blackwidow", 24, 10994)
+    lib.create_machine_builds("gbpbox", 12, 224)
+    lib.create_machine_builds("lighthouse", 29, 10694)
+    lib.create_machine_builds("testing", 23, 10159)
 
 
 @given(builds_fixture)
@@ -46,11 +44,6 @@ class MachinesTestCase(lib.TestCase):
 ╰────────────┴────────┴────────╯
 """
         self.assertEqual(fixtures.console.stdout, expected)
-
-
-def create_machine_builds(machine: str, count: int, stop: int):
-    for i in range(stop - count + 1, stop + 1):
-        publisher.pull(Build(machine=machine, build_id=str(i)))
 
 
 EXPECTED_OUTPUT = """$ gbp machines

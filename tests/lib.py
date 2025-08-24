@@ -183,3 +183,8 @@ def load_ndjson(filename: str, start: int = 1) -> Iterator[Any]:
                 continue
 
             yield parse(line)
+
+
+def create_machine_builds(machine: str, count: int, stop: int):
+    for i in range(stop - count + 1, stop + 1):
+        publisher.pull(Build(machine=machine, build_id=str(i)))
