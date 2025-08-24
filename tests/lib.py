@@ -18,7 +18,6 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 from gbpcli import graphql
 
-LOCAL_TIMEZONE = dt.timezone(dt.timedelta(days=-1, seconds=61200), "PDT")
 NO_JSON = object()
 
 __unittest = True  # pylint: disable=invalid-name
