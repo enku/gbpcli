@@ -4,7 +4,6 @@
 
 import datetime as dt
 from json import dumps as stringify
-from json import loads as parse
 from pathlib import Path
 from typing import Any, Sequence
 from unittest import TestCase as BaseTestCase
@@ -141,33 +140,6 @@ def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
         response.headers["Content-Type"] = "application/json"
 
     return response
-
-
-def make_response(gbp, data):
-    """Add 200 json response to mock post
-
-    This is like http_response() below except it assumes all responses are 200
-    responses and all content is JSON. Additionally it can be called more than once
-    and adds responses for subsequent calls. If called with `None` as an argument,
-    then any previously configured responses are cleared
-    """
-    # pylint: disable=protected-access
-    match data:
-        case None:
-            gbp.query._session.post.side_effect = None
-            return
-        case str():
-            mock_json = parse(load_data(data))
-        case _:
-            mock_json = data
-
-    if not gbp.query._session.post.side_effect:
-        gbp.query._session.post.side_effect = (http_response(json=mock_json),)
-    else:
-        gbp.query._session.post.side_effect = (
-            *gbp.query._session.post.side_effect,
-            http_response(json=mock_json),
-        )
 
 
 def load_data(filename: str) -> bytes:
