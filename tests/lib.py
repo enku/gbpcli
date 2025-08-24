@@ -1,11 +1,10 @@
 """Unittest tools"""
 
-# pylint: disable=missing-docstring,redefined-outer-name,protected-access
+# pylint: disable=missing-docstring,protected-access
 
 import datetime as dt
 from json import dumps as stringify
-from typing import Any, Sequence
-from unittest import TestCase as BaseTestCase
+from typing import Sequence
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
@@ -13,26 +12,9 @@ import requests
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
-from rich.theme import Theme
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 NO_JSON = object()
-
-__unittest = True  # pylint: disable=invalid-name
-
-
-class ThemeTests(BaseTestCase):
-    """Custom assertions for theme tests"""
-
-    def assert_themes_are_equal(self, first: Theme, second: Theme, msg: Any = None):
-        """Compare two rich themes"""
-        self.assertEqual(first.styles, second.styles, msg)
-
-    def assert_theme_color(self, theme: Theme, style: str, color: str, msg: Any = None):
-        """Assert the theme's style is the given color"""
-        style_color = theme.styles[style].color
-        assert style_color is not None, msg
-        self.assertEqual(style_color.name, color, msg)
 
 
 @fixture(testkit.tmpdir)

@@ -1,14 +1,15 @@
 """Tests for the theme module"""
 
 # pylint: disable=missing-docstring
+from typing import Any
+from unittest import TestCase
 
+from rich.theme import Theme
 
 from gbpcli.theme import DEFAULT_THEME, get_theme_from_string
 
-from .lib import ThemeTests
 
-
-class GetColormapFromString(ThemeTests):
+class GetColormapFromString(TestCase):
     """Tests for the get_theme_from_string function"""
 
     default_theme = get_theme_from_string(
@@ -60,3 +61,13 @@ class GetColormapFromString(ThemeTests):
             str(context.exception),
             "Invalid theme assignment: 'This is totally garbage!'",
         )
+
+    def assert_themes_are_equal(self, first: Theme, second: Theme, msg: Any = None):
+        """Compare two rich themes"""
+        self.assertEqual(first.styles, second.styles, msg)
+
+    def assert_theme_color(self, theme: Theme, style: str, color: str, msg: Any = None):
+        """Assert the theme's style is the given color"""
+        style_color = theme.styles[style].color
+        assert style_color is not None, msg
+        self.assertEqual(style_color.name, color, msg)
