@@ -13,6 +13,7 @@ from unittest import mock
 import gbp_testkit.fixtures as testkit
 import requests
 from gentoo_build_publisher import publisher
+from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
 from rich.theme import Theme
 from unittest_fixtures import FixtureContext, Fixtures, fixture
@@ -102,7 +103,7 @@ def pulled_build(  # pylint: disable=too-many-arguments
     note: str | None = None,
     tags: Sequence[str] | None = None,
     logs: str | None = None,
-) -> None:
+) -> BuildRecord:
     build = build or fixtures.build
     builder = publisher.jenkins.artifact_builder  # type: ignore
 
@@ -110,7 +111,8 @@ def pulled_build(  # pylint: disable=too-many-arguments
         builder.build(build, package)
 
     publisher.pull(build, tags=list(tags) if tags else None)
-    publisher.save(
+
+    return publisher.save(
         publisher.record(build),
         built=built,
         submitted=submitted,

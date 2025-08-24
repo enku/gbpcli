@@ -29,15 +29,12 @@ class KeepTestCase(lib.TestCase):
         self.assertEqual(fixtures.console.stderr, "Not Found\n")
 
     def test_release(self, fixtures: Fixtures):
-        build = fixtures.build
-        record = publisher.record(build)
-        publisher.save(record, keep=True)
+        build = publisher.save(fixtures.pulled_build, keep=True)
 
         status = fixtures.gbpcli(f"gbp keep -r {build.machine} {build.build_id}")
 
         self.assertEqual(status, 0)
-        record = publisher.record(build)
-        self.assertFalse(record.keep)
+        self.assertFalse(publisher.record(fixtures.build).keep)
 
     def test_release_should_print_error_when_build_does_not_exist(
         self, fixtures: Fixtures
