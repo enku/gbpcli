@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-function-docstring,protected-access
 import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given, where
 
@@ -11,10 +12,12 @@ BUILD = Build(machine="lighthouse", build_id="3587")
 PACKAGES = ["app-editors/vim-8.2.3582", "app-editors/vim-core-8.2.3582"]
 
 
-@given(testkit.gbpcli, lib.local_timezone, lib.pulled_build)
+@given(testkit.gbpcli, lib.pulled_build, local_timezone=testkit.patch)
 @where(pulled_build__build=BUILD, pulled_build__packages=PACKAGES)
 @where(pulled_build__tags=["testing"])
 @where(pulled_build__note="This is a build note.\nHello world!\n")
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 class StatusTestCase(lib.TestCase):
     """status() tests"""
 

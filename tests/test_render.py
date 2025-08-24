@@ -3,7 +3,9 @@ import argparse
 import datetime as dt
 from unittest import TestCase
 
-from unittest_fixtures import Fixtures, given
+import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import LOCAL_TIMEZONE
+from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.render import (
     build_to_str,
@@ -14,8 +16,6 @@ from gbpcli.render import (
     yesno,
 )
 from gbpcli.types import Build, BuildInfo, Package
-
-from . import lib
 
 
 class YesNoTestCase(TestCase):
@@ -38,7 +38,9 @@ class TimestrTestCase(TestCase):
         self.assertEqual(timestr(timestamp, timezone), "Tue Jul 20 09:45:06 2021 -0700")
 
 
-@given(lib.local_timezone)
+@given(local_timezone=testkit.patch)
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 class BuildToStrTests(TestCase):
     build = Build(
         machine="babette",

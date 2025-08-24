@@ -4,6 +4,7 @@
 import datetime as dt
 
 import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given, where
@@ -11,7 +12,9 @@ from unittest_fixtures import Fixtures, given, where
 from . import lib
 
 
-@given(testkit.gbpcli, testkit.console, lib.local_timezone)
+@given(testkit.gbpcli, testkit.console, local_timezone=testkit.patch)
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 @given(build2=lib.pulled_build)
 @where(build2__build=Build(machine="lighthouse", build_id="3112"))
 @where(

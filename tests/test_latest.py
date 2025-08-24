@@ -7,7 +7,7 @@ from unittest_fixtures import Fixtures, given
 from . import lib
 
 
-@given(testkit.gbpcli, lib.local_timezone, lib.pulled_build)
+@given(testkit.gbpcli, lib.pulled_build)
 class LatestTestCase(lib.TestCase):
     """latest() tests"""
 

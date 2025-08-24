@@ -7,7 +7,7 @@ from unittest_fixtures import Fixtures, given, where
 from . import lib
 
 
-@given(testkit.gbpcli, lib.local_timezone, lib.pulled_build)
+@given(testkit.gbpcli, lib.pulled_build)
 @where(pulled_build__logs="This is a test!")
 class LogsTestCase(lib.TestCase):
     """logs() tests"""

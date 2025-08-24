@@ -5,6 +5,7 @@ from typing import Sequence
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.factories import package_factory
+from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given, where
@@ -35,10 +36,12 @@ def inspect_fixture(
     publisher.save(publisher.record(build), note="Build note")
 
 
-@given(inspect_fixture, testkit.gbpcli, testkit.environ, lib.local_timezone)
+@given(inspect_fixture, testkit.gbpcli, testkit.environ, local_timezone=testkit.patch)
 @where(inspect__machines=["base", "testing", "babette"])
 @where(inspect__builds_per_machine=3)
 @where(environ={"GBPCLI_MYMACHINES": "babette"})
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 class InspectTestCase(lib.TestCase):
     """inspect() tests"""
 

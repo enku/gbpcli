@@ -9,7 +9,7 @@ from unittest_fixtures import Fixtures, given
 from . import lib
 
 
-@given(testkit.gbpcli, lib.local_timezone)
+@given(testkit.gbpcli)
 class PullTestCase(lib.TestCase):
     """pull() tests"""
 

@@ -19,7 +19,7 @@ def builds_fixture(_: Fixtures) -> None:
 
 
 @given(builds_fixture)
-@given(testkit.gbpcli, testkit.environ, lib.local_timezone)
+@given(testkit.gbpcli, testkit.environ)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
 class MachinesTestCase(lib.TestCase):
     """machines() tests"""

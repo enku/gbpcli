@@ -6,6 +6,7 @@ import subprocess
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given, where
@@ -18,8 +19,10 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
-@given(lib.pulled_build, testkit.gbpcli, lib.local_timezone)
+@given(lib.pulled_build, testkit.gbpcli, local_timezone=testkit.patch)
 @where(pulled_build__build=BUILD)
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 class NotesTestCase(lib.TestCase):
     """notes tests"""
 

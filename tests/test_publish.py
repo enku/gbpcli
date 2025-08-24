@@ -9,7 +9,7 @@ from unittest_fixtures import Fixtures, given
 from . import lib
 
 
-@given(testkit.gbpcli, testkit.console, lib.local_timezone, testkit.publisher)
+@given(testkit.gbpcli, testkit.console, testkit.publisher)
 class PublishTestCase(lib.TestCase):
     """publish() tests"""
 

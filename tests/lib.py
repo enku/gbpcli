@@ -4,7 +4,6 @@
 
 import datetime as dt
 from json import dumps as stringify
-from pathlib import Path
 from typing import Any, Sequence
 from unittest import TestCase as BaseTestCase
 from unittest import mock
@@ -79,14 +78,6 @@ def user_config_dir(fixtures: Fixtures) -> FixtureContext[mock.Mock]:
         "gbpcli.platformdirs.user_config_dir", return_value=fixtures.tmpdir
     ) as patch:
         yield patch
-
-
-@fixture()
-def local_timezone(
-    _: Fixtures, local_timezone: dt.timezone = LOCAL_TIMEZONE
-) -> FixtureContext[dt.timezone]:
-    with mock.patch("gbpcli.render.LOCAL_TIMEZONE", new=local_timezone):
-        yield local_timezone
 
 
 @fixture(testkit.publisher, testkit.build)

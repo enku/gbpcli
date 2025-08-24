@@ -4,6 +4,7 @@
 import datetime as dt
 
 import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
@@ -35,10 +36,13 @@ def builds_fixture(
     return records
 
 
-@given(testkit.gbpcli, lib.local_timezone, builds_fixture, final=lib.pulled_build)
+@given(testkit.gbpcli, builds_fixture, final=lib.pulled_build)
 @where(final__build=Build(machine="jenkins", build_id="37"))
 @where(final__packages=["dev-libs/nss-3.115.1"])
 @where(final__built=dt.datetime(2025, 8, 24, tzinfo=dt.UTC))
+@given(local_timezone=testkit.patch)
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
 class ListTestCase(lib.TestCase):
     """list() tests"""
 
