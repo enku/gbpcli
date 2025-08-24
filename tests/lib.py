@@ -20,7 +20,6 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 from gbpcli import GBP, graphql
 from gbpcli.config import AuthDict
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
 LOCAL_TIMEZONE = dt.timezone(dt.timedelta(days=-1, seconds=61200), "PDT")
 NO_JSON = object()
 
@@ -140,11 +139,6 @@ def http_response(status_code=200, json=NO_JSON, content=None) -> requests.Respo
         response.headers["Content-Type"] = "application/json"
 
     return response
-
-
-def load_data(filename: str) -> bytes:
-    """Read and return content from filename in the data directory"""
-    return (DATA_DIR / filename).read_bytes()
 
 
 def create_machine_builds(machine: str, count: int, stop: int):
