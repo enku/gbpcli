@@ -9,7 +9,7 @@ import unittest
 from unittest import mock
 
 import gbp_testkit.fixtures as testkit
-from unittest_fixtures import Fixtures, given
+from unittest_fixtures import Fixtures, given, where
 
 import gbpcli
 import gbpcli.subcommands.list as list_subcommand
@@ -146,14 +146,14 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
-@given(lib.gbp, testkit.tmpdir, lib.user_config_dir, testkit.console)
+@given(testkit.tmpdir, lib.user_config_dir, testkit.console, gbp=testkit.patch)
+@where(gbp__target="gbpcli.GBP")
 class MainTestCase(lib.TestCase):
     """tests for the main function"""
 
-    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
     @mock.patch("gbpcli.Console")
-    def test(self, console_mock, parse_args_mock, gbp_mock, fixtures: Fixtures):
+    def test(self, console_mock, parse_args_mock, fixtures: Fixtures):
         parse_args_mock.return_value.url = "http://test.invalid/"
         parse_args_mock.return_value.color = "auto"
         func = parse_args_mock.return_value.func
@@ -163,7 +163,7 @@ class MainTestCase(lib.TestCase):
 
         func.assert_called_once_with(
             parse_args_mock.return_value,
-            gbp_mock.return_value,
+            fixtures.gbp.return_value,
             console_mock.return_value,
         )
         self.assertEqual(status, 0)
@@ -176,26 +176,24 @@ class MainTestCase(lib.TestCase):
         self.assertEqual(context.exception.args, (1,))
         print_help_mock.assert_called_once_with(file=sys.stderr)
 
-    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.rich.console.Console")
     def test_should_print_to_stderr_and_exit_1_on_exception(
-        self, console_mock, gbp_mock, fixtures: Fixtures
+        self, console_mock, fixtures: Fixtures
     ):
         error = APIError("blah", {})
         message = "blah"
 
-        gbp_mock.return_value.get_build_info.side_effect = error
+        fixtures.gbp.return_value.get_build_info.side_effect = error
         status = main(["status", "lighthouse"])
         self.assertEqual(status, 1)
         console_mock.return_value.print.assert_called_once_with(message)
 
-    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
     @mock.patch("gbpcli.Console")
     def test_should_instantiate_gbp_with_api_key_when_available(
-        self, _mock_console, mock_parse_args, mock_gbp, fixtures: Fixtures
+        self, _mock_console, mock_parse_args, fixtures: Fixtures
     ):
-        mock_gbp.return_value = fixtures.gbp
+        fixtures.gbp.return_value = fixtures.gbp
         mock_parse_args.return_value.url = "http://test.invalid/"
         mock_parse_args.return_value.color = "auto"
         func = mock_parse_args.return_value.func
@@ -209,16 +207,13 @@ class MainTestCase(lib.TestCase):
 
         main(["status", "lighthouse"])
 
-        mock_gbp.assert_called_once_with(
+        fixtures.gbp.assert_called_once_with(
             "http://test.invalid/", auth={"user": "test", "api_key": "secret"}
         )
 
-    @mock.patch("gbpcli.GBP")
     @mock.patch("gbpcli.Console")
-    def test_with_config_file_option(
-        self, _mock_console, mock_gbp, fixtures: Fixtures
-    ) -> None:
-        mock_gbp.return_value = fixtures.gbp
+    def test_with_config_file_option(self, _mock_console, fixtures: Fixtures) -> None:
+        fixtures.gbp.return_value = fixtures.gbp
         tmpdir = fixtures.tmpdir
 
         filename = os.path.join(tmpdir, "custom.toml")
@@ -228,7 +223,7 @@ class MainTestCase(lib.TestCase):
         with mock.patch.dict(os.environ, {"GBPCLI_CONFIG": filename}):
             main(["status", "lighthouse"])
 
-        mock_gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
+        fixtures.gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
 
     def test_main_no_args(self, fixtures: Fixtures) -> None:
         # admittedly this is mostly to get a good screenshot
@@ -247,7 +242,7 @@ class MainTestCase(lib.TestCase):
         self.assertEqual(exception.args, (1,))
 
 
-@given(lib.gbp, testkit.tmpdir, lib.user_config_dir)
+@given(testkit.tmpdir, lib.user_config_dir)
 class GetUserConfigTests(lib.TestCase):
     """Tests for the get_user_config function"""
 
