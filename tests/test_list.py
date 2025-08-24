@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-docstring
 import datetime as dt
+from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import LOCAL_TIMEZONE
@@ -43,7 +44,7 @@ def builds_fixture(
 @given(local_timezone=testkit.patch)
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)
-class ListTestCase(lib.TestCase):
+class ListTestCase(TestCase):
     """list() tests"""
 
     def test(self, fixtures: Fixtures):

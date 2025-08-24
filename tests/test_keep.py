@@ -1,6 +1,8 @@
 """Tests for the keep subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-function-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from unittest_fixtures import Fixtures, given
@@ -9,7 +11,7 @@ from . import lib
 
 
 @given(testkit.gbpcli, lib.pulled_build)
-class KeepTestCase(lib.TestCase):
+class KeepTestCase(TestCase):
     """keep() tests"""
 
     def test_keep(self, fixtures: Fixtures):

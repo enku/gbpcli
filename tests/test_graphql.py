@@ -1,7 +1,7 @@
 """Tests for the graphql module"""
 
 # pylint: disable=missing-docstring
-from unittest import mock
+from unittest import TestCase, mock
 
 import requests
 from yarl import URL
@@ -11,7 +11,7 @@ from gbpcli import graphql
 from . import lib
 
 
-class QueryTestCase(lib.TestCase):
+class QueryTestCase(TestCase):
     def test_passes_given_query_and_vars_to_graphql_request(self):
         session = mock.Mock(spec=requests.Session)
         query = graphql.Query("query foo { bar }", "https://gbp.invalid", session)
@@ -43,7 +43,7 @@ class QueryTestCase(lib.TestCase):
         self.assertEqual(response, ({"foo": "bar"}, [{"this": "that"}]))
 
 
-class QueriesTestCase(lib.TestCase):
+class QueriesTestCase(TestCase):
     """Tests for the Queries wrapper"""
 
     def test_returns_query_on_attribute_access(self):
@@ -93,7 +93,7 @@ class QueriesTestCase(lib.TestCase):
         )
 
 
-class AuthEncodeTests(lib.TestCase):
+class AuthEncodeTests(TestCase):
     def test(self):
         # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization#basic_authentication
         user = "aladdin"

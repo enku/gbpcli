@@ -1,7 +1,8 @@
 """Tests for the inspect subcommand"""
 
-# pylint: disable=missing-docstring,
+# pylint: disable=missing-docstring
 from typing import Sequence
+from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.factories import package_factory
@@ -9,8 +10,6 @@ from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given, where
-
-from . import lib
 
 
 @fixture(testkit.publisher)
@@ -42,7 +41,7 @@ def inspect_fixture(
 @where(environ={"GBPCLI_MYMACHINES": "babette"})
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)
-class InspectTestCase(lib.TestCase):
+class InspectTestCase(TestCase):
     """inspect() tests"""
 
     def test_entire_tree(self, fixtures: Fixtures):

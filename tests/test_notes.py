@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring
 import os
 import subprocess
-from unittest import mock
+from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import LOCAL_TIMEZONE
@@ -23,7 +23,7 @@ NOTE = "Hello world\n"
 @where(pulled_build__build=BUILD)
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)
-class NotesTestCase(lib.TestCase):
+class NotesTestCase(TestCase):
     """notes tests"""
 
     def test_create_with_editor(self, fixtures: Fixtures):

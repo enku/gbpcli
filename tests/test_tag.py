@@ -1,6 +1,8 @@
 """Tests for the tag subcommand"""
 
-# pylint: disable=missing-docstring,protected-access
+# pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
@@ -13,7 +15,7 @@ BUILD = Build(machine="lighthouse", build_id="9400")
 
 @given(testkit.gbpcli, lib.pulled_build)
 @where(pulled_build__build=BUILD)
-class TagTestCase(lib.TestCase):
+class TagTestCase(TestCase):
     """tag() tests"""
 
     def test_tag(self, fixtures: Fixtures):

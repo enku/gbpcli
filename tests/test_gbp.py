@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-docstring,protected-access,unused-argument
 import os
-from unittest import mock
+from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 import requests.exceptions
@@ -11,17 +11,15 @@ from unittest_fixtures import Fixtures, fixture, given
 from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
 
-from . import lib
 
-
-class GGPTestCase(lib.TestCase):
+class GGPTestCase(TestCase):
     def test_url(self) -> None:
         gbp = GBP("http://gbp.invalid/")
 
         self.assertEqual(gbp.query._url, "http://gbp.invalid/graphql")
 
 
-class GBPQueryTestCase(lib.TestCase):
+class GBPQueryTestCase(TestCase):
     """Tests for the .query method"""
 
     def test_does_not_exit_when_flag_turned_off(self):
@@ -42,7 +40,7 @@ def parser(_fixtures):
 
 
 @given(testkit.tmpdir, parser)
-class BuildParserTestCase(lib.TestCase):
+class BuildParserTestCase(TestCase):
     """Tests for the build_parser method"""
 
     def test_my_machines_string(self, fixtures: Fixtures):

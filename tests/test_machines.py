@@ -1,6 +1,8 @@
 """Tests for the machines subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access,unused-argument
+# pylint: disable=missing-docstring,unused-argument
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, fixture, given, where
 
@@ -21,7 +23,7 @@ def builds_fixture(_: Fixtures) -> None:
 @given(builds_fixture)
 @given(testkit.gbpcli, testkit.environ)
 @where(environ={"GBPCLI_MYMACHINES": "babette lighthouse"})
-class MachinesTestCase(lib.TestCase):
+class MachinesTestCase(TestCase):
     """machines() tests"""
 
     def test(self, fixtures: Fixtures):

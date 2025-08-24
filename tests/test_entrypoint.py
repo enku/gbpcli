@@ -6,7 +6,7 @@ import importlib
 import os.path
 import sys
 import unittest
-from unittest import mock
+from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
@@ -148,7 +148,7 @@ class GetConsoleTestCase(unittest.TestCase):
 
 @given(testkit.tmpdir, lib.user_config_dir, testkit.console, gbp=testkit.patch)
 @where(gbp__target="gbpcli.GBP")
-class MainTestCase(lib.TestCase):
+class MainTestCase(TestCase):
     """tests for the main function"""
 
     @mock.patch("gbpcli.argparse.ArgumentParser.parse_args")
@@ -243,7 +243,7 @@ class MainTestCase(lib.TestCase):
 
 
 @given(testkit.tmpdir, lib.user_config_dir)
-class GetUserConfigTests(lib.TestCase):
+class GetUserConfigTests(TestCase):
     """Tests for the get_user_config function"""
 
     def test_with_config(self, fixtures: Fixtures) -> None:
@@ -293,7 +293,7 @@ my_machines = ["this", "that", "the_other"]
             gbpcli.get_user_config(custom_filename)
 
 
-class EnsureArgsHasFuncTests(lib.TestCase):
+class EnsureArgsHasFuncTests(TestCase):
     """Tests for the ensure_args_has_func helper function"""
 
     def test_has_func(self) -> None:

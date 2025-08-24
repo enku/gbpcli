@@ -16,15 +16,9 @@ from gentoo_build_publisher.types import Build
 from rich.theme import Theme
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
-from gbpcli import graphql
-
 NO_JSON = object()
 
 __unittest = True  # pylint: disable=invalid-name
-
-
-class TestCase(BaseTestCase):
-    """Custom test case for gbpcli"""
 
 
 class ThemeTests(BaseTestCase):

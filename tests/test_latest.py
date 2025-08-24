@@ -1,6 +1,8 @@
 """Tests for the latest subcommand"""
 
 # pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given
 
@@ -8,7 +10,7 @@ from . import lib
 
 
 @given(testkit.gbpcli, lib.pulled_build)
-class LatestTestCase(lib.TestCase):
+class LatestTestCase(TestCase):
     """latest() tests"""
 
     def test(self, fixtures: Fixtures):

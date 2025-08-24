@@ -3,13 +3,11 @@
 # pylint: disable=missing-docstring
 
 from argparse import Namespace
-from unittest import mock
+from unittest import TestCase, mock
 
 from gbpcli import GBP
 from gbpcli.subcommands import completers
 from gbpcli.types import Build
-
-from .lib import TestCase
 
 
 def patch_gbp(func):

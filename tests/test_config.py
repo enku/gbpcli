@@ -2,14 +2,12 @@
 import contextlib
 import io
 import os.path
-from unittest import mock
+from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, fixture, given
 
 from gbpcli import config
-
-from .lib import TestCase
 
 
 @fixture(testkit.tmpdir)

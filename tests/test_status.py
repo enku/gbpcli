@@ -1,6 +1,8 @@
 """Tests for the status subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher.types import Build
@@ -18,7 +20,7 @@ PACKAGES = ["app-editors/vim-8.2.3582", "app-editors/vim-core-8.2.3582"]
 @where(pulled_build__note="This is a build note.\nHello world!\n")
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)
-class StatusTestCase(lib.TestCase):
+class StatusTestCase(TestCase):
     """status() tests"""
 
     def test(self, fixtures: Fixtures):

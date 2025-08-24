@@ -1,16 +1,16 @@
 """Tests for the pull subcommand"""
 
-# pylint: disable=missing-function-docstring,protected-access
+# pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
 
-from . import lib
-
 
 @given(testkit.gbpcli)
-class PullTestCase(lib.TestCase):
+class PullTestCase(TestCase):
     """pull() tests"""
 
     def test(self, fixtures: Fixtures):

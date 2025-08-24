@@ -2,6 +2,7 @@
 
 # pylint: disable=missing-function-docstring,protected-access
 import datetime as dt
+from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
 from gbp_testkit.helpers import LOCAL_TIMEZONE
@@ -40,7 +41,7 @@ from . import lib
     ]
 )
 @where(build1__built=dt.datetime(2022, 10, 2, 19, 10, 2, tzinfo=dt.UTC))
-class DiffTestCase(lib.TestCase):
+class DiffTestCase(TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self, fixtures: Fixtures):

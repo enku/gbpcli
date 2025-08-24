@@ -1,6 +1,8 @@
 """Tests for the logs subcommand"""
 
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from unittest_fixtures import Fixtures, given, where
 
@@ -9,7 +11,7 @@ from . import lib
 
 @given(testkit.gbpcli, lib.pulled_build)
 @where(pulled_build__logs="This is a test!")
-class LogsTestCase(lib.TestCase):
+class LogsTestCase(TestCase):
     """logs() tests"""
 
     def test(self, fixtures: Fixtures):

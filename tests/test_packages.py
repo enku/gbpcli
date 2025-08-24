@@ -1,6 +1,8 @@
 """Tests for the packages subcommand"""
 
 # pylint: disable=missing-docstring
+from unittest import TestCase
+
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import publisher
 from unittest_fixtures import Fixtures, given, where
@@ -17,7 +19,7 @@ PACKAGES = [
 
 @given(testkit.gbpcli, lib.pulled_build)
 @where(pulled_build__packages=PACKAGES)
-class PackagesTestCase(lib.TestCase):
+class PackagesTestCase(TestCase):
     """packages() tests"""
 
     def test(self, fixtures: Fixtures):

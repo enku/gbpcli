@@ -1,10 +1,10 @@
 """Tests for the "utils" module"""
 
-# pylint: disable=missing-docstring,protected-access,unused-argument
+# pylint: disable=missing-docstring,unused-argument
 import argparse
 import os
 import sys
-from unittest import mock
+from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import types as gbp_types
@@ -17,7 +17,7 @@ from gbpcli.utils import get_my_machines_from_args, load_env, re_path, resolve_b
 from . import lib
 
 
-class CheckTestCase(lib.TestCase):
+class CheckTestCase(TestCase):
     """check() tests"""
 
     def test_should_raise_apierror_if_query_response_has_errors(self):
@@ -35,7 +35,7 @@ class CheckTestCase(lib.TestCase):
 
 @given(testkit.gbp, lib.pulled_build)
 @where(pulled_build__build=gbp_types.Build(machine="lighthouse", build_id="123"))
-class ResolveBuildIdTestCase(lib.TestCase):
+class ResolveBuildIdTestCase(TestCase):
     """resolve_build_id() tests"""
 
     def test_returns_latest_build_for_machine_when_build_id_is_none(
@@ -74,7 +74,7 @@ class ResolveBuildIdTestCase(lib.TestCase):
         self.assertEqual(result, Build(machine="lighthouse", number=456))
 
 
-class GetMyMachinesFromArgsTestCase(lib.TestCase):
+class GetMyMachinesFromArgsTestCase(TestCase):
     """Tests for the get_my_machines_from_args method"""
 
     def test_when_argument_is_none(self):
@@ -121,7 +121,7 @@ class GetMyMachinesFromArgsTestCase(lib.TestCase):
 
 
 @given(testkit.environ, testkit.tmpdir)
-class LoadEnvTests(lib.TestCase):
+class LoadEnvTests(TestCase):
     def test_loads_config(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "config.env"
         path.write_text("TEST=foobar\n")
@@ -158,7 +158,7 @@ class LoadEnvTests(lib.TestCase):
         self.assertTrue("TEST" not in os.environ)
 
 
-class RePath(lib.TestCase):
+class RePath(TestCase):
     def test(self) -> None:
         orig_path = sys.path.copy()
 
