@@ -103,9 +103,13 @@ def pulled_build(  # pylint: disable=too-many-arguments
     note: str | None = None,
     tags: Sequence[str] | None = None,
     logs: str | None = None,
+    clear: bool = False,
 ) -> BuildRecord:
     build = build or fixtures.build
     builder = publisher.jenkins.artifact_builder  # type: ignore
+
+    if clear:
+        builder._builds.clear()
 
     for package in packages:
         builder.build(build, package)
