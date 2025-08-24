@@ -6,7 +6,7 @@ import datetime as dt
 from json import dumps as stringify
 from json import loads as parse
 from pathlib import Path
-from typing import Any, Iterator, Sequence
+from typing import Any, Sequence
 from unittest import TestCase as BaseTestCase
 from unittest import mock
 
@@ -173,16 +173,6 @@ def make_response(gbp, data):
 def load_data(filename: str) -> bytes:
     """Read and return content from filename in the data directory"""
     return (DATA_DIR / filename).read_bytes()
-
-
-def load_ndjson(filename: str, start: int = 1) -> Iterator[Any]:
-    """Iterate over a newline-delimited JSON file"""
-    with open(DATA_DIR / filename, "r", encoding="UTF-8") as ndjson_file:
-        for line_no, line in enumerate(ndjson_file, start=1):
-            if line_no < start:
-                continue
-
-            yield parse(line)
 
 
 def create_machine_builds(machine: str, count: int, stop: int):
