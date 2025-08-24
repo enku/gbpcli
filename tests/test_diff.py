@@ -1,31 +1,47 @@
 """Tests for the diff subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-from json import loads as parse
-from unittest import mock
+import datetime as dt
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import parse_args, print_command
-from unittest_fixtures import Fixtures, given
-
-from gbpcli.subcommands.diff import handler as diff
+from gentoo_build_publisher import publisher
+from gentoo_build_publisher.types import Build
+from unittest_fixtures import Fixtures, given, where
 
 from . import lib
 
 
-@given(lib.gbp, testkit.console, lib.local_timezone)
+@given(testkit.gbpcli, testkit.console, lib.local_timezone)
+@given(build2=lib.pulled_build)
+@where(build2__build=Build(machine="lighthouse", build_id="3112"))
+@where(
+    build2__packages=[
+        "app-accessibility/at-spi2-atk-2.46.0",
+        "app-accessibility/at-spi2-core-2.46.0",
+        "dev-libs/atk-2.46.0",
+        "dev-libs/libgusb-0.4.1",
+        "sys-kernel/vanilla-sources-6.0.0",
+    ]
+)
+@where(build2__built=dt.datetime(2022, 10, 3, 11, 38, 28, tzinfo=dt.UTC))
+@where(build2__clear=True)
+@given(build1=lib.pulled_build)
+@where(build1__build=Build(machine="lighthouse", build_id="3111"))
+@where(
+    build1__packages=[
+        "app-accessibility/at-spi2-atk-2.38.0",
+        "app-accessibility/at-spi2-core-2.44.1",
+        "dev-libs/atk-2.38.0",
+        "dev-libs/libgusb-0.4.0",
+        "sys-kernel/vanilla-sources-5.19.12",
+    ]
+)
+@where(build1__built=dt.datetime(2022, 10, 2, 19, 10, 2, tzinfo=dt.UTC))
 class DiffTestCase(lib.TestCase):
     """diff() tests"""
 
     def test_should_display_diffs(self, fixtures: Fixtures):
-        cmdline = "gbp diff lighthouse 3111 3112"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        lib.make_response(gbp, "diff.json")
-
-        print_command(cmdline, console)
-        status = diff(args, gbp, console)
+        status = fixtures.gbpcli("gbp diff lighthouse 3111 3112")
 
         self.assertEqual(status, 0)
         expected = """$ gbp diff lighthouse 3111 3112
@@ -36,142 +52,83 @@ diff -r lighthouse/3111 lighthouse/3112
 +app-accessibility/at-spi2-atk-2.46.0-1
 -app-accessibility/at-spi2-core-2.44.1-1
 +app-accessibility/at-spi2-core-2.46.0-1
--dev-libs/atk-2.38.0-3
+-dev-libs/atk-2.38.0-1
 +dev-libs/atk-2.46.0-1
 -dev-libs/libgusb-0.4.0-1
 +dev-libs/libgusb-0.4.1-1
 -sys-kernel/vanilla-sources-5.19.12-1
 +sys-kernel/vanilla-sources-6.0.0-1
 """
-        self.assertEqual(console.stdout, expected)
-        self.assert_graphql(
-            gbp, gbp.query.gbpcli.diff, left="lighthouse.3111", right="lighthouse.3112"
-        )
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_should_print_nothing_when_no_diffs(self, fixtures: Fixtures):
         cmdline = "gbp diff lighthouse 3111 3111"
-        args = parse_args(cmdline)
-        no_diffs_json = parse(lib.load_data("diff_no_content.json"))
-        gbp = fixtures.gbp
-        console = fixtures.console
-        gbp.query._session.post.return_value = lib.http_response(json=no_diffs_json)
 
-        diff(args, gbp, console)
+        fixtures.gbpcli(cmdline)
 
-        self.assertEqual(console.stdout, "")
+        self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
 
     def test_when_right_is_none_should_use_latest(self, fixtures: Fixtures):
-        cmdline = "gbp diff lighthouse 3111"
-        args = parse_args(cmdline)
-        latest_json = parse(lib.load_data("list.json"))
-        mock_diff_json = parse(lib.load_data("diff.json"))
-        gbp = fixtures.gbp
-        console = fixtures.console
-        gbp.query._session.post.side_effect = (
-            lib.http_response(json=latest_json),
-            lib.http_response(json=mock_diff_json),
-        )
-
-        status = diff(args, gbp, console)
+        status = fixtures.gbpcli("gbp diff lighthouse 3111")
 
         self.assertEqual(status, 0)
-        expected_calls = [
-            mock.call(
-                gbp.query._url,
-                json={
-                    "query": gbp.query.gbpcli.builds.query,
-                    "variables": {"machine": "lighthouse", "withPackages": False},
-                },
-            ),
-            mock.call(
-                gbp.query._url,
-                json={
-                    "query": gbp.query.gbpcli.diff.query,
-                    "variables": {
-                        "left": "lighthouse.3111",
-                        "right": "lighthouse.10694",
-                    },
-                },
-            ),
-        ]
-        gbp.query._session.post.assert_has_calls(expected_calls)
+        expected = """$ gbp diff lighthouse 3111
+diff -r lighthouse/3111 lighthouse/3112
+--- lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
++++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
+-app-accessibility/at-spi2-atk-2.38.0-1
++app-accessibility/at-spi2-atk-2.46.0-1
+-app-accessibility/at-spi2-core-2.44.1-1
++app-accessibility/at-spi2-core-2.46.0-1
+-dev-libs/atk-2.38.0-1
++dev-libs/atk-2.46.0-1
+-dev-libs/libgusb-0.4.0-1
++dev-libs/libgusb-0.4.1-1
+-sys-kernel/vanilla-sources-5.19.12-1
++sys-kernel/vanilla-sources-6.0.0-1
+"""
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_when_left_is_none_should_use_published(self, fixtures: Fixtures):
-        cmdline = "gbp diff lighthouse"
-        args = parse_args(cmdline)
-        list_json = parse(lib.load_data("list.json"))
-        mock_diff_json = parse(lib.load_data("diff.json"))
-        gbp = fixtures.gbp
-        console = fixtures.console
-        gbp.query._session.post.side_effect = (
-            lib.http_response(json=list_json),
-            lib.http_response(json=mock_diff_json),
-        )
+        publisher.publish(fixtures.build1)
 
-        status = diff(args, gbp, console)
+        status = fixtures.gbpcli("gbp diff lighthouse")
 
         self.assertEqual(status, 0)
-        expected_calls = [
-            mock.call(
-                gbp.query._url,
-                json={
-                    "query": gbp.query.gbpcli.builds.query,
-                    "variables": {"machine": "lighthouse", "withPackages": False},
-                },
-            ),
-            mock.call(
-                gbp.query._url,
-                json={
-                    "query": gbp.query.gbpcli.diff.query,
-                    "variables": {
-                        "left": "lighthouse.10678",
-                        "right": "lighthouse.10694",
-                    },
-                },
-            ),
-        ]
-        gbp.query._session.post.assert_has_calls(expected_calls)
+        expected = """$ gbp diff lighthouse
+diff -r lighthouse/3111 lighthouse/3112
+--- lighthouse/3111 Sun Oct  2 12:10:02 2022 -0700
++++ lighthouse/3112 Mon Oct  3 04:38:28 2022 -0700
+-app-accessibility/at-spi2-atk-2.38.0-1
++app-accessibility/at-spi2-atk-2.46.0-1
+-app-accessibility/at-spi2-core-2.44.1-1
++app-accessibility/at-spi2-core-2.46.0-1
+-dev-libs/atk-2.38.0-1
++dev-libs/atk-2.46.0-1
+-dev-libs/libgusb-0.4.0-1
++dev-libs/libgusb-0.4.1-1
+-sys-kernel/vanilla-sources-5.19.12-1
++sys-kernel/vanilla-sources-6.0.0-1
+"""
+        self.assertEqual(fixtures.console.stdout, expected)
 
     def test_when_left_is_none_and_not_published(self, fixtures: Fixtures):
-        cmdline = "gbp diff jenkins"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        list_json = parse(lib.load_data("list.json"))
-
-        # Make sure there are not published builds
-        for item in list_json["data"]["builds"]:
-            item["published"] = False
-
-        lib.make_response(gbp, list_json)
-
-        status = diff(args, gbp, console)
+        status = fixtures.gbpcli("gbp diff lighthouse")
 
         self.assertEqual(status, 1)
-        self.assert_graphql(
-            gbp, gbp.query.gbpcli.builds, machine="jenkins", withPackages=False
+        self.assertEqual(
+            fixtures.console.stderr, "No builds given and no builds published\n"
         )
-        self.assertEqual(console.stderr, "No builds given and no builds published\n")
 
     def test_against_missing_timestamps(self, fixtures: Fixtures):
         # Legacy builds have no (None) built field
-        cmdline = "gbp diff lighthouse 3111 3112"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
-        mock_json = parse(lib.load_data("diff.json"))
+        publisher.save(fixtures.build1, built=None)
 
-        # Emulate an old build where we didn't have a built field
-        mock_json["data"]["diff"]["left"]["built"] = None
-
-        lib.make_response(gbp, mock_json)
-
-        print_command(cmdline, console)
-        status = diff(args, gbp, console)
+        status = fixtures.gbpcli("gbp diff lighthouse 3111 3112")
 
         self.assertEqual(status, 0)
         self.assertEqual(
-            console.stdout,
+            fixtures.console.stdout,
             """$ gbp diff lighthouse 3111 3112
 diff -r lighthouse/3111 lighthouse/3112
 --- lighthouse/3111 Sat Mar 20 11:57:21 2021 -0700
@@ -180,7 +137,7 @@ diff -r lighthouse/3111 lighthouse/3112
 +app-accessibility/at-spi2-atk-2.46.0-1
 -app-accessibility/at-spi2-core-2.44.1-1
 +app-accessibility/at-spi2-core-2.46.0-1
--dev-libs/atk-2.38.0-3
+-dev-libs/atk-2.38.0-1
 +dev-libs/atk-2.46.0-1
 -dev-libs/libgusb-0.4.0-1
 +dev-libs/libgusb-0.4.1-1
@@ -191,11 +148,6 @@ diff -r lighthouse/3111 lighthouse/3112
 
     def test_left_and_right_equal(self, fixtures: Fixtures) -> None:
         cmdline = "gbp diff lighthouse 3111 3111"
-        args = parse_args(cmdline)
-        gbp = fixtures.gbp
-        console = fixtures.console
+        fixtures.gbpcli(cmdline)
 
-        diff(args, gbp, console)
-
-        self.assertEqual(console.stdout, "")
-        gbp.query._session.post.assert_not_called()
+        self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
