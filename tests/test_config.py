@@ -73,7 +73,7 @@ auth = { user = "test", api_key = "secret" }
         self.assertEqual(conf.auth, None)
 
 
-@given(testkit.tmpdir, filename)
+@given(filename)
 class IsReadableByOthersTests(TestCase):
     def test_true(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:

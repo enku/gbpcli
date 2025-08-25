@@ -9,7 +9,7 @@ from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given
 
 
-@given(testkit.gbpcli, testkit.console, testkit.publisher)
+@given(testkit.gbpcli, testkit.publisher)
 class PublishTestCase(TestCase):
     """publish() tests"""
 
