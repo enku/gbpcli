@@ -20,11 +20,10 @@ class MachinesTests(TestCase):
         gbp = mock_gbp.return_value
         gbp.machines.return_value = [("lighthouse",), ("babette",)]
         parsed_args = Namespace(url="http://gbp.invalid/")
+        _ = mock.Mock()
 
         self.assertEqual(
-            completers.machines(
-                prefix="", action=None, parser=None, parsed_args=parsed_args
-            ),
+            completers.machines(prefix="", action=_, parser=_, parsed_args=parsed_args),
             ["lighthouse", "babette"],
         )
 
@@ -50,10 +49,11 @@ class BuildIDsTests(TestCase):
             make_build("lighthouse", 2),
             make_build("lighthouse", 12),
         ]
+        _ = mock.Mock()
 
         parsed_args = Namespace(url="http://gbp.invalid/", machine="lighthouse")
         build_ids = completers.build_ids(
-            prefix="", action=None, parser=None, parsed_args=parsed_args
+            prefix="", action=_, parser=_, parsed_args=parsed_args
         )
 
         self.assertEqual(build_ids, ["1", "2", "12"])
@@ -65,10 +65,11 @@ class BuildIDsTests(TestCase):
             make_build("lighthouse", 2),
             make_build("lighthouse", 12),
         ]
+        _ = mock.Mock()
 
         parsed_args = Namespace(url="http://gbp.invalid/", machine="lighthouse")
         build_ids = completers.build_ids(
-            prefix="1", action=None, parser=None, parsed_args=parsed_args
+            prefix="1", action=_, parser=_, parsed_args=parsed_args
         )
 
         self.assertEqual(build_ids, ["1", "12"])
