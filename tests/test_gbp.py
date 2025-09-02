@@ -2,11 +2,11 @@
 
 # pylint: disable=missing-docstring,protected-access,unused-argument
 import os
-from unittest import TestCase, mock
+from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
 import requests.exceptions
-from unittest_fixtures import Fixtures, fixture, given
+from unittest_fixtures import Fixtures, fixture, given, where
 
 from gbpcli import build_parser, config
 from gbpcli.gbp import GBP
@@ -19,17 +19,18 @@ class GGPTestCase(TestCase):
         self.assertEqual(gbp.query._url, "http://gbp.invalid/graphql")
 
 
+@given(post=testkit.patch)
+@where(post__target="requests.Session.post")
 class GBPQueryTestCase(TestCase):
     """Tests for the .query method"""
 
-    def test_does_not_exit_when_flag_turned_off(self):
+    def test_does_not_exit_when_flag_turned_off(self, fixtures: Fixtures):
         gbp = GBP("http://gbp.invalid/")
-        gbp.exit_gracefully_on_requests_errors = False
         error = requests.exceptions.ConnectionError()
+        fixtures.post.side_effect = error
 
-        with mock.patch.object(gbp.query._session, "post", side_effect=error):
-            with self.assertRaises(requests.exceptions.ConnectionError) as cxt:
-                gbp.query.gbpcli.machines()
+        with self.assertRaises(requests.exceptions.ConnectionError) as cxt:
+            gbp.query.gbpcli.machines()  # type: ignore[attr-defined]
 
         self.assertIs(cxt.exception, error)
 
