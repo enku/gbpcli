@@ -19,6 +19,9 @@ MODULE = "gbpcli.subcommands.notes"
 NOTE = "Hello world\n"
 
 
+@given(isatty=testkit.patch)
+@where(isatty__target=f"{MODULE}.sys.stdin.isatty")
+@where(isatty__return_value=True)
 @given(lib.pulled_build, testkit.gbpcli, local_timezone=testkit.patch)
 @where(pulled_build__build=BUILD)
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
@@ -29,10 +32,9 @@ class NotesTestCase(TestCase):
     def test_create_with_editor(self, fixtures: Fixtures):
         editor = fake_editor()
 
-        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
-            with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
-                with mock.patch.dict(os.environ, VISUAL="foo"):
-                    status = fixtures.gbpcli(CMDLINE)
+        with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
+            with mock.patch.dict(os.environ, VISUAL="foo"):
+                status = fixtures.gbpcli(CMDLINE)
 
         self.assertEqual(status, 0)
         record = publisher.record(BUILD)
@@ -44,10 +46,9 @@ class NotesTestCase(TestCase):
     ):
         editor = fake_editor(returncode=1)
 
-        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
-            with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
-                with mock.patch.dict(os.environ, VISUAL="foo"):
-                    status = fixtures.gbpcli(CMDLINE)
+        with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
+            with mock.patch.dict(os.environ, VISUAL="foo"):
+                status = fixtures.gbpcli(CMDLINE)
 
         self.assertEqual(status, 1)
         record = publisher.record(BUILD)
@@ -55,12 +56,11 @@ class NotesTestCase(TestCase):
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_when_isatty_but_no_editor_reads_from_stdin(self, fixtures: Fixtures):
-        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=True):
-            with mock.patch.dict(os.environ):
-                os.environ.pop("VISUAL", None)
-                os.environ.pop("EDITOR", None)
-                with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                    status = fixtures.gbpcli(CMDLINE)
+        with mock.patch.dict(os.environ):
+            os.environ.pop("VISUAL", None)
+            os.environ.pop("EDITOR", None)
+            with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
+                status = fixtures.gbpcli(CMDLINE)
 
         self.assertEqual(status, 0)
         record = publisher.record(BUILD)
@@ -77,9 +77,10 @@ class NotesTestCase(TestCase):
         self.assertEqual(record.note, None)
 
     def test_create_with_no_tty(self, fixtures: Fixtures):
-        with mock.patch(f"{MODULE}.sys.stdin.isatty", return_value=False):
-            with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
-                fixtures.gbpcli(CMDLINE)
+        fixtures.isatty.return_value = False
+
+        with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
+            fixtures.gbpcli(CMDLINE)
 
         record = publisher.record(BUILD)
         self.assertEqual(record.note, NOTE)
