@@ -1,6 +1,7 @@
 """Tests for GBP Settings"""
 
 # pylint: disable=missing-docstring,unused-argument
+import datetime as dt
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +25,11 @@ class Settings(BaseSettings):
     FLAG: bool
     JENKINS_DOWNLOAD_CHUNK_SIZE: int
     JENKINS_USER: str | None = None
+    TIMESTAMP: dt.datetime = dt.datetime(2025, 9, 14, 14, 1)
+
+    @staticmethod
+    def validate_timestamp(value: str) -> dt.datetime:
+        return dt.datetime.fromisoformat(value)
 
 
 @given(testkit.environ)
@@ -55,6 +61,7 @@ class SettingsTestCase(TestCase):
             "TODAY_JENKINS_DOWNLOAD_CHUNK_SIZE": "14",
             "TODAY_STORAGE_PATH": "/home/today",
             "TODAY_FLAG": "yes",
+            "TODAY_TIMESTAMP": "2002-11-04 04:15:22",
         }
         prefix = "TODAY_"
 
@@ -64,6 +71,7 @@ class SettingsTestCase(TestCase):
         self.assertEqual(settings.JENKINS_USER, None)
         self.assertEqual(settings.JENKINS_DOWNLOAD_CHUNK_SIZE, 14)
         self.assertIs(settings.FLAG, True)
+        self.assertEqual(settings.TIMESTAMP, dt.datetime(2002, 11, 4, 4, 15, 22))
 
         with self.assertRaises(AttributeError):
             # pylint: disable=no-member,pointless-statement

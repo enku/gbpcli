@@ -28,7 +28,12 @@ class BaseSettings:
             if (key := f"{prefix}{field.name}") not in data_dict:
                 continue
 
-            params[field.name] = string_value_to_field_value(data_dict[key], field.type)
+            value = string_value_to_field_value(data_dict[key], field.type)
+
+            if validator := getattr(cls, f"validate_{field.name.lower()}", None):
+                value = validator(value)  # pylint: disable=not-callable
+
+            params[field.name] = value
 
         return cls(**params)
 
