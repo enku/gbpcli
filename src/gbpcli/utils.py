@@ -45,6 +45,12 @@ def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
 
     if build_id.startswith(TAG_SYM):
         tag = build_id[1:]
+
+        if tag == '@':  # "special" @@ tag means "latest"
+            if build := gbp.latest(machine):
+                return build
+            raise ResolveBuildError(f"No builds for {machine}")
+
         if not (build := gbp.resolve_tag(machine, tag)):
             raise ResolveBuildError(f"No such tag for {machine}: {tag}")
         return build
