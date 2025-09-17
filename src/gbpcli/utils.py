@@ -45,7 +45,7 @@ def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
     if build_id.isdigit():
         return Build(machine=machine, number=int(build_id))
 
-    raise ResolveBuildError(f"Invalid build ID: {build_id}")
+    raise ResolveBuildError(f"Invalid build ID: {build_id!r}")
 
 
 def get_my_machines_from_args(args: argparse.Namespace) -> list[str]:
@@ -132,7 +132,7 @@ def resolve_tag(machine: str, tag: str, gbp: GBP) -> Build:
         error_msg = f"No builds for {machine}"
     else:
         build = gbp.resolve_tag(machine, tag)
-        error_msg = f"No such tag for {machine}: {tag}"
+        error_msg = f"No such tag for {machine}: {tag!r}"
 
     if not build:
         raise ResolveBuildError(error_msg)

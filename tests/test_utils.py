@@ -62,7 +62,9 @@ class ResolveBuildIdTestCase(TestCase):
         with self.assertRaises(SystemExit) as context:
             resolve_build_id("lighthouse", "@prod", gbp=fixtures.gbp)
 
-        self.assertEqual(context.exception.args, ("No such tag for lighthouse: prod",))
+        self.assertEqual(
+            context.exception.args, ("No such tag for lighthouse: 'prod'",)
+        )
 
     def test_returns_build_with_given_id_if_given_build_id_is_numeric(
         self, fixtures: Fixtures

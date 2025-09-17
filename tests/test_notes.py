@@ -97,7 +97,7 @@ class NotesTestCase(TestCase):
         with self.assertRaises(SystemExit) as context:
             fixtures.gbpcli("gbp notes lighthouse foo")
 
-        self.assertEqual(context.exception.args, ("Invalid build ID: foo",))
+        self.assertEqual(context.exception.args, ("Invalid build ID: 'foo'",))
 
     def test_search_notes(self, fixtures: Fixtures):
         record = publisher.record(BUILD)
