@@ -36,24 +36,11 @@ def resolve_build_id(machine: str, build_id: str | None, gbp: GBP) -> Build:
     If there is an issue finding/calculating the build, then ResolveBuildError, which a
     subclass of SystemExit.
     """
-    build = None
-
     if build_id is None:
-        if not (build := gbp.latest(machine)):
-            raise ResolveBuildError(f"No builds for {machine}")
-        return build
+        return latest(machine, gbp)
 
     if build_id.startswith(TAG_SYM):
-        tag = build_id[1:]
-
-        if tag == '@':  # "special" @@ tag means "latest"
-            if build := gbp.latest(machine):
-                return build
-            raise ResolveBuildError(f"No builds for {machine}")
-
-        if not (build := gbp.resolve_tag(machine, tag)):
-            raise ResolveBuildError(f"No such tag for {machine}: {tag}")
-        return build
+        return resolve_tag(machine, build_id[1:], gbp)
 
     if build_id.isdigit():
         return Build(machine=machine, number=int(build_id))
@@ -119,3 +106,35 @@ def add_columns(table: Table, data: ColumnData) -> None:
         kwargs = kwargs.copy()
         kwargs.setdefault("header_style", "header")
         table.add_column(header, **kwargs)
+
+
+def latest(machine: str, gbp: GBP) -> Build:
+    """Return the latest build for the given machine
+
+    Raise ResolveBuildError if there are no builds
+    """
+    if not (build := gbp.latest(machine)):
+        raise ResolveBuildError(f"No builds for {machine}")
+
+    return build
+
+
+def resolve_tag(machine: str, tag: str, gbp: GBP) -> Build:
+    """Resolves the given tag for the given machine
+
+    `tag` should not start with a `"@"` except for the special `"@"` tag which is
+    translated to mean the latest build for the given machine.
+
+    Raise ResolveBuildError if there are no builds with the given tag.
+    """
+    if tag == "@":
+        build = gbp.latest(machine)
+        error_msg = f"No builds for {machine}"
+    else:
+        build = gbp.resolve_tag(machine, tag)
+        error_msg = f"No such tag for {machine}: {tag}"
+
+    if not build:
+        raise ResolveBuildError(error_msg)
+
+    return build
