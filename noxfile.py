@@ -4,7 +4,6 @@
 import nox
 
 PYTHON_VERSIONS = (
-    "3.11",
     "3.12",
     "3.13",
     # "3.14", PyO3 (needed to build orjson) does not support 3.14 yet
