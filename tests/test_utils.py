@@ -21,15 +21,17 @@ class CheckTestCase(TestCase):
     """check() tests"""
 
     def test_should_raise_apierror_if_query_response_has_errors(self):
-        error1 = {"message": "The end is near", "locations": [], "path": None}
-        error2 = {"message": "Oh no!", "locations": [], "path": None}
-        query_result = ({"build": None}, [error1, error2])
+        errors = [
+            {"message": "The end is near", "locations": [], "path": None},
+            {"message": "Oh no!", "locations": [], "path": None},
+        ]
+        query_result = ({"build": None}, errors)
 
         with self.assertRaises(APIError) as context:
             check(query_result)
 
         exception = context.exception
-        self.assertEqual(exception.args[0], [error1, error2])
+        self.assertEqual(exception.args[0], errors)
         self.assertEqual(exception.data, {"build": None})
 
 
