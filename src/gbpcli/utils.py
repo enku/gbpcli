@@ -122,19 +122,12 @@ def latest(machine: str, gbp: GBP) -> Build:
 def resolve_tag(machine: str, tag: str, gbp: GBP) -> Build:
     """Resolves the given tag for the given machine
 
-    `tag` should not start with a `"@"` except for the special `"@"` tag which is
-    translated to mean the latest build for the given machine.
+    `tag` should not start with a `"@"`.
 
     Raise ResolveBuildError if there are no builds with the given tag.
     """
-    if tag == "@":
-        build = gbp.latest(machine)
-        error_msg = f"No builds for {machine}"
-    else:
-        build = gbp.resolve_tag(machine, tag)
-        error_msg = f"No such tag for {machine}: {tag!r}"
+    if build := gbp.resolve_tag(machine, tag):
+        return build
 
-    if not build:
-        raise ResolveBuildError(error_msg)
-
-    return build
+    error_msg = f"No such tag for {machine}: {tag!r}"
+    raise ResolveBuildError(error_msg)
