@@ -78,17 +78,17 @@ class ResolveBuildIdTestCase(TestCase):
         self.assertEqual(result, Build(machine="lighthouse", number=456))
 
     def test_latest_build_tag(self, fixtures: Fixtures) -> None:
-        """'@!' refers to the latest build for a machine"""
-        result = resolve_build_id("lighthouse", "@!", gbp=fixtures.gbp)
+        """'@@' refers to the latest build for a machine"""
+        result = resolve_build_id("lighthouse", "@@", gbp=fixtures.gbp)
 
         self.assertEqual(result, Build(machine="lighthouse", number=123))
 
     def test_latest_build_tag_no_builds(self, fixtures: Fixtures) -> None:
         """'@@' for a non-existant machine"""
         with self.assertRaises(SystemExit) as context:
-            resolve_build_id("bogus", "@!", gbp=fixtures.gbp)
+            resolve_build_id("bogus", "@@", gbp=fixtures.gbp)
 
-        self.assertEqual(context.exception.args, ("No such tag for bogus: '!'",))
+        self.assertEqual(context.exception.args, ("No such tag for bogus: '@'",))
 
 
 class GetMyMachinesFromArgsTestCase(TestCase):
