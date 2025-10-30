@@ -5,21 +5,20 @@ from typing import Sequence
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.factories import package_factory
 from gbp_testkit.helpers import LOCAL_TIMEZONE
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, fixture, given, where
 
 
-@fixture(testkit.publisher)
+@fixture(testkit.publisher, pf=testkit.cpv_generator)
 def inspect_fixture(
-    _fixtures: Fixtures,
+    fixtures: Fixtures,
     machines: Sequence[str] = (),
     builds_per_machine: int = 1,
     packages_per_build: int = 2,
 ) -> None:
-    pf = package_factory()
+    pf = fixtures.pf
     builder = publisher.jenkins.artifact_builder  # type: ignore
     builder.timer = 1756068380
     build_id = 1
@@ -83,55 +82,55 @@ Machines
     │   └── dev-python/gcc-1.0 (13:47:10)
     └── 3 (08/24/25 13:47:20) 
         ├── dev-python/ffmpeg-1.0 (13:47:30)
-        └── media-libs/markdown-1.0 (13:47:40)
+        └── dev-python/xwayland-1.0 (13:47:40)
 """
 INSPECT_SINGLE = """$ gbp inspect babette
 Machines
 └── babette
     ├── 7 (08/24/25 13:49:20) 
-    │   ├── app-admin/pycups-1.0 (13:49:30)
-    │   └── app-admin/gcc-1.0 (13:49:40)
+    │   ├── app-admin/markdown-1.0 (13:49:30)
+    │   └── app-admin/mesa-1.0 (13:49:40)
     ├── 8 (08/24/25 13:49:50) 
-    │   ├── app-admin/ffmpeg-1.0 (13:50:00)
-    │   └── net-im/markdown-1.0 (13:50:10)
+    │   ├── app-admin/pycups-1.0 (13:50:00)
+    │   └── app-admin/gcc-1.0 (13:50:10)
     └── 9 (08/24/25 13:50:20) 
         ╭────────────╮        
         │ Build note │        
         ╰────────────╯        
-        ├── net-im/mesa-1.0 (13:50:30)
-        └── net-im/pycups-1.0 (13:50:40)
+        ├── app-admin/ffmpeg-1.0 (13:50:30)
+        └── app-admin/xwayland-1.0 (13:50:40)
 """
 INSPECT_SINGLE_MINE = """$ gbp inspect --mine
 Machines
 └── babette
     ├── 7 (08/24/25 13:49:20) 
-    │   ├── app-admin/pycups-1.0 (13:49:30)
-    │   └── app-admin/gcc-1.0 (13:49:40)
+    │   ├── app-admin/markdown-1.0 (13:49:30)
+    │   └── app-admin/mesa-1.0 (13:49:40)
     ├── 8 (08/24/25 13:49:50) 
-    │   ├── app-admin/ffmpeg-1.0 (13:50:00)
-    │   └── net-im/markdown-1.0 (13:50:10)
+    │   ├── app-admin/pycups-1.0 (13:50:00)
+    │   └── app-admin/gcc-1.0 (13:50:10)
     └── 9 (08/24/25 13:50:20) 
         ╭────────────╮        
         │ Build note │        
         ╰────────────╯        
-        ├── net-im/mesa-1.0 (13:50:30)
-        └── net-im/pycups-1.0 (13:50:40)
+        ├── app-admin/ffmpeg-1.0 (13:50:30)
+        └── app-admin/xwayland-1.0 (13:50:40)
 """
 INSPECT_ALL = """$ gbp inspect
 Machines
 ├── babette
 │   ├── 7 (08/24/25 13:49:20) 
-│   │   ├── app-admin/pycups-1.0 (13:49:30)
-│   │   └── app-admin/gcc-1.0 (13:49:40)
+│   │   ├── app-admin/markdown-1.0 (13:49:30)
+│   │   └── app-admin/mesa-1.0 (13:49:40)
 │   ├── 8 (08/24/25 13:49:50) 
-│   │   ├── app-admin/ffmpeg-1.0 (13:50:00)
-│   │   └── net-im/markdown-1.0 (13:50:10)
+│   │   ├── app-admin/pycups-1.0 (13:50:00)
+│   │   └── app-admin/gcc-1.0 (13:50:10)
 │   └── 9 (08/24/25 13:50:20) 
 │       ╭────────────╮        
 │       │ Build note │        
 │       ╰────────────╯        
-│       ├── net-im/mesa-1.0 (13:50:30)
-│       └── net-im/pycups-1.0 (13:50:40)
+│       ├── app-admin/ffmpeg-1.0 (13:50:30)
+│       └── app-admin/xwayland-1.0 (13:50:40)
 ├── base
 │   ├── 1 (08/24/25 13:46:20) 
 │   │   ├── dev-python/markdown-1.0 (13:46:30)
@@ -141,17 +140,17 @@ Machines
 │   │   └── dev-python/gcc-1.0 (13:47:10)
 │   └── 3 (08/24/25 13:47:20) 
 │       ├── dev-python/ffmpeg-1.0 (13:47:30)
-│       └── media-libs/markdown-1.0 (13:47:40)
+│       └── dev-python/xwayland-1.0 (13:47:40)
 └── testing
     ├── 4 (08/24/25 13:47:50) 
-    │   ├── media-libs/mesa-1.0 (13:48:00)
-    │   └── media-libs/pycups-1.0 (13:48:10)
+    │   ├── media-libs/markdown-1.0 (13:48:00)
+    │   └── media-libs/mesa-1.0 (13:48:10)
     ├── 5 (08/24/25 13:48:20) 
-    │   ├── media-libs/gcc-1.0 (13:48:30)
-    │   └── media-libs/ffmpeg-1.0 (13:48:40)
+    │   ├── media-libs/pycups-1.0 (13:48:30)
+    │   └── media-libs/gcc-1.0 (13:48:40)
     └── 6 (08/24/25 13:48:50) 
-        ├── app-admin/markdown-1.0 (13:49:00)
-        └── app-admin/mesa-1.0 (13:49:10)
+        ├── media-libs/ffmpeg-1.0 (13:49:00)
+        └── media-libs/xwayland-1.0 (13:49:10)
 """
 INSPECT_SINGLE_WITH_BUILD_ID = """$ gbp inspect base.2
 Machines
