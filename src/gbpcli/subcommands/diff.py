@@ -13,7 +13,6 @@ from gbpcli import GBP, render, utils
 from gbpcli.subcommands import completers as comp
 from gbpcli.types import Build, BuildInfo, Change, ChangeState, Console
 
-CPV = re.compile(r"(.*)-(\d.*)")
 HELP = """Show differences between two builds
 
 If the "left" argument is omitted, it defaults to the build which is published.
@@ -39,7 +38,7 @@ class Package:
     def from_api(cls, item: Change) -> Self:
         """Return Package from diff query item"""
         assert item.package
-        if match := CPV.match(item.package["cpv"]):
+        if match := re.match(r"(.*)-(\d.*)", item.package["cpv"]):
             cp, v = match.groups()
             return cls(
                 cp, v, item.package["buildId"], item.package["size"], item.status
