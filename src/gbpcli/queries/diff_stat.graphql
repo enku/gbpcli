@@ -1,0 +1,25 @@
+query ($left: ID!, $right: ID!) {
+  diff(left: $left, right: $right) {
+    left {
+      id
+      machine
+      built
+      submitted
+    }
+    right {
+      id
+      machine
+      built
+      submitted
+    }
+    items {
+      item
+      status
+      package {
+        cpv
+        buildId
+        size
+      }
+    }
+  }
+}

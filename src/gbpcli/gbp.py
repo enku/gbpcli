@@ -83,18 +83,21 @@ class GBP:
         return [Build.from_api_response(i) for i in builds]
 
     def diff(
-        self, machine: str, left: int, right: int
+        self, machine: str, left: int, right: int, with_packages: bool = False
     ) -> tuple[Build, Build, list[Change]]:
         """Return difference between two builds"""
-        data = check(
-            self.query.gbpcli.diff(left=f"{machine}.{left}", right=f"{machine}.{right}")
-        )
+        query = self.query.gbpcli.diff_stat if with_packages else self.query.gbpcli.diff
+        data = check(query(left=f"{machine}.{left}", right=f"{machine}.{right}"))
 
         return (
             Build.from_api_response(data["diff"]["left"]),
             Build.from_api_response(data["diff"]["right"]),
             [
-                Change(item=i["item"], status=getattr(ChangeState, i["status"]))
+                Change(
+                    item=i["item"],
+                    status=getattr(ChangeState, i["status"]),
+                    package=i.get("package"),
+                )
                 for i in data["diff"]["items"]
             ],
         )

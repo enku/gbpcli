@@ -3,7 +3,7 @@
 import datetime as dt
 from dataclasses import dataclass
 from enum import Enum, IntEnum
-from typing import Any, Self
+from typing import Any, Self, TypedDict
 
 import rich.console
 
@@ -115,12 +115,21 @@ class SearchField(Enum):
     notes = "NOTES"
 
 
+class DiffPackage(TypedDict):
+    """Package attributes returned from the diff query"""
+
+    cpv: str
+    buildId: int
+    size: int
+
+
 @dataclass(frozen=True, kw_only=True, slots=True)
 class Change:
     """Item in a diff"""
 
     item: str
     status: ChangeState
+    package: DiffPackage | None = None
 
 
 @dataclass(frozen=True, kw_only=True, slots=True)

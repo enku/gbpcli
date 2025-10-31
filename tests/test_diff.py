@@ -155,3 +155,64 @@ diff -r lighthouse/3111 lighthouse/3112
         fixtures.gbpcli(cmdline)
 
         self.assertEqual(fixtures.console.stdout, f"$ {cmdline}\n")
+
+
+@given(right=lib.pulled_build)
+@where(right__build=Build(machine="mediaserver", build_id="6323"))
+@where(
+    right__packages=[
+        "app-alternatives/gpg-1-r2",
+        "app-crypt/gpgme-2.0.1",
+        "dev-libs/glib-2.84.4",
+        "dev-perl/File-Slurper-0.14.0-r1",
+        "sys-apps/locale-gen-3.9",
+        "sys-libs/glibc-2.42-r2",
+    ]
+)
+@where(right__built=dt.datetime(2025, 10, 30, 11, 55, 35, tzinfo=dt.UTC))
+@given(left=lib.pulled_build)
+@where(left__build=Build(machine="mediaserver", build_id="6322"))
+@where(
+    left__packages=[
+        "app-alternatives/gpg-1-r2",
+        "app-crypt/gpgme-2.0.1",
+        "dev-perl/File-Slurper-0.14.0",
+        "sys-apps/locale-gen-3.8",
+        "sys-libs/glibc-2.42-r1",
+        "sys-libs/libcap-2.77",
+    ]
+)
+@where(left__built=dt.datetime(2025, 10, 29, 11, 55, 32, tzinfo=dt.UTC))
+@given(local_timezone=testkit.patch)
+@where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
+@where(local_timezone__new=LOCAL_TIMEZONE)
+@given(testkit.gbpcli)
+class DiffStatTests(TestCase):
+    """tests for `gbp diff --stat`"""
+
+    def test(self, fixtures: Fixtures) -> None:
+        status = fixtures.gbpcli("gbp diff --stat mediaserver 6322 6323")
+        self.assertEqual(status, 0)
+        self.assertEqual(
+            fixtures.console.stdout,
+            """\
+$ gbp diff --stat mediaserver 6322 6323
+diff -r mediaserver/6322 mediaserver/6323
+--- mediaserver/6322 Wed Oct 29 04:55:32 2025 -0700
++++ mediaserver/6323 Thu Oct 30 04:55:35 2025 -0700
+-app-alternatives/gpg-1-r2-1
++app-alternatives/gpg-1-r2-2
+-app-crypt/gpgme-2.0.1-1
++app-crypt/gpgme-2.0.1-2
++dev-libs/glib-2.84.4-1
+-dev-perl/File-Slurper-0.14.0-1
++dev-perl/File-Slurper-0.14.0-r1-1
+-sys-apps/locale-gen-3.8-1
++sys-apps/locale-gen-3.9-1
+-sys-libs/glibc-2.42-r1-1
++sys-libs/glibc-2.42-r2-1
+
+6 packages added (3 upgrades, 1 new, 2 reinstalls), Size of downloads: 4 KiB
+5 packages removed
+""",
+        )
