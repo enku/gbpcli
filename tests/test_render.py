@@ -12,6 +12,7 @@ from gbpcli.render import (
     format_flags,
     format_machine,
     format_tags,
+    pluralize,
     timestr,
     yesno,
 )
@@ -180,3 +181,17 @@ class FormatFlagsTests(TestCase):
         )
         with self.assertRaises(ValueError):
             format_flags(build)
+
+
+class PluralizeTests(TestCase):
+    def test_singular(self) -> None:
+        self.assertEqual(pluralize("book", 1), "book")
+
+    def test_plural(self) -> None:
+        self.assertEqual(pluralize("book", 10), "books")
+
+    def test_zero(self) -> None:
+        self.assertEqual(pluralize("book", 0), "books")
+
+    def test_custom_suffix(self) -> None:
+        self.assertEqual(pluralize("waitress", 10, "es"), "waitresses")
