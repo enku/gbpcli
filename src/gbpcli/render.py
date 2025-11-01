@@ -137,3 +137,13 @@ def format_machine(machine: str, args: argparse.Namespace) -> str:
         post = "[/mymachine]"
 
     return f"[machine]{pre}{machine}{post}[/machine]"
+
+
+def pluralize(string: str, count: int, suffix: str = "s") -> str:
+    """Pluralize the given string.
+
+    Add a suffix (default: 's') if count != 1
+    """
+    if count == 1:
+        return string
+    return f"{string}{suffix}"

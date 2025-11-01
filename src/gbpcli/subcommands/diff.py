@@ -180,7 +180,7 @@ def print_diff(diff: Iterable[Change], console: Console, with_stats: bool) -> No
 def print_stats(stats: DiffStats, console: Console):
     """Print the DiffStats to the Console"""
     added = stats.new + stats.reinstall + stats.upgrade
-    line = f"{added} {pluralize('package', added)} added"
+    line = f"{added} {render.pluralize('package', added)} added"
 
     if added:
         prefix = ""
@@ -188,13 +188,15 @@ def print_stats(stats: DiffStats, console: Console):
 
         for field, suffix in [("upgrade", "s"), ("new", ""), ("reinstall", "s")]:
             if stat := getattr(stats, field):
-                line = f"{line}{prefix}{stat} {pluralize(field, stat, suffix)}"
+                line = f"{line}{prefix}{stat} {render.pluralize(field, stat, suffix)}"
                 prefix = ", "
 
         line = f"{line}), Size of downloads: {humansize(stats.download_size)}"
 
     console.out.print(line)
-    console.out.print(f"{stats.remove} {pluralize('package', stats.remove)} removed")
+    console.out.print(
+        f"{stats.remove} {render.pluralize('package', stats.remove)} removed"
+    )
 
 
 def aggregate_stats(
@@ -213,16 +215,6 @@ def aggregate_stats(
                     stats.upgrade -= 1
     elif package.status == ChangeState.REMOVED:
         stats.remove += 1
-
-
-def pluralize(string: str, count: int, suffix: str = "s") -> str:
-    """Pluralize the given string.
-
-    Add a suffix (default: 's') if count != 1
-    """
-    if count == 1:
-        return string
-    return f"{string}{suffix}"
 
 
 def humansize(size: int) -> str:
