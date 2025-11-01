@@ -185,13 +185,10 @@ class FormatFlagsTests(TestCase):
 
 class PluralizeTests(TestCase):
     def test_singular(self) -> None:
-        self.assertEqual(pluralize("book", 1), "book")
+        self.assertEqual(pluralize("book", "books", 1), "book")
 
     def test_plural(self) -> None:
-        self.assertEqual(pluralize("book", 10), "books")
+        self.assertEqual(pluralize("book", "books", 10), "books")
 
     def test_zero(self) -> None:
-        self.assertEqual(pluralize("book", 0), "books")
-
-    def test_custom_suffix(self) -> None:
-        self.assertEqual(pluralize("waitress", 10, "es"), "waitresses")
+        self.assertEqual(pluralize("book", "books", 0), "books")
