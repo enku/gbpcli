@@ -47,6 +47,23 @@ class MachinesTestCase(TestCase):
 """
         self.assertEqual(fixtures.console.stdout, expected)
 
+    def test_with_short_options(self, fixtures: Fixtures) -> None:
+        status = fixtures.gbpcli("gbp machines -s")
+
+        self.assertEqual(status, 0)
+
+        expected = """\
+$ gbp machines -s
+arm64-base
+babette
+base
+blackwidow
+gbpbox
+lighthouse
+testing
+"""
+        self.assertEqual(fixtures.console.stdout, expected)
+
 
 EXPECTED_OUTPUT = """$ gbp machines
            7 Machines           
