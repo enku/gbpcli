@@ -1,8 +1,7 @@
 """Tests for the "utils" module"""
 
-# pylint: disable=missing-docstring,unused-argument
+# pylint: disable=missing-docstring
 import argparse
-import os
 import sys
 from unittest import TestCase, mock
 
@@ -146,7 +145,7 @@ class LoadEnvTests(TestCase):
         status = load_env(path)
 
         self.assertTrue(status)
-        self.assertEqual(os.environ["TEST"], "foobar")
+        self.assertEqual(fixtures.environ["TEST"], "foobar")
 
     def test_file_does_not_exist(self, fixtures: Fixtures) -> None:
         path = fixtures.tmpdir / "bogus.env"
@@ -168,32 +167,33 @@ class LoadEnvTests(TestCase):
         path = fixtures.tmpdir / "config.env"
         path.write_text("TEST=foobar\n")
 
-        with mock.patch.dict(os.environ, {"GBPCLI_DONTLOADSERVERENV": "1"}):
+        with mock.patch.dict(fixtures.environ, {"GBPCLI_DONTLOADSERVERENV": "1"}):
             status = load_env(path)
 
         self.assertFalse(status)
-        self.assertTrue("TEST" not in os.environ)
+        self.assertTrue("TEST" not in fixtures.environ)
 
 
+@given(testkit.environ)
 class RePath(TestCase):
-    def test(self) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         orig_path = sys.path.copy()
+        fixtures.environ["PYTHONPATH"] = "/dev/null"
 
         try:
-            with mock.patch.dict(os.environ, {"PYTHONPATH": "/dev/null"}):
-                re_path()
-                self.assertEqual(sys.path[0], "/dev/null")
+            re_path()
+            self.assertEqual(sys.path[0], "/dev/null")
         finally:
             sys.path = orig_path
 
-    def test_when_already_in_path(self) -> None:
+    def test_when_already_in_path(self, fixtures: Fixtures) -> None:
         orig_path = sys.path.copy()
+        fixtures.environ["PYTHONPATH"] = "/dev/null"
 
         try:
             sys.path.append("/dev/null")
-            with mock.patch.dict(os.environ, {"PYTHONPATH": "/dev/null"}):
-                re_path()
-                self.assertEqual(1, sys.path.count("/dev/null"))
-                self.assertEqual(sys.path[-1], "/dev/null")
+            re_path()
+            self.assertEqual(1, sys.path.count("/dev/null"))
+            self.assertEqual(sys.path[-1], "/dev/null")
         finally:
             sys.path = orig_path

@@ -146,6 +146,7 @@ class GetConsoleTestCase(unittest.TestCase):
         self.assertEqual(violet.style.color.name, "blue")
 
 
+@given(testkit.environ)
 @given(testkit.tmpdir, lib.user_config_dir, testkit.console, gbp=testkit.patch)
 @where(gbp__target="gbpcli.GBP")
 class MainTestCase(TestCase):
@@ -220,8 +221,8 @@ class MainTestCase(TestCase):
         with open(filename, "wb") as fp:
             fp.write(b'[gbpcli]\nurl = "http://fromconfig.invalid/"\n')
 
-        with mock.patch.dict(os.environ, {"GBPCLI_CONFIG": filename}):
-            main(["status", "lighthouse"])
+        fixtures.environ["GBPCLI_CONFIG"] = filename
+        main(["status", "lighthouse"])
 
         fixtures.gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
 

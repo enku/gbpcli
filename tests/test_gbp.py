@@ -1,7 +1,6 @@
 """Tests for the GBP interface"""
 
-# pylint: disable=missing-docstring,protected-access,unused-argument
-import os
+# pylint: disable=missing-docstring,protected-access
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
@@ -59,7 +58,7 @@ class BuildParserTestCase(TestCase):
         self.assertEqual(args.my_machines, "")
 
     def test_my_machines_from_environ(self, fixtures: Fixtures):
-        os.environ["GBPCLI_MYMACHINES"] = "this that the other"
+        fixtures.environ["GBPCLI_MYMACHINES"] = "this that the other"
         argv: list[str] = []
 
         parser_ = build_parser(config.Config())

@@ -2,7 +2,6 @@
 
 # pylint: disable=missing-docstring,unused-argument
 import datetime as dt
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
@@ -44,7 +43,7 @@ class SettingsTestCase(TestCase):
             "TODAY_FLAG": "no",
             "TODAY_STORAGE_PATH": "/home/today",
         }
-        os.environ.update(data_dict)
+        fixtures.environ.update(data_dict)
 
         settings = Settings.from_environ(prefix="TODAY_")
 

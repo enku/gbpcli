@@ -1,7 +1,6 @@
 """Tests for the notes subcommand"""
 
 # pylint: disable=missing-function-docstring
-import os
 import subprocess
 from unittest import TestCase, mock
 
@@ -33,7 +32,7 @@ class NotesTestCase(TestCase):
 
     def test_create_with_editor(self, fixtures: Fixtures):
         editor = fake_editor()
-        os.environ["VISUAL"] = "foo"
+        fixtures.environ["VISUAL"] = "foo"
 
         with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
             status = fixtures.gbpcli(CMDLINE)
@@ -47,7 +46,7 @@ class NotesTestCase(TestCase):
         self, fixtures: Fixtures
     ):
         editor = fake_editor(returncode=1)
-        os.environ["VISUAL"] = "foo"
+        fixtures.environ["VISUAL"] = "foo"
 
         with mock.patch(f"{MODULE}.subprocess.run", wraps=editor) as run:
             status = fixtures.gbpcli(CMDLINE)
@@ -58,8 +57,8 @@ class NotesTestCase(TestCase):
         run.assert_called_once_with(["foo", mock.ANY], check=False)
 
     def test_when_isatty_but_no_editor_reads_from_stdin(self, fixtures: Fixtures):
-        os.environ.pop("EDITOR", None)
-        os.environ.pop("EDITOR", None)
+        fixtures.environ.pop("EDITOR", None)
+        fixtures.environ.pop("EDITOR", None)
 
         with mock.patch(f"{MODULE}.sys.stdin.read", return_value=NOTE):
             status = fixtures.gbpcli(CMDLINE)
