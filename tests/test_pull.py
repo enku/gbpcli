@@ -16,23 +16,17 @@ class PullTestCase(TestCase):
     """pull() tests"""
 
     def test(self, fixtures: Fixtures):
-        cmdline = "gbp pull lighthouse 3226"
-
-        fixtures.gbpcli(cmdline)
+        fixtures.gbpcli("gbp pull lighthouse 3226")
 
         self.assertTrue(publisher.pulled(BUILD))
 
     def test_with_note(self, fixtures: Fixtures) -> None:
-        cmdline = "gbp pull lighthouse 3226 --note='This is a test'"
-
-        fixtures.gbpcli(cmdline)
+        fixtures.gbpcli("gbp pull lighthouse 3226 --note='This is a test'")
 
         record = publisher.record(BUILD)
         self.assertEqual(record.note, "This is a test")
 
     def test_with_tags(self, fixtures: Fixtures) -> None:
-        cmdline = "gbp pull lighthouse 3226 --tag test"
-
-        fixtures.gbpcli(cmdline)
+        fixtures.gbpcli("gbp pull lighthouse 3226 --tag test")
 
         self.assertEqual(publisher.tags(BUILD), ["test"])
