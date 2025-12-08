@@ -7,7 +7,7 @@ from unittest import TestCase, mock
 
 import gbp_testkit.fixtures as testkit
 from gentoo_build_publisher import types as gbp_types
-from unittest_fixtures import Fixtures, given, where
+from unittest_fixtures import FixtureContext, Fixtures, fixture, given, where
 
 from gbpcli.graphql import APIError, check
 from gbpcli.types import Build
@@ -174,26 +174,26 @@ class LoadEnvTests(TestCase):
         self.assertTrue("TEST" not in fixtures.environ)
 
 
-@given(testkit.environ)
+@fixture()
+def pythonpath(_: Fixtures) -> FixtureContext[list[str]]:
+    orig_path = sys.path.copy()
+    sys.path = []
+    yield sys.path
+    sys.path = orig_path
+
+
+@given(pythonpath, testkit.environ)
 class RePath(TestCase):
     def test(self, fixtures: Fixtures) -> None:
-        orig_path = sys.path.copy()
         fixtures.environ["PYTHONPATH"] = "/dev/null"
 
-        try:
-            re_path()
-            self.assertEqual(sys.path[0], "/dev/null")
-        finally:
-            sys.path = orig_path
+        re_path()
+        self.assertEqual(sys.path[0], "/dev/null")
 
     def test_when_already_in_path(self, fixtures: Fixtures) -> None:
-        orig_path = sys.path.copy()
         fixtures.environ["PYTHONPATH"] = "/dev/null"
 
-        try:
-            sys.path.append("/dev/null")
-            re_path()
-            self.assertEqual(1, sys.path.count("/dev/null"))
-            self.assertEqual(sys.path[-1], "/dev/null")
-        finally:
-            sys.path = orig_path
+        sys.path.append("/dev/null")
+        re_path()
+        self.assertEqual(1, sys.path.count("/dev/null"))
+        self.assertEqual(sys.path[-1], "/dev/null")
