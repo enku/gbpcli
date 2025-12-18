@@ -14,7 +14,34 @@ from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
+from gbpcli import types
+
 NO_JSON = object()
+
+
+build = types.Build(
+    machine="babette",
+    number=12,
+    info=types.BuildInfo(
+        keep=False,
+        note="This is a test",
+        published=True,
+        tags=["@foo", "@bar"],
+        submitted=dt.datetime(2025, 4, 8, 7, 1, tzinfo=dt.UTC),
+        built=dt.datetime(2025, 4, 8, 6, 1, tzinfo=dt.UTC),
+        completed=dt.datetime(2025, 4, 8, 7, 10, tzinfo=dt.UTC),
+    ),
+    packages_built=[
+        types.Package(
+            cpv="app-arch/libarchive-3.7.9",
+            build_time=dt.datetime(2025, 4, 8, 6, 10, tzinfo=dt.UTC),
+        ),
+        types.Package(
+            cpv="sys-apps/acl-2.3.2-r2",
+            build_time=dt.datetime(2025, 4, 8, 6, 20, tzinfo=dt.UTC),
+        ),
+    ],
+)
 
 
 @fixture(testkit.tmpdir)

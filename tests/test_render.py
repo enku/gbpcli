@@ -18,6 +18,8 @@ from gbpcli.render import (
 )
 from gbpcli.types import Build, BuildInfo, Package
 
+from . import lib
+
 
 class YesNoTestCase(TestCase):
     """Tests for the yesno() function"""
@@ -43,32 +45,8 @@ class TimestrTestCase(TestCase):
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)
 class BuildToStrTests(TestCase):
-    build = Build(
-        machine="babette",
-        number=12,
-        info=BuildInfo(
-            keep=False,
-            note="This is a test",
-            published=True,
-            tags=["@foo", "@bar"],
-            submitted=dt.datetime(2025, 4, 8, 7, 1, tzinfo=dt.UTC),
-            built=dt.datetime(2025, 4, 8, 6, 1, tzinfo=dt.UTC),
-            completed=dt.datetime(2025, 4, 8, 7, 10, tzinfo=dt.UTC),
-        ),
-        packages_built=[
-            Package(
-                cpv="app-arch/libarchive-3.7.9",
-                build_time=dt.datetime(2025, 4, 8, 6, 10, tzinfo=dt.UTC),
-            ),
-            Package(
-                cpv="sys-apps/acl-2.3.2-r2",
-                build_time=dt.datetime(2025, 4, 8, 6, 20, tzinfo=dt.UTC),
-            ),
-        ],
-    )
-
     def test(self, fixtures: Fixtures) -> None:
-        result = build_to_str(self.build)
+        result = build_to_str(lib.build)
 
         expected = """\
 [bold]Build:[/bold] [blue]babette/12[/blue]
