@@ -53,7 +53,7 @@ def user_config_dir(fixtures: Fixtures) -> FixtureContext[mock.Mock]:
 
 
 @fixture(testkit.publisher, testkit.build)
-def pulled_build(  # pylint: disable=too-many-arguments
+def pulled_build(  # pylint: disable=too-many-arguments,redefined-outer-name
     fixtures: Fixtures,
     *,
     build: Build | None = None,
