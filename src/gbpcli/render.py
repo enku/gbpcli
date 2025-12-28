@@ -16,10 +16,7 @@ LOCAL_TIMEZONE = dt.datetime.now().astimezone().tzinfo
 
 def yesno(value: bool) -> Literal["yes", "no"]:
     """Convert bool value to 'yes' or 'no'"""
-    if value:
-        return "yes"
-
-    return "no"
+    return "yes" if value else "no"
 
 
 def timestr(timestamp: dt.datetime, timezone: dt.tzinfo | None = None) -> str:
