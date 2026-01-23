@@ -1,11 +1,10 @@
 """Tests for the diff subcommand"""
 
 # pylint: disable=missing-function-docstring,protected-access
-import datetime as dt
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import LOCAL_TIMEZONE
+from gbp_testkit.helpers import LOCAL_TIMEZONE, ts
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.types import Build
 from unittest_fixtures import Fixtures, given, where
@@ -27,7 +26,7 @@ from . import lib
         "sys-kernel/vanilla-sources-6.0.0",
     ]
 )
-@where(build2__built=dt.datetime(2022, 10, 3, 11, 38, 28, tzinfo=dt.UTC))
+@where(build2__built=ts("2022-10-03 11:38:28"))
 @where(build2__clear=True)
 @given(build1=lib.pulled_build)
 @where(build1__build=Build(machine="lighthouse", build_id="3111"))
@@ -40,7 +39,7 @@ from . import lib
         "sys-kernel/vanilla-sources-5.19.12",
     ]
 )
-@where(build1__built=dt.datetime(2022, 10, 2, 19, 10, 2, tzinfo=dt.UTC))
+@where(build1__built=ts("2022-10-02 19:10:02"))
 class DiffTestCase(TestCase):
     """diff() tests"""
 
@@ -169,7 +168,7 @@ diff -r lighthouse/3111 lighthouse/3112
         "sys-libs/glibc-2.42-r2",
     ]
 )
-@where(right__built=dt.datetime(2025, 10, 30, 11, 55, 35, tzinfo=dt.UTC))
+@where(right__built=ts("2025-10-30 11:55:35"))
 @given(left=lib.pulled_build)
 @where(left__build=Build(machine="mediaserver", build_id="6322"))
 @where(
@@ -182,7 +181,7 @@ diff -r lighthouse/3111 lighthouse/3112
         "sys-libs/libcap-2.77",
     ]
 )
-@where(left__built=dt.datetime(2025, 10, 29, 11, 55, 32, tzinfo=dt.UTC))
+@where(left__built=ts("2025-10-29 11:55:32"))
 @given(local_timezone=testkit.patch)
 @where(local_timezone__target="gbpcli.render.LOCAL_TIMEZONE")
 @where(local_timezone__new=LOCAL_TIMEZONE)

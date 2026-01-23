@@ -4,7 +4,7 @@ import datetime as dt
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
-from gbp_testkit.helpers import LOCAL_TIMEZONE
+from gbp_testkit.helpers import LOCAL_TIMEZONE, ts
 from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.render import (
@@ -130,14 +130,13 @@ class FormatFlagsTests(TestCase):
                 note=None,
                 published=True,
                 tags=["foo"],
-                submitted=dt.datetime(2025, 6, 13, 6, 50, tzinfo=dt.UTC),
-                completed=dt.datetime(2025, 6, 13, 6, 55, tzinfo=dt.UTC),
-                built=dt.datetime(2025, 6, 13, 6, 49, tzinfo=dt.UTC),
+                submitted=ts("2025-06-13 06:50:00"),
+                completed=ts("2025-06-13 06:55:00"),
+                built=ts("2025-06-13 06:49:00"),
             ),
             packages_built=[
                 Package(
-                    cpv="media-video/totem-43.2",
-                    build_time=dt.datetime(2025, 6, 13, 4, 49, tzinfo=dt.UTC),
+                    cpv="media-video/totem-43.2", build_time=ts("2025-06-13 04:49:00")
                 )
             ],
         )
@@ -152,8 +151,7 @@ class FormatFlagsTests(TestCase):
             info=None,
             packages_built=[
                 Package(
-                    cpv="media-video/totem-43.2",
-                    build_time=dt.datetime(2025, 6, 13, 4, 49, tzinfo=dt.UTC),
+                    cpv="media-video/totem-43.2", build_time=ts("2025-06-13 04:49:00")
                 )
             ],
         )

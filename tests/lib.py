@@ -9,6 +9,7 @@ from unittest import mock
 
 import gbp_testkit.fixtures as testkit
 import requests
+from gbp_testkit.helpers import ts
 from gentoo_build_publisher import publisher
 from gentoo_build_publisher.records import BuildRecord
 from gentoo_build_publisher.types import Build
@@ -27,18 +28,16 @@ build = types.Build(
         note="This is a test",
         published=True,
         tags=["@foo", "@bar"],
-        submitted=dt.datetime(2025, 4, 8, 7, 1, tzinfo=dt.UTC),
-        built=dt.datetime(2025, 4, 8, 6, 1, tzinfo=dt.UTC),
-        completed=dt.datetime(2025, 4, 8, 7, 10, tzinfo=dt.UTC),
+        submitted=ts("2025-04-08 07:01:00"),
+        built=ts("2025-04-08 06:01:00"),
+        completed=ts("2025-04-08 07:10:00"),
     ),
     packages_built=[
         types.Package(
-            cpv="app-arch/libarchive-3.7.9",
-            build_time=dt.datetime(2025, 4, 8, 6, 10, tzinfo=dt.UTC),
+            cpv="app-arch/libarchive-3.7.9", build_time=ts("2025-04-08 06:10:00")
         ),
         types.Package(
-            cpv="sys-apps/acl-2.3.2-r2",
-            build_time=dt.datetime(2025, 4, 8, 6, 20, tzinfo=dt.UTC),
+            cpv="sys-apps/acl-2.3.2-r2", build_time=ts("2025-04-08 06:20:00")
         ),
     ],
 )
@@ -57,9 +56,9 @@ def pulled_build(  # pylint: disable=too-many-arguments,redefined-outer-name
     fixtures: Fixtures,
     *,
     build: Build | None = None,
-    built: dt.datetime = dt.datetime(2021, 11, 13, 4, 23, 34, tzinfo=dt.UTC),
-    submitted: dt.datetime = dt.datetime(2021, 11, 13, 4, 25, 53, tzinfo=dt.UTC),
-    completed: dt.datetime = dt.datetime(2021, 11, 13, 4, 29, 34, tzinfo=dt.UTC),
+    built: dt.datetime = ts("2021-11-13 04:23:34"),
+    submitted: dt.datetime = ts("2021-11-13 04:25:53"),
+    completed: dt.datetime = ts("2021-11-13 04:29:34"),
     packages: Sequence[str] = (),
     note: str | None = None,
     tags: Sequence[str] | None = None,

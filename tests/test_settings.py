@@ -8,6 +8,7 @@ from typing import ClassVar
 from unittest import TestCase
 
 import gbp_testkit.fixtures as testkit
+from gbp_testkit.helpers import ts
 from unittest_fixtures import Fixtures, given, where
 
 from gbpcli.settings import BaseSettings, string_value_to_field_value
@@ -24,7 +25,7 @@ class Settings(BaseSettings):
     FLAG: bool
     JENKINS_DOWNLOAD_CHUNK_SIZE: int
     JENKINS_USER: str | None = None
-    TIMESTAMP: dt.datetime = dt.datetime(2025, 9, 14, 14, 1)
+    TIMESTAMP: dt.datetime = ts("2025-09-14 14:01:00")
 
     @staticmethod
     def validate_timestamp(value: str) -> dt.datetime:
@@ -70,7 +71,7 @@ class SettingsTestCase(TestCase):
         self.assertEqual(settings.JENKINS_USER, None)
         self.assertEqual(settings.JENKINS_DOWNLOAD_CHUNK_SIZE, 14)
         self.assertIs(settings.FLAG, True)
-        self.assertEqual(settings.TIMESTAMP, dt.datetime(2002, 11, 4, 4, 15, 22))
+        self.assertEqual(settings.TIMESTAMP, ts("2002-11-04 04:15:22", None))
 
         with self.assertRaises(AttributeError):
             # pylint: disable=no-member,pointless-statement
