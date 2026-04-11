@@ -251,13 +251,11 @@ class GetUserConfigTests(TestCase):
         filename = os.path.join(fixtures.tmpdir, "gbpcli.toml")
 
         with open(filename, "wb") as fp:
-            fp.write(
-                b"""\
+            fp.write(b"""\
 [gbpcli]
 url = "http://test.invalid/"
 my_machines = ["this", "that", "the_other"]
-"""
-            )
+""")
 
         user_config = gbpcli.get_user_config()
 
@@ -274,13 +272,11 @@ my_machines = ["this", "that", "the_other"]
         custom_filename = os.path.join(fixtures.tmpdir, "custom.toml")
 
         with open(custom_filename, "wb") as fp:
-            fp.write(
-                b"""\
+            fp.write(b"""\
 [gbpcli]
 url = "http://test.invalid/"
 my_machines = ["this", "that", "the_other"]
-"""
-            )
+""")
 
         user_config = gbpcli.get_user_config(custom_filename)
 

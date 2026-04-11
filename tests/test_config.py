@@ -19,13 +19,11 @@ def filename(fixtures: Fixtures) -> str:
 class ConfigTests(TestCase):
     def test_from_file(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:
-            fp.write(
-                b"""\
+            fp.write(b"""\
 [gbpcli]
 url = "http://test.invalid/"
 my_machines = ["babette", "lighthouse"]
-"""
-            )
+""")
             fp.seek(0)
             conf = config.Config.from_file(fp)
 
@@ -38,12 +36,10 @@ my_machines = ["babette", "lighthouse"]
     ) -> None:
         with open(fixtures.filename, "wb+") as fp:
             os.chmod(fp.fileno(), 0o666)
-            fp.write(
-                b"""\
+            fp.write(b"""\
 [gbpcli]
 auth = { user = "test", api_key = "secret" }
-"""
-            )
+""")
             fp.seek(0)
             stderr = io.StringIO()
             with contextlib.redirect_stderr(stderr):
