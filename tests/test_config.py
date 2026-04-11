@@ -11,7 +11,7 @@ from gbpcli import config
 
 
 @fixture(testkit.tmpdir)
-def filename(fixtures):
+def filename(fixtures: Fixtures) -> str:
     return os.path.join(fixtures.tmpdir, "gbpcli.toml")
 
 
@@ -35,7 +35,7 @@ my_machines = ["babette", "lighthouse"]
 
     def test_from_file_warnings_if_contains_auth_and_readable_by_others(
         self, fixtures: Fixtures
-    ):
+    ) -> None:
         with open(fixtures.filename, "wb+") as fp:
             os.chmod(fp.fileno(), 0o666)
             fp.write(
@@ -54,14 +54,14 @@ auth = { user = "test", api_key = "secret" }
             "Warning: the config file contains secrets yet is readable by others.\n",
         )
 
-    def test_missing_section(self, fixtures: Fixtures):
+    def test_missing_section(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:
             fp.seek(0)
 
             with self.assertRaises(config.ConfigError):
                 config.Config.from_file(fp)
 
-    def test_empty_section(self, fixtures: Fixtures):
+    def test_empty_section(self, fixtures: Fixtures) -> None:
         with open(fixtures.filename, "wb+") as fp:
             fp.write(b"[gbpcli]\n")
             fp.seek(0)
