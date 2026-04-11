@@ -32,6 +32,7 @@ class Config:
     url: str | None = None
     my_machines: list[str] | None = None
     auth: AuthDict | None = None
+    color: t.Literal["always"] | t.Literal["never"] | t.Literal["auto"] = "auto"
 
     @classmethod
     def from_file(cls: type[_T], fp: t.IO[bytes]) -> _T:

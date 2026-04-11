@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     user_config = get_user_config(os.environ.get("GBPCLI_CONFIG"))
     args = get_arguments(user_config, argv)
     theme = get_theme_from_string(os.getenv("GBPCLI_COLORS", ""))
-    console = get_console(COLOR_CHOICES[args.color], theme)
+    console = get_console(get_color_choice(args.color), theme)
 
     try:
         return cast(int, args.func(args, GBP(args.url, auth=user_config.auth), console))
@@ -99,7 +99,7 @@ def build_parser(user_config: config.Config) -> argparse.ArgumentParser:
         "--color",
         metavar="WHEN",
         choices=COLOR_CHOICES,
-        default="auto",
+        default=user_config.color,
         help=f"colorize output {tuple(COLOR_CHOICES)}",
     )
     parser.add_argument(
@@ -131,6 +131,19 @@ def build_parser(user_config: config.Config) -> argparse.ArgumentParser:
     parser.usage = usage
 
     return parser
+
+
+def get_color_choice(choice: str) -> bool | None:
+    """Return the given COLOR_CHOICES
+
+    If `choice` doesn't resolve to a valid color choice, print an error and raise
+    SystemExit
+    """
+    try:
+        return COLOR_CHOICES[choice]
+    except KeyError:
+        print(f"Invalid color option: {choice!r}", file=sys.stderr)
+        raise SystemExit(1) from None
 
 
 def ensure_args_has_func(

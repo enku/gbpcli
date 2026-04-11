@@ -68,6 +68,17 @@ auth = { user = "test", api_key = "secret" }
         self.assertEqual(conf.my_machines, None)
         self.assertEqual(conf.auth, None)
 
+    def test_color(self, fixtures: Fixtures) -> None:
+        with open(fixtures.filename, "wb+") as fp:
+            fp.write(b"""\
+[gbpcli]
+color = "test"
+""")
+            fp.seek(0)
+            conf = config.Config.from_file(fp)
+
+        self.assertEqual(conf.color, "test")
+
 
 @given(filename)
 class IsReadableByOthersTests(TestCase):

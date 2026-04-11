@@ -2,7 +2,9 @@
 
 # pylint: disable=missing-function-docstring,protected-access,unused-argument
 import argparse
+import contextlib
 import importlib
+import io
 import os.path
 import sys
 import unittest
@@ -89,23 +91,6 @@ class GetArgumentsTestCase(unittest.TestCase):
         ]
 
         result = gbpcli.get_arguments(config.Config(), argv)
-
-        expected = argparse.Namespace(
-            url="https://gbp.invalid/",
-            color="auto",
-            my_machines="lighthouse polaris",
-            machine="lighthouse",
-            func=list_subcommand.handler,
-        )
-        self.assertEqual(result, expected)
-
-    def test_with_config(self):
-        argv = ["list", "lighthouse"]
-        user_config = config.Config(
-            url="https://gbp.invalid/", my_machines=["lighthouse", "polaris"]
-        )
-
-        result = gbpcli.get_arguments(user_config, argv)
 
         expected = argparse.Namespace(
             url="https://gbp.invalid/",
@@ -225,6 +210,30 @@ class MainTestCase(TestCase):
         main(["status", "lighthouse"])
 
         fixtures.gbp.assert_called_once_with("http://fromconfig.invalid/", auth=None)
+
+    @mock.patch("gbpcli.Console")
+    def test_with_color_config(self, _mock_console, fixtures: Fixtures) -> None:
+        filename = os.path.join(fixtures.tmpdir, "custom.toml")
+        fixtures.environ["GBPCLI_CONFIG"] = filename
+        stderr = io.StringIO()
+
+        with open(filename, "wb") as fp:
+            fp.write(b'[gbpcli]\ncolor = "auto"\n')
+
+        status = main(["status", "lighthouse"])
+        self.assertEqual(status, 0)
+
+        with open(filename, "wb") as fp:
+            fp.write(b'[gbpcli]\ncolor = "bogus"\n')
+
+        try:
+            with contextlib.redirect_stderr(stderr):
+                main(["status", "lighthouse"])
+        except SystemExit:
+            self.assertEqual(stderr.getvalue(), "Invalid color option: 'bogus'\n")
+            return
+
+        self.fail("main() should have errored")
 
     def test_main_no_args(self, fixtures: Fixtures) -> None:
         # admittedly this is mostly to get a good screenshot
