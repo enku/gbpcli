@@ -20,7 +20,13 @@ class GBP:
     def machines(
         self, *, names: list[str] | None = None
     ) -> list[tuple[str, int, dict[str, Any]]]:
-        """Handler for subcommand"""
+        """Return metadata for each machine
+
+        metadata is a tuple that includes:
+            - machine name
+            - build count
+            - latest build information
+        """
         data = check(self.query.gbpcli.machines(names=names))
 
         return [
