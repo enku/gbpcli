@@ -58,7 +58,7 @@ class DiffStats:
 
 
 def handler(args: argparse.Namespace, gbp: GBP, console: Console) -> int:
-    """Handler for subcommand"""
+    """Show the differences between two builds"""
     if (left := get_left_build(args.machine, args.left, gbp)) is None:
         console.err.print("No builds given and no builds published")
         return 1
